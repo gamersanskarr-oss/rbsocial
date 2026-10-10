@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import ScrollExpand from "@/components/scroll-expand";
 import LightRays from "@/components/light-rays";
+import TextLoop from "@/components/text-loop";
 
 /* Brand colors lifted from the logo: flame red-orange + deep navy */
 const FLAME = "#ff4a36";
@@ -301,18 +302,23 @@ export default function Home() {
         <WaveDivider back={`${NAVY}2e`} front="#07080d" />
       </section>
 
-      {/* ══ Marquee ════════════════════════════════════════════════════ */}
-      <div className="relative border-y border-white/5 bg-white/[0.02] py-5">
-        <div className="flex overflow-hidden">
-          <div className="animate-marquee flex shrink-0 items-center gap-10 pr-10">
-            {[...marqueeWords, ...marqueeWords].map((w, i) => (
-              <span key={i} className="flex items-center gap-10 whitespace-nowrap text-sm font-bold uppercase tracking-[0.2em] text-faint">
-                {w}
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: i % 2 ? NAVY : FLAME }} />
-              </span>
-            ))}
-          </div>
-        </div>
+      {/* ══ Curved moving text loop ════════════════════════════════════ */}
+      <div className="relative border-y border-white/5 bg-white/[0.02] py-8">
+        <TextLoop
+          text={marqueeWords.join("  ✦  ")}
+          shape="wave"
+          curviness={64}
+          speed={85}
+          fontSize={34}
+          fontWeight={800}
+          letterSpacing={3}
+          separator=""
+          color="#ffffff"
+          ribbon
+          ribbonColor={FLAME}
+          ribbonWidth={72}
+          pauseOnHover
+        />
       </div>
 
       {/* ══ Services ═══════════════════════════════════════════════════ */}
