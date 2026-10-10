@@ -143,6 +143,40 @@ const marqueeWords = [
   "Web support",
 ];
 
+/* Two-layer scrolling wave — seamless because the path repeats every 600 units
+   across a 2400-wide viewBox, and the animation slides exactly -50%. */
+function WaveDivider({
+  back,
+  front,
+  flip = false,
+  className = "",
+}: {
+  back: string;
+  front: string;
+  flip?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      aria-hidden
+      className={`pointer-events-none absolute inset-x-0 bottom-0 h-20 overflow-hidden md:h-28 ${flip ? "rotate-180" : ""} ${className}`}
+    >
+      <svg className="animate-wave-slow absolute inset-x-0 bottom-0 h-full w-[200%] opacity-70" viewBox="0 0 2400 120" preserveAspectRatio="none">
+        <path
+          fill={back}
+          d="M0 58 Q150 6 300 58 T600 58 T900 58 T1200 58 T1500 58 T1800 58 T2100 58 T2400 58 V120 H0 Z"
+        />
+      </svg>
+      <svg className="animate-wave absolute inset-x-0 bottom-0 h-full w-[200%]" viewBox="0 0 2400 120" preserveAspectRatio="none">
+        <path
+          fill={front}
+          d="M0 72 Q150 26 300 72 T600 72 T900 72 T1200 72 T1500 72 T1800 72 T2100 72 T2400 72 V120 H0 Z"
+        />
+      </svg>
+    </div>
+  );
+}
+
 export default function Home() {
   return (
     <div className="theme-dark min-h-screen bg-[#07080d] text-ink">
@@ -172,28 +206,22 @@ export default function Home() {
 
       {/* ══ Hero ═══════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden">
-        {/* gradient washes — navy base, flame edge */}
+        {/* drifting gradient orbs — navy base, flame edge */}
         <div
-          className="pointer-events-none absolute -top-64 left-1/2 h-[640px] w-[1100px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
+          className="animate-drift pointer-events-none absolute -top-64 left-1/2 h-[640px] w-[1100px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
           style={{ background: `radial-gradient(closest-side, ${NAVY}66, transparent)` }}
         />
         <div
-          className="pointer-events-none absolute -right-40 top-24 h-[420px] w-[420px] rounded-full opacity-25 blur-3xl"
+          className="animate-drift-alt pointer-events-none absolute -right-40 top-24 h-[440px] w-[440px] rounded-full opacity-30 blur-3xl"
           style={{ background: `radial-gradient(closest-side, ${FLAME}55, transparent)` }}
         />
         <div
-          className="pointer-events-none absolute -left-52 top-72 h-[380px] w-[380px] rounded-full opacity-20 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${NAVY}88, transparent)` }}
+          className="animate-drift pointer-events-none absolute -left-52 top-72 h-[400px] w-[400px] rounded-full opacity-25 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${NAVY}88, transparent)`, animationDelay: "-8s" }}
         />
-        {/* hairline grid */}
         <div
-          className="pointer-events-none absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
-            backgroundSize: "72px 72px",
-            maskImage: "radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent)",
-          }}
+          className="animate-drift-alt pointer-events-none absolute bottom-0 left-1/3 h-[300px] w-[300px] rounded-full opacity-20 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${FLAME}44, transparent)`, animationDelay: "-5s" }}
         />
 
         <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-28 text-center md:pt-36">
@@ -208,8 +236,8 @@ export default function Home() {
           <h1 className="mx-auto max-w-4xl text-5xl font-extrabold leading-[1.04] tracking-tight md:text-7xl">
             Your brand,{" "}
             <span
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: `linear-gradient(100deg, ${FLAME} 10%, #ff8a5c 50%, ${NAVY} 95%)` }}
+              className="animate-gradient-pan bg-clip-text text-transparent"
+              style={{ backgroundImage: `linear-gradient(100deg, ${FLAME} 10%, #ff8a5c 40%, #ffd7a8 50%, ${NAVY} 90%)` }}
             >
               designed daily
             </span>
@@ -250,6 +278,8 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        <WaveDivider back={`${NAVY}2e`} front="#07080d" />
       </section>
 
       {/* ══ Marquee ════════════════════════════════════════════════════ */}
@@ -344,12 +374,8 @@ export default function Home() {
                   }}
                 />
                 <div
-                  className="absolute inset-0 opacity-[0.08]"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
-                    backgroundSize: "36px 36px",
-                  }}
+                  className={`animate-drift absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-40 blur-2xl transition-opacity group-hover:opacity-70 ${i % 2 ? "" : "animate-drift-alt"}`}
+                  style={{ background: "radial-gradient(closest-side, #ffffff66, transparent)" }}
                 />
                 <div className="absolute inset-x-0 bottom-0 p-6">
                   <p className="text-lg font-bold tracking-tight text-white">{a}</p>
@@ -541,8 +567,9 @@ export default function Home() {
       </section>
 
       {/* ══ FAQ ════════════════════════════════════════════════════════ */}
-      <section id="faq" className="border-t border-white/5 bg-white/[0.015]">
-        <div className="mx-auto max-w-3xl px-6 py-28">
+      <section id="faq" className="relative bg-white/[0.015]">
+        <WaveDivider back={`${NAVY}30`} front="#090b10" flip />
+        <div className="mx-auto max-w-3xl px-6 pb-28 pt-32">
           <div className="text-center">
             <p className="section-label" style={{ color: FLAME }}>FAQ</p>
             <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
@@ -576,12 +603,12 @@ export default function Home() {
             style={{ background: `linear-gradient(140deg, ${NAVY}52, #0a0c14 45%, ${FLAME}30)` }}
           />
           <div
-            className="absolute inset-0 opacity-[0.07]"
-            style={{
-              backgroundImage:
-                "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
-              backgroundSize: "56px 56px",
-            }}
+            className="animate-drift pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full opacity-40 blur-3xl"
+            style={{ background: `radial-gradient(closest-side, ${FLAME}66, transparent)` }}
+          />
+          <div
+            className="animate-drift-alt pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full opacity-50 blur-3xl"
+            style={{ background: `radial-gradient(closest-side, ${NAVY}88, transparent)` }}
           />
           <div className="relative">
             <h2 className="mx-auto max-w-2xl text-4xl font-extrabold tracking-tight md:text-5xl">

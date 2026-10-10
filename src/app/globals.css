@@ -242,3 +242,36 @@ html {
     --t-shadow-lift: 0 2px 6px rgb(28 27 25 / 0.06);
   }
 }
+
+/* ── Landing motion: drifting gradient orbs, scrolling waves, panning gradients ── */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(48px, -36px) scale(1.08); }
+  66% { transform: translate(-32px, 28px) scale(0.94); }
+}
+@keyframes drift-alt {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-56px, 44px) scale(1.14); }
+}
+@keyframes wave-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes gradient-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-drift { animation: drift 22s ease-in-out infinite; }
+.animate-drift-alt { animation: drift-alt 17s ease-in-out infinite; }
+.animate-wave { animation: wave-scroll 16s linear infinite; }
+.animate-wave-slow { animation: wave-scroll 28s linear infinite reverse; }
+.animate-gradient-pan {
+  background-size: 220% 220%;
+  animation: gradient-pan 9s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-drift, .animate-drift-alt, .animate-wave, .animate-wave-slow,
+  .animate-gradient-pan, .animate-marquee, .animate-float {
+    animation: none;
+  }
+}
