@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
+import ScrollExpand from "@/components/scroll-expand";
 
 /* Brand colors lifted from the logo: flame red-orange + deep navy */
 const FLAME = "#ff4a36";
@@ -387,6 +388,53 @@ export default function Home() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ══ Featured — scroll-expand showcase ══════════════════════════ */}
+      <section className="relative py-24">
+        <ScrollExpand
+          useWindowScroll
+          src="/showcase.svg"
+          alt="RB Social Branding — brand waves artwork"
+          title="RB Social Branding"
+          scrollHint="Scroll to expand"
+          startWidth={46}
+          startHeight={62}
+          startRadius={28}
+          mediaZoom={1.3}
+          scrollDistance={1.1}
+          holdDistance={0.3}
+          smoothing={0.09}
+          overlayScrim={0.55}
+        >
+          <div className="max-w-xl">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ff8a5c" }}>
+              Featured system
+            </p>
+            <h3 className="mt-4 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
+              Every post, on brand and on schedule.
+            </h3>
+            <p className="mt-4 text-base font-medium leading-relaxed text-white/70">
+              One dedicated designer, one live dashboard, one monthly invoice — the whole
+              content engine, handled.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="#contact"
+                className="rounded-full px-7 py-3 text-sm font-bold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
+                style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` }}
+              >
+                Start a project
+              </a>
+              <a
+                href="#pricing"
+                className="rounded-full border border-white/20 bg-white/10 px-7 py-3 text-sm font-bold text-white backdrop-blur transition duration-200 hover:bg-white/20 active:scale-[0.98]"
+              >
+                See pricing
+              </a>
+            </div>
+          </div>
+        </ScrollExpand>
       </section>
 
       {/* ══ Process ════════════════════════════════════════════════════ */}
