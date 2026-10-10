@@ -7,10 +7,14 @@ export default async function ManagerLayout({ children }: { children: React.Reac
   const openRequests = await countOpenRequests();
 
   const nav = [
-    { href: "/manager/tasks", label: "Tasks", icon: "tasks" as const },
-    { href: "/manager/calendar", label: "Calendar", icon: "calendar" as const },
-    { href: "/manager/requests", label: "Requests", icon: "requests" as const, badge: openRequests },
-    { href: "/manager/assign", label: "Assign Task", icon: "assign" as const },
+    {
+      label: "Workspace",
+      items: [
+        { href: "/manager/tasks", label: "Tasks", icon: "tasks" as const },
+        { href: "/manager/calendar", label: "Calendar", icon: "calendar" as const },
+        { href: "/manager/requests", label: "Requests", icon: "requests" as const, badge: openRequests },
+      ],
+    },
   ];
 
   return (

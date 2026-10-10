@@ -22,15 +22,15 @@ const MONTHS = [
 ];
 
 const chipStyles: Record<string, string> = {
-  PENDING: "bg-amber-50 text-amber-800 ring-amber-200/70 hover:bg-amber-100",
-  COMPLETED: "bg-emerald-50 text-emerald-800 ring-emerald-200/70 hover:bg-emerald-100",
-  MISSED: "bg-rose-50 text-rose-800 ring-rose-200/70 hover:bg-rose-100",
+  PENDING: "bg-warn-soft text-warn ring-warn-line hover:bg-warn-soft/60",
+  COMPLETED: "bg-ok-soft text-ok ring-ok-line hover:bg-ok-soft/60",
+  MISSED: "bg-bad-soft text-bad ring-bad-line hover:bg-bad-soft/60",
 };
 
 const dotStyles: Record<string, string> = {
   PENDING: "bg-amber-400",
-  COMPLETED: "bg-emerald-500",
-  MISSED: "bg-rose-500",
+  COMPLETED: "bg-ok-soft0",
+  MISSED: "bg-bad-soft0",
 };
 
 function AssignModal({
@@ -61,7 +61,7 @@ function AssignModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-ink/30 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-line bg-white p-7 shadow-lift">
+      <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-line bg-elevated p-7 shadow-lift">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <h2 className="text-lg font-bold tracking-tight text-ink">Assign task</h2>
@@ -195,7 +195,7 @@ export function TaskCalendar({
           <button
             onClick={() => move(-1)}
             aria-label="Previous month"
-            className="rounded-xl border border-line bg-white p-2 text-muted shadow-sm transition hover:bg-hover hover:text-ink"
+            className="rounded-xl border border-line bg-elevated p-2 text-muted shadow-sm transition hover:bg-hover hover:text-ink"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
               <path d="M15 18l-6-6 6-6" />
@@ -203,14 +203,14 @@ export function TaskCalendar({
           </button>
           <button
             onClick={() => setView({ y: now.getFullYear(), m: now.getMonth() })}
-            className="rounded-xl border border-line bg-white px-3.5 py-2 text-xs font-bold text-ink shadow-sm transition hover:bg-hover"
+            className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-xs font-bold text-ink shadow-sm transition hover:bg-hover"
           >
             Today
           </button>
           <button
             onClick={() => move(1)}
             aria-label="Next month"
-            className="rounded-xl border border-line bg-white p-2 text-muted shadow-sm transition hover:bg-hover hover:text-ink"
+            className="rounded-xl border border-line bg-elevated p-2 text-muted shadow-sm transition hover:bg-hover hover:text-ink"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
               <path d="M9 18l6-6-6-6" />
@@ -223,8 +223,8 @@ export function TaskCalendar({
 
         <div className="flex items-center gap-4 text-xs font-medium text-muted">
           <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-400" />Pending</span>
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" />Completed</span>
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-rose-500" />Missed</span>
+          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-ok-soft0" />Completed</span>
+          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-bad-soft0" />Missed</span>
         </div>
       </div>
 
@@ -259,7 +259,7 @@ export function TaskCalendar({
                   <>
                     <span
                       className={`mb-1 inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold ${
-                        isToday ? "bg-ink font-bold text-white" : "text-muted"
+                        isToday ? "bg-ink font-bold text-canvas" : "text-muted"
                       }`}
                     >
                       {day}

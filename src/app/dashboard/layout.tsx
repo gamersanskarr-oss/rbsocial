@@ -3,9 +3,14 @@ import { countCompletedTasks, getUser } from "@/lib/data";
 import { DashboardShell } from "@/components/dashboard-shell";
 
 const nav = [
-  { href: "/dashboard", label: "My Tasks", icon: "my-tasks" as const },
-  { href: "/dashboard/calendar", label: "Calendar", icon: "calendar" as const },
-  { href: "/dashboard/clients", label: "My Clients", icon: "clients" as const },
+  {
+    label: "My work",
+    items: [
+      { href: "/dashboard", label: "My Tasks", icon: "my-tasks" as const },
+      { href: "/dashboard/calendar", label: "Calendar", icon: "calendar" as const },
+      { href: "/dashboard/clients", label: "My Clients", icon: "clients" as const },
+    ],
+  },
 ];
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {

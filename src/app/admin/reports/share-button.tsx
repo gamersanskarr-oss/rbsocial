@@ -26,13 +26,13 @@ export default function ShareButton({ horizon }: { horizon: string }) {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           }}
-          className="rounded-lg border border-line bg-white px-3 py-2 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
+          className="rounded-lg border border-line bg-elevated px-3 py-2 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
           title={fullUrl}
         >
           {copied ? "Copied!" : "Copy link"}
         </button>
       )}
-      {state.error && <p className="text-xs font-semibold text-rose-600">{state.error}</p>}
+      {state.error && <p className="text-xs font-semibold text-bad">{state.error}</p>}
     </div>
   );
 }

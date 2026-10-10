@@ -168,6 +168,11 @@ export async function listEmployees(): Promise<UserRecord[]> {
   return snap.docs.map((d) => withDates<UserRecord>(d, USER_DATES)).sort(byName);
 }
 
+export async function listAllUsers(): Promise<UserRecord[]> {
+  const snap = await adminDb.collection("users").get();
+  return snap.docs.map((d) => withDates<UserRecord>(d, USER_DATES)).sort(byName);
+}
+
 export async function listDesigners(): Promise<{ id: string; name: string }[]> {
   return (await listEmployees())
     .filter((u) => u.team === "DESIGN")

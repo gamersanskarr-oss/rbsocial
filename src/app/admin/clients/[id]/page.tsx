@@ -55,7 +55,7 @@ export default async function AdminClientDetailPage({
                 href={s.url!}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-xl border border-line bg-white px-3.5 py-2 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
+                className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
               >
                 {s.label} ↗
               </a>

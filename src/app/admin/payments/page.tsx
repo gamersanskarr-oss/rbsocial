@@ -20,9 +20,9 @@ const monthLabel = (key: string | null) => {
 };
 
 const STATUS_STYLE: Record<string, { label: string; cls: string }> = {
-  RECEIVED: { label: "Received", cls: "bg-emerald-50 text-emerald-800 ring-emerald-200/60" },
-  OVERDUE: { label: "Overdue", cls: "bg-rose-50 text-rose-800 ring-rose-200/60" },
-  DUE_TODAY: { label: "Due today", cls: "bg-amber-50 text-amber-800 ring-amber-200/60" },
+  RECEIVED: { label: "Received", cls: "bg-ok-soft text-ok ring-ok-line" },
+  OVERDUE: { label: "Overdue", cls: "bg-bad-soft text-bad ring-bad-line" },
+  DUE_TODAY: { label: "Due today", cls: "bg-warn-soft text-warn ring-warn-line" },
   PENDING: { label: "Pending", cls: "bg-panel text-muted ring-line" },
 };
 
@@ -58,8 +58,8 @@ export default async function PaymentsPage() {
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-panel/70 px-5 py-4">
           <h2 className="text-sm font-bold text-ink">All payments</h2>
           <div className="flex gap-4 text-xs font-semibold text-muted">
-            <span>This month received: <span className="text-emerald-700">{inr(thisMonth)}</span></span>
-            <span>Outstanding: <span className="text-rose-600">{inr(outstanding)}</span></span>
+            <span>This month received: <span className="text-ok">{inr(thisMonth)}</span></span>
+            <span>Outstanding: <span className="text-bad">{inr(outstanding)}</span></span>
             <span>All time: <span className="text-ink">{inr(allTime)}</span></span>
           </div>
         </div>
@@ -123,14 +123,14 @@ export default async function PaymentsPage() {
                           <>
                             <form action={logFollowUp}>
                               <input type="hidden" name="paymentId" value={p.id} />
-                              <button className="rounded-lg border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel">
+                              <button className="rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel">
                                 + Follow-up
                               </button>
                             </form>
                             <form action={markPaymentReceived}>
                               <input type="hidden" name="paymentId" value={p.id} />
                               <input type="hidden" name="method" value="ONLINE" />
-                              <button className="rounded-lg bg-ink px-2 py-1 text-[11px] font-semibold text-white shadow-sm transition hover:bg-black">
+                              <button className="rounded-lg bg-ink px-2 py-1 text-[11px] font-semibold text-canvas shadow-sm transition hover:bg-accent-hover">
                                 Received
                               </button>
                             </form>
@@ -138,9 +138,9 @@ export default async function PaymentsPage() {
                         ) : (
                           <Link
                             href={`/admin/payments/${p.id}`}
-                            className="rounded-lg border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel"
+                            className="rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel"
                           >
-                            Receipt
+                            Invoice
                           </Link>
                         )}
                         <form action={deletePayment}>

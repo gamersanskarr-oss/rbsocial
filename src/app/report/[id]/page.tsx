@@ -50,7 +50,7 @@ export default async function SharedReportPage({
   const margin = received > 0 ? Math.round((net / received) * 100) : 0;
 
   return (
-    <main className="min-h-screen bg-panel py-12">
+    <main className="theme-dark min-h-screen bg-canvas py-12 text-ink">
       <div className="mx-auto max-w-3xl space-y-6 px-5">
         <div className="text-center">
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-faint">
@@ -97,9 +97,9 @@ export default async function SharedReportPage({
               {snap.months.map((m) => (
                 <tr key={m.month}>
                   <td className="td font-semibold text-ink">{monthLabel(m.month)}</td>
-                  <td className="td text-emerald-700">{inr(m.received)}</td>
-                  <td className="td text-rose-600">{inr(m.expenses)}</td>
-                  <td className={`td font-bold ${m.net >= 0 ? "text-ink" : "text-rose-600"}`}>
+                  <td className="td text-ok">{inr(m.received)}</td>
+                  <td className="td text-bad">{inr(m.expenses)}</td>
+                  <td className={`td font-bold ${m.net >= 0 ? "text-ink" : "text-bad"}`}>
                     {inr(m.net)}
                   </td>
                 </tr>
@@ -129,11 +129,11 @@ export default async function SharedReportPage({
                   <td className="td font-bold text-ink">{inr(p.amount)}</td>
                   <td className="td">
                     {p.receivedAt ? (
-                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-200/60">
+                      <span className="rounded-full bg-ok-soft px-2 py-0.5 text-xs font-semibold text-ok ring-1 ring-inset ring-ok-line">
                         Received {day(p.receivedAt)}
                       </span>
                     ) : (
-                      <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs font-semibold text-amber-800 ring-1 ring-inset ring-amber-200/60">
+                      <span className="rounded-full bg-warn-soft px-2 py-0.5 text-xs font-semibold text-warn ring-1 ring-inset ring-warn-line">
                         Pending
                       </span>
                     )}

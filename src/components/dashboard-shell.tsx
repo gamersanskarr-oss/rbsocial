@@ -160,6 +160,18 @@ export type PayBox = {
   completedCount: number;
 };
 
+export type NavItem = {
+  href: string;
+  label: string;
+  icon: NavIcon;
+  badge?: number;
+};
+
+export type NavSection = {
+  label?: string;
+  items: NavItem[];
+};
+
 export function DashboardShell({
   user,
   nav,
@@ -167,7 +179,7 @@ export function DashboardShell({
   children,
 }: {
   user: ShellUser;
-  nav: { href: string; label: string; icon: NavIcon; badge?: number }[];
+  nav: NavSection[];
   payBox?: PayBox;
   children: React.ReactNode;
 }) {
@@ -181,33 +193,34 @@ export function DashboardShell({
     .join("")
     .toUpperCase();
 
-  const links = nav.map((item) => {
-    const active = pathname === item.href || pathname.startsWith(item.href + "/");
-    return (
-      <Link
-        key={item.href}
-        href={item.href}
-        onClick={() => setOpen(false)}
-        className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition duration-200 ${
-          active
-            ? "bg-white font-semibold text-ink shadow-soft ring-1 ring-line"
-            : "font-medium text-muted hover:bg-hover hover:text-ink"
-        }`}
-      >
-        <Icon name={item.icon} className="h-4 w-4 shrink-0" />
-        {item.label}
-        {!!item.badge && item.badge > 0 && (
-          <span className="ml-auto rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
-            {item.badge}
-          </span>
-        )}
-      </Link>
-    );
-  });
+  const renderItems = (items: NavItem[]) =>
+    items.map((item) => {
+      const active = pathname === item.href || pathname.startsWith(item.href + "/");
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          onClick={() => setOpen(false)}
+          className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm transition duration-200 ${
+            active
+              ? "bg-elevated font-semibold text-ink shadow-soft ring-1 ring-line"
+              : "font-medium text-muted hover:bg-hover hover:text-ink"
+          }`}
+        >
+          <Icon name={item.icon} className="h-4 w-4 shrink-0" />
+          {item.label}
+          {!!item.badge && item.badge > 0 && (
+            <span className="ml-auto rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">
+              {item.badge}
+            </span>
+          )}
+        </Link>
+      );
+    });
 
   const sidebar = (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-3 px-5 pt-6 pb-7">
+      <div className="flex items-center gap-3 px-5 pt-6 pb-5">
         <Logo size={44} className="shadow-soft" />
         <div className="min-w-0">
           <p className="truncate text-sm font-bold tracking-tight text-ink">RB Social Branding</p>
@@ -223,12 +236,23 @@ export function DashboardShell({
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 px-3">{links}</nav>
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 pb-4">
+        {nav.map((section, i) => (
+          <div key={i} className={section.label ? "pt-5" : i > 0 ? "pt-3" : ""}>
+            {section.label && (
+              <p className="px-3 pb-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-faint">
+                {section.label}
+              </p>
+            )}
+            <div className="space-y-1">{renderItems(section.items)}</div>
+          </div>
+        ))}
+      </nav>
 
       {payBox && (
-        <div className="mx-3 mb-3 rounded-2xl border border-line bg-white p-3.5 shadow-soft">
+        <div className="mx-3 mb-3 rounded-2xl border border-line bg-elevated p-3.5 shadow-soft">
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-warn-soft text-warn">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
                 <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
                 <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
@@ -245,7 +269,7 @@ export function DashboardShell({
               </p>
               <p className="mt-0.5 text-xs font-medium text-muted">
                 {payBox.completedCount} post{payBox.completedCount === 1 ? "" : "s"} completed ·{" "}
-                <span className="font-semibold text-emerald-700">
+                <span className="font-semibold text-ok">
                   ₹{(payBox.perPostPay * payBox.completedCount).toLocaleString("en-IN")}
                 </span>{" "}
                 earned
@@ -258,7 +282,7 @@ export function DashboardShell({
       )}
 
       <div className="p-3">
-        <div className="flex items-center gap-3 rounded-2xl border border-line bg-white p-2.5 shadow-soft">
+        <div className="flex items-center gap-3 rounded-2xl border border-line bg-elevated p-2.5 shadow-soft">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-panel text-xs font-bold text-ink ring-1 ring-line">
             {initials}
           </span>
@@ -293,7 +317,7 @@ export function DashboardShell({
   );
 
   return (
-    <div className="min-h-screen">
+    <div className="theme-dark min-h-screen bg-canvas text-ink">
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-line bg-panel md:block">
         {sidebar}
@@ -327,7 +351,7 @@ export function DashboardShell({
       {/* Mobile drawer */}
       {open && (
         <div className="fixed inset-0 z-40 md:hidden">
-          <div className="absolute inset-0 bg-ink/30 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <aside className="absolute inset-y-0 left-0 w-72 border-r border-line bg-panel shadow-lift">
             {sidebar}
           </aside>

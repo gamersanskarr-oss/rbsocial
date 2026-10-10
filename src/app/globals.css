@@ -1,35 +1,147 @@
 @import "tailwindcss";
 
+/* Raw theme variables — light values here keep the public landing page
+   unchanged. Dashboard shells add the `.theme-dark` class to flip everything. */
 :root {
-  --background: #faf9f7;
-  --foreground: #1c1b19;
+  --t-background: #faf9f7;
+  --t-foreground: #1c1b19;
+  --t-ink: #1c1b19;
+  --t-muted: #66625b;
+  --t-faint: #a29d94;
+  --t-line: #ebe8e3;
+  --t-panel: #f5f4f1;
+  --t-hover: #efede9;
+  --t-canvas: #ffffff;
+  --t-elevated: #ffffff;
+  --t-accent: #1c1b19;
+  --t-accent-hover: #000000;
+  --t-accent-soft: #efede9;
+
+  /* semantic status colors */
+  --t-ok: #047857;
+  --t-ok-soft: #ecfdf5;
+  --t-ok-line: #a7f3d0;
+  --t-bad: #9f1239;
+  --t-bad-soft: #fff1f2;
+  --t-bad-line: #fecdd3;
+  --t-warn: #b45309;
+  --t-warn-soft: #fffbeb;
+  --t-warn-line: #fde68a;
+  --t-info: #0369a1;
+  --t-info-soft: #f0f9ff;
+  --t-info-line: #bae6fd;
+  --t-brand: #c2410c;
+  --t-brand-soft: #fff7ed;
+  --t-brand-line: #fed7aa;
+
+  --t-shadow-soft: 0 1px 2px rgb(28 27 25 / 0.04), 0 6px 20px -10px rgb(28 27 25 / 0.08);
+  --t-shadow-lift: 0 2px 6px rgb(28 27 25 / 0.04), 0 18px 36px -14px rgb(28 27 25 / 0.14);
+}
+
+/* Dark futuristic scope — graphite surfaces, warm off-white ink, hairline
+   borders, one restrained accent. No glows, no gradients. */
+.theme-dark {
+  --t-background: #0b0c0e;
+  --t-foreground: #e9e7e2;
+  --t-ink: #e9e7e2;
+  --t-muted: #a3a1a6;
+  --t-faint: #6d6b72;
+  --t-line: #26292f;
+  --t-panel: #121317;
+  --t-hover: #1b1e24;
+  --t-canvas: #0b0c0e;
+  --t-elevated: #191b20;
+  --t-accent: #e9e7e2;
+  --t-accent-hover: #ffffff;
+  --t-accent-soft: #1b1e24;
+
+  --t-ok: #34d399;
+  --t-ok-soft: rgb(52 211 153 / 0.1);
+  --t-ok-line: rgb(52 211 153 / 0.25);
+  --t-bad: #fb7185;
+  --t-bad-soft: rgb(251 113 133 / 0.1);
+  --t-bad-line: rgb(251 113 133 / 0.25);
+  --t-warn: #fbbf24;
+  --t-warn-soft: rgb(251 191 36 / 0.1);
+  --t-warn-line: rgb(251 191 36 / 0.25);
+  --t-info: #38bdf8;
+  --t-info-soft: rgb(56 189 248 / 0.1);
+  --t-info-line: rgb(56 189 248 / 0.25);
+  --t-brand: #fb923c;
+  --t-brand-soft: rgb(251 146 60 / 0.1);
+  --t-brand-line: rgb(251 146 60 / 0.25);
+
+  --t-shadow-soft: inset 0 1px 0 rgb(255 255 255 / 0.03), 0 1px 3px rgb(0 0 0 / 0.45);
+  --t-shadow-lift: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 4px 10px rgb(0 0 0 / 0.4),
+    0 24px 48px -16px rgb(0 0 0 / 0.7);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--t-background);
+  --color-foreground: var(--t-foreground);
+  --color-ink: var(--t-ink);
+  --color-muted: var(--t-muted);
+  --color-faint: var(--t-faint);
+  --color-line: var(--t-line);
+  --color-panel: var(--t-panel);
+  --color-hover: var(--t-hover);
+  --color-canvas: var(--t-canvas);
+  --color-elevated: var(--t-elevated);
+  --color-accent: var(--t-accent);
+  --color-accent-hover: var(--t-accent-hover);
+  --color-accent-soft: var(--t-accent-soft);
+  --color-ok: var(--t-ok);
+  --color-ok-soft: var(--t-ok-soft);
+  --color-ok-line: var(--t-ok-line);
+  --color-bad: var(--t-bad);
+  --color-bad-soft: var(--t-bad-soft);
+  --color-bad-line: var(--t-bad-line);
+  --color-warn: var(--t-warn);
+  --color-warn-soft: var(--t-warn-soft);
+  --color-warn-line: var(--t-warn-line);
+  --color-info: var(--t-info);
+  --color-info-soft: var(--t-info-soft);
+  --color-info-line: var(--t-info-line);
+  --color-brand: var(--t-brand);
+  --color-brand-soft: var(--t-brand-soft);
+  --color-brand-line: var(--t-brand-line);
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
-}
-
-@theme {
-  --color-ink: #1c1b19;
-  --color-muted: #66625b;
-  --color-faint: #a29d94;
-  --color-line: #ebe8e3;
-  --color-panel: #f5f4f1;
-  --color-hover: #efede9;
-  --color-accent: #1c1b19;
-  --color-accent-hover: #000000;
-  --color-accent-soft: #efede9;
-
-  --shadow-soft: 0 1px 2px rgb(28 27 25 / 0.04), 0 6px 20px -10px rgb(28 27 25 / 0.08);
-  --shadow-lift: 0 2px 6px rgb(28 27 25 / 0.04), 0 18px 36px -14px rgb(28 27 25 / 0.14);
+  --shadow-soft: var(--t-shadow-soft);
+  --shadow-lift: var(--t-shadow-lift);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--t-background);
+  color: var(--t-foreground);
+}
+
+::selection {
+  background: #1c1b19;
+  color: #fff;
+}
+.theme-dark ::selection {
+  background: #e9e7e2;
+  color: #0b0c0e;
+}
+
+/* Slim dark scrollbars inside the dashboard scope */
+.theme-dark {
+  scrollbar-width: thin;
+  scrollbar-color: #2e3138 transparent;
+}
+.theme-dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.theme-dark ::-webkit-scrollbar-thumb {
+  background: #2e3138;
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.theme-dark ::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 @keyframes marquee {
@@ -54,23 +166,18 @@ html {
   scroll-behavior: smooth;
 }
 
-::selection {
-  background: #1c1b19;
-  color: #fff;
-}
-
 @layer components {
   .input {
-    @apply w-full rounded-xl border border-line bg-white px-4 py-2.5 text-sm text-ink shadow-[0_1px_2px_rgb(28_27_25/0.03)] outline-none transition duration-200 placeholder:text-faint hover:border-[#dcd8d1] focus:border-ink/40 focus:ring-4 focus:ring-ink/5;
+    @apply w-full rounded-xl border border-line bg-elevated px-4 py-2.5 text-sm text-ink shadow-[0_1px_2px_rgb(0_0_0/0.04)] outline-none transition duration-200 placeholder:text-faint hover:border-faint/50 focus:border-ink/40 focus:ring-4 focus:ring-ink/5;
   }
   .btn-primary {
-    @apply rounded-xl bg-ink px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-black hover:shadow-md active:scale-[0.98] disabled:opacity-50;
+    @apply rounded-xl bg-ink px-5 py-2.5 text-sm font-semibold text-canvas shadow-sm transition duration-200 hover:bg-accent-hover hover:shadow-md active:scale-[0.98] disabled:opacity-50;
   }
   .btn-secondary {
-    @apply rounded-xl border border-line bg-white px-5 py-2.5 text-sm font-semibold text-ink shadow-sm transition duration-200 hover:bg-panel active:scale-[0.98];
+    @apply rounded-xl border border-line bg-elevated px-5 py-2.5 text-sm font-semibold text-ink shadow-sm transition duration-200 hover:bg-hover active:scale-[0.98];
   }
   .card {
-    @apply rounded-2xl border border-line bg-white shadow-soft transition duration-300;
+    @apply rounded-2xl border border-line bg-panel shadow-soft transition duration-300;
   }
   .th {
     @apply px-5 py-3 text-left text-[11px] font-bold uppercase tracking-wider text-faint;
@@ -82,12 +189,56 @@ html {
     @apply px-1 text-[11px] font-bold uppercase tracking-wider text-faint;
   }
   .link {
-    @apply font-semibold text-ink underline decoration-line decoration-2 underline-offset-4 transition hover:decoration-ink;
+    @apply font-semibold text-ink underline decoration-faint/60 decoration-2 underline-offset-4 transition hover:decoration-ink;
   }
   .banner-error {
-    @apply rounded-2xl border border-rose-200/70 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-800;
+    @apply rounded-2xl border border-bad-line bg-bad-soft px-4 py-3 text-sm font-medium text-bad;
   }
   .banner-success {
-    @apply rounded-2xl border border-emerald-200/70 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800;
+    @apply rounded-2xl border border-ok-line bg-ok-soft px-4 py-3 text-sm font-medium text-ok;
+  }
+}
+
+/* Invoice printing — clean A4 output. Zero @page margin hides the browser's
+   automatic date/title header & URL footer; spacing moves inside the sheet. */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  body {
+    background: white !important;
+  }
+  .theme-dark {
+    --t-background: #faf9f7;
+    --t-foreground: #1c1b19;
+    --t-ink: #1c1b19;
+    --t-muted: #66625b;
+    --t-faint: #a29d94;
+    --t-line: #ebe8e3;
+    --t-panel: #ffffff;
+    --t-hover: #efede9;
+    --t-canvas: #ffffff;
+    --t-elevated: #ffffff;
+    --t-accent: #1c1b19;
+    --t-accent-hover: #000000;
+    --t-accent-soft: #efede9;
+    --t-ok: #047857;
+    --t-ok-soft: #ecfdf5;
+    --t-ok-line: #a7f3d0;
+    --t-bad: #9f1239;
+    --t-bad-soft: #fff1f2;
+    --t-bad-line: #fecdd3;
+    --t-warn: #b45309;
+    --t-warn-soft: #fffbeb;
+    --t-warn-line: #fde68a;
+    --t-info: #0369a1;
+    --t-info-soft: #f0f9ff;
+    --t-info-line: #bae6fd;
+    --t-brand: #c2410c;
+    --t-brand-soft: #fff7ed;
+    --t-brand-line: #fed7aa;
+    --t-shadow-soft: 0 1px 2px rgb(28 27 25 / 0.04);
+    --t-shadow-lift: 0 2px 6px rgb(28 27 25 / 0.06);
   }
 }

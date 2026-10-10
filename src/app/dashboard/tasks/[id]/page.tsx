@@ -95,16 +95,16 @@ export default async function TaskDetailPage({
           )}
 
           {isCompleted && (
-            <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50 p-6">
+            <div className="rounded-2xl border border-emerald-200/70 bg-ok-soft p-6">
               <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-white">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ok-soft0 text-white">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 </span>
-                <h2 className="text-sm font-bold text-emerald-800">Task completed</h2>
+                <h2 className="text-sm font-bold text-ok">Task completed</h2>
               </div>
-              <p className="mt-3 text-sm font-medium text-emerald-800">
+              <p className="mt-3 text-sm font-medium text-ok">
                 Submitted on {task.completedAt?.toLocaleDateString()}
               </p>
               {task.submissionLink && (
@@ -125,7 +125,7 @@ export default async function TaskDetailPage({
             <div className="flex items-center justify-between gap-3">
               <h2 className="text-sm font-bold text-ink">Need something from admin?</h2>
               {task.requests.some((r) => r.status === "OPEN") && (
-                <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 ring-1 ring-inset ring-amber-200/60">
+                <span className="rounded-full bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn ring-1 ring-inset ring-warn-line">
                   {task.requests.filter((r) => r.status === "OPEN").length} open
                 </span>
               )}
@@ -155,12 +155,12 @@ export default async function TaskDetailPage({
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     {r.status === "RESOLVED" ? (
-                      <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-200/60">
+                      <span className="rounded-full bg-ok-soft px-2.5 py-1 text-xs font-semibold text-ok ring-1 ring-inset ring-ok-line">
                         Resolved
                       </span>
                     ) : (
                       <>
-                        <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 ring-1 ring-inset ring-amber-200/60">
+                        <span className="rounded-full bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn ring-1 ring-inset ring-warn-line">
                           Waiting
                         </span>
                         <form action={deleteRequest}>
@@ -202,9 +202,9 @@ export default async function TaskDetailPage({
               isCompleted
                 ? ""
                 : overdue
-                  ? "border-rose-200/70 bg-rose-50"
+                  ? "border-rose-200/70 bg-bad-soft"
                   : rel.urgent
-                    ? "border-amber-200/70 bg-amber-50"
+                    ? "border-amber-200/70 bg-warn-soft"
                     : ""
             }`}
           >
@@ -212,14 +212,14 @@ export default async function TaskDetailPage({
             {!isCompleted && (
               <p
                 className={`mt-2 text-2xl font-bold tracking-tight ${
-                  overdue ? "text-rose-700" : rel.urgent ? "text-amber-700" : "text-ink"
+                  overdue ? "text-bad" : rel.urgent ? "text-warn" : "text-ink"
                 }`}
               >
                 {rel.text}
               </p>
             )}
             {isCompleted && (
-              <p className="mt-2 text-sm font-semibold text-emerald-700">Submitted in time ✓</p>
+              <p className="mt-2 text-sm font-semibold text-ok">Submitted in time ✓</p>
             )}
             <p className="mt-1 text-xs font-medium text-muted">
               {task.deadline.toLocaleDateString()}{" "}
@@ -245,8 +245,8 @@ export default async function TaskDetailPage({
                       s.done
                         ? "border-ink bg-ink"
                         : s.current
-                          ? "border-ink bg-white"
-                          : "border-line bg-white"
+                          ? "border-ink bg-elevated"
+                          : "border-line bg-elevated"
                     }`}
                   >
                     {s.done && (

@@ -20,7 +20,6 @@ import { requireAdmin, requireAdminOrAccountant } from "@/lib/auth";
 export type FinState = { error?: string; success?: string; shareUrl?: string };
 
 const FIN_PATHS = [
-  "/admin/finance",
   "/admin/payments",
   "/admin/expenses",
   "/admin/subscriptions",

@@ -6,7 +6,7 @@ import {
   listPayments,
 } from "@/lib/data";
 import { requireAdminOrAccountant } from "@/lib/auth";
-import { deleteDisbursement } from "@/app/actions/finance";
+import { deleteDisbursement, updateFinanceSettings } from "@/app/actions/finance";
 import { PageHeader, Card } from "@/components/ui";
 import AddDisbursementForm from "./add-disbursement-form";
 
@@ -18,7 +18,7 @@ const monthLabel = (key: string) => {
 };
 
 export default async function DharamPage() {
-  await requireAdminOrAccountant();
+  const user = await requireAdminOrAccountant();
   const [payments, expenses, settings, disbursements] = await Promise.all([
     listPayments(),
     listExpenses(),
@@ -77,7 +77,7 @@ export default async function DharamPage() {
                 return (
                   <tr key={b.month}>
                     <td className="td font-semibold text-ink">{monthLabel(b.month)}</td>
-                    <td className={`td font-medium ${b.net >= 0 ? "text-ink" : "text-rose-600"}`}>
+                    <td className={`td font-medium ${b.net >= 0 ? "text-ink" : "text-bad"}`}>
                       {inr(b.net)}
                     </td>
                     <td className="td font-bold text-ink">{inr(alloc)}</td>
@@ -136,6 +136,43 @@ export default async function DharamPage() {
           </table>
         </div>
       </div>
+
+      {user.role === "ADMIN" && (
+        <div className="card p-6">
+          <h2 className="mb-4 text-sm font-bold text-ink">Settings</h2>
+          <form action={updateFinanceSettings} className="flex flex-wrap items-end gap-3">
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-faint">
+                Dharam allocation (% of net profit)
+              </label>
+              <input
+                name="dharamPercent"
+                type="number"
+                min="0"
+                max="100"
+                step="0.5"
+                defaultValue={settings.dharamPercent}
+                className="input w-28 px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-semibold text-faint">
+                Monthly revenue target (₹)
+              </label>
+              <input
+                name="monthlyRevenueTarget"
+                type="number"
+                min="0"
+                step="1"
+                defaultValue={settings.monthlyRevenueTarget || ""}
+                className="input w-44 px-3 py-2 text-sm"
+                placeholder="100000"
+              />
+            </div>
+            <button className="btn-secondary px-4 py-2">Save</button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

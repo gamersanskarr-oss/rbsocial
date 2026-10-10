@@ -9,11 +9,11 @@ export default async function LoginPage() {
   if (user) redirect(roleHome(user.role));
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-panel px-6">
-      <div className="pointer-events-none absolute -top-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-amber-100/70 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-sky-100/70 blur-3xl" />
+    <div className="theme-dark relative flex min-h-screen items-center justify-center overflow-hidden bg-canvas px-6 text-ink">
+      <div className="pointer-events-none absolute -top-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-warn-soft blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-info-soft blur-3xl" />
 
-      <div className="relative w-full max-w-sm rounded-3xl border border-line bg-white/90 p-9 shadow-lift backdrop-blur">
+      <div className="relative w-full max-w-sm rounded-3xl border border-line bg-elevated/90 p-9 shadow-lift backdrop-blur">
         <Link href="/" className="mx-auto block w-fit">
           <Logo size={96} rounded="rounded-3xl" className="shadow-soft" />
         </Link>

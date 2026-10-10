@@ -33,7 +33,7 @@ export function ClientLogo({
       width={size}
       height={size}
       unoptimized
-      className={`shrink-0 bg-white object-contain ring-1 ring-line ${rounded}`}
+      className={`shrink-0 bg-elevated object-contain ring-1 ring-line ${rounded}`}
     />
   );
 }

@@ -1,20 +1,28 @@
 import Link from "next/link";
-import { listTasksWithRefs } from "@/lib/data";
+import { listClientOptions, listEmployeeOptions, listTasksWithRefs } from "@/lib/data";
 import { checkMissedDeadlines } from "@/lib/deadlines";
 import { PageHeader, StatusBadge } from "@/components/ui";
+import CreateTaskForm from "./create-task-form";
 
 export default async function TasksView({ basePath }: { basePath: string }) {
   await checkMissedDeadlines();
 
-  const tasks = await listTasksWithRefs();
+  const [tasks, clients, employees] = await Promise.all([
+    listTasksWithRefs(),
+    listClientOptions(),
+    listEmployeeOptions(),
+  ]);
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <PageHeader title="Tasks" subtitle="Monitor progress across the whole team." />
-        <Link href={`${basePath}/assign`} className="btn-primary shrink-0">
-          + Assign Task
-        </Link>
+      <PageHeader
+        title="Tasks"
+        subtitle="Assign new work and monitor progress across the whole team."
+      />
+
+      <div className="card p-6">
+        <h2 className="mb-4 text-sm font-bold text-ink">Assign a task</h2>
+        <CreateTaskForm clients={clients} employees={employees} basePath={basePath} />
       </div>
 
       <div className="card overflow-hidden">
@@ -49,7 +57,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
                     </td>
                     <td className="td font-medium text-ink">{t.client.name}</td>
                     <td className="td text-muted">{t.assignedTo.name}</td>
-                    <td className={`td ${overdue ? "font-bold text-rose-600" : "text-muted"}`}>
+                    <td className={`td ${overdue ? "font-bold text-bad" : "text-muted"}`}>
                       {t.deadline.toLocaleDateString()}{" "}
                       {t.deadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                     </td>
@@ -58,7 +66,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
                       {t.requests.length > 0 ? (
                         <Link
                           href={`${basePath}/requests`}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 ring-1 ring-inset ring-amber-200/60 hover:bg-amber-100"
+                          className="inline-flex items-center gap-1.5 rounded-full bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn ring-1 ring-inset ring-warn-line hover:bg-warn-soft/60"
                         >
                           {t.requests.length} open
                         </Link>

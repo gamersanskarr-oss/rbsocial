@@ -28,7 +28,7 @@ export default async function RequestsView({ basePath }: { basePath: string }) {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 ring-1 ring-inset ring-amber-200/60">
+                  <span className="rounded-full bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn ring-1 ring-inset ring-warn-line">
                     Waiting
                   </span>
                   <Link
@@ -59,7 +59,7 @@ export default async function RequestsView({ basePath }: { basePath: string }) {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-200/60">
+                  <span className="rounded-full bg-ok-soft px-2.5 py-1 text-xs font-semibold text-ok ring-1 ring-inset ring-ok-line">
                     Resolved
                   </span>
                   <span className="text-sm font-bold text-ink">{r.task.topic}</span>

@@ -74,8 +74,8 @@ export default async function SubscriptionsPage() {
                         !s.active
                           ? "bg-panel text-muted ring-line"
                           : overdue
-                            ? "bg-rose-50 text-rose-800 ring-rose-200/60"
-                            : "bg-emerald-50 text-emerald-800 ring-emerald-200/60"
+                            ? "bg-bad-soft text-bad ring-bad-line"
+                            : "bg-ok-soft text-ok ring-ok-line"
                       }`}
                     >
                       {!s.active ? "Paused" : overdue ? "Due" : "Active"}
@@ -85,7 +85,7 @@ export default async function SubscriptionsPage() {
                     <div className="flex items-center justify-end gap-2">
                       <form action={toggleSubscription}>
                         <input type="hidden" name="subscriptionId" value={s.id} />
-                        <button className="rounded-lg border border-line bg-white px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel">
+                        <button className="rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel">
                           {s.active ? "Pause" : "Resume"}
                         </button>
                       </form>

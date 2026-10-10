@@ -75,7 +75,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 export function roleHome(role: string) {
   if (role === "ADMIN") return "/admin";
   if (role === "MANAGER") return "/manager";
-  if (role === "ACCOUNTANT") return "/admin/finance";
+  if (role === "ACCOUNTANT") return "/admin/payments";
   return "/dashboard";
 }
 

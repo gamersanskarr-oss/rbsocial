@@ -41,13 +41,13 @@ export default async function AdminOverview() {
       {openRequests > 0 && (
         <Link
           href="/admin/requests"
-          className="flex items-center justify-between gap-4 rounded-2xl border border-amber-200/70 bg-amber-50 px-5 py-4 transition hover:bg-amber-100/70"
+          className="flex items-center justify-between gap-4 rounded-2xl border border-amber-200/70 bg-warn-soft px-5 py-4 transition hover:bg-warn-soft/60"
         >
-          <p className="text-sm font-semibold text-amber-800">
+          <p className="text-sm font-semibold text-warn">
             {openRequests} open request{openRequests === 1 ? "" : "s"} from your team — they need
             details to finish their tasks.
           </p>
-          <span className="shrink-0 text-sm font-bold text-amber-800">View →</span>
+          <span className="shrink-0 text-sm font-bold text-warn">View →</span>
         </Link>
       )}
 

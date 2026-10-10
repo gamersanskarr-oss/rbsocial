@@ -25,10 +25,10 @@ export default async function DashboardPage() {
       <div
         className={`rounded-2xl border p-4 text-sm font-medium ${
           payout.reduced
-            ? "border-rose-200 bg-rose-50 text-rose-800"
+            ? "border-rose-200 bg-bad-soft text-bad"
             : user.missedDeadlines > 0
-              ? "border-amber-200 bg-amber-50 text-amber-800"
-              : "border-emerald-200 bg-emerald-50 text-emerald-800"
+              ? "border-amber-200 bg-warn-soft text-warn"
+              : "border-emerald-200 bg-ok-soft text-ok"
         }`}
       >
         {payout.reduced ? (
@@ -68,12 +68,12 @@ export default async function DashboardPage() {
                 </div>
                 <p className="mt-1.5 text-xs font-medium text-muted">{t.client.name}</p>
                 {t.requests.length > 0 && (
-                  <p className="mt-1 text-xs font-semibold text-amber-700">
+                  <p className="mt-1 text-xs font-semibold text-warn">
                     {t.requests.length} request{t.requests.length === 1 ? "" : "s"} waiting on
                     admin
                   </p>
                 )}
-                <p className={`mt-4 text-xs font-semibold ${overdue ? "text-rose-600" : "text-faint"}`}>
+                <p className={`mt-4 text-xs font-semibold ${overdue ? "text-bad" : "text-faint"}`}>
                   Due {t.deadline.toLocaleDateString()}{" "}
                   {t.deadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   {overdue ? " · overdue" : ""}

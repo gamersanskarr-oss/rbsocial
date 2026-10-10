@@ -1,7 +1,7 @@
 const styles: Record<string, { cls: string; dot: string }> = {
-  PENDING: { cls: "bg-amber-50 text-amber-800 ring-amber-200/60", dot: "bg-amber-400" },
-  COMPLETED: { cls: "bg-emerald-50 text-emerald-800 ring-emerald-200/60", dot: "bg-emerald-500" },
-  MISSED: { cls: "bg-rose-50 text-rose-800 ring-rose-200/60", dot: "bg-rose-500" },
+  PENDING: { cls: "bg-warn-soft text-warn ring-warn-line", dot: "bg-amber-400" },
+  COMPLETED: { cls: "bg-ok-soft text-ok ring-ok-line", dot: "bg-ok-soft0" },
+  MISSED: { cls: "bg-bad-soft text-bad ring-bad-line", dot: "bg-bad-soft0" },
 };
 
 const label: Record<string, string> = {
@@ -26,8 +26,8 @@ export function TeamBadge({ team }: { team: string | null }) {
   if (!team) return null;
   const cls =
     team === "DESIGN"
-      ? "bg-orange-50 text-orange-800 ring-orange-200/60"
-      : "bg-sky-50 text-sky-800 ring-sky-200/60";
+      ? "bg-brand-soft text-brand ring-brand-line"
+      : "bg-info-soft text-info ring-info-line";
   return (
     <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${cls}`}>
       {team === "DESIGN" ? "Graphic Design" : "IT Team"}

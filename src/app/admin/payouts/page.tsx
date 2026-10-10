@@ -189,17 +189,17 @@ export default async function PayoutsPage({
                   <td className="td font-medium text-ink">{inr(r.gross)}</td>
                   <td className="td">
                     {r.reduced ? (
-                      <span className="inline-block rounded-full bg-rose-50 px-2.5 py-1 text-xs font-semibold text-rose-800 ring-1 ring-inset ring-rose-200/60">
+                      <span className="inline-block rounded-full bg-bad-soft px-2.5 py-1 text-xs font-semibold text-bad ring-1 ring-inset ring-bad-line">
                         −{PAYOUT_REDUCTION * 100}% ({r.employee.missedDeadlines} misses)
                       </span>
                     ) : (
                       <span className="text-xs font-medium text-faint">Full payout</span>
                     )}
                   </td>
-                  <td className="td font-medium text-rose-600">
+                  <td className="td font-medium text-bad">
                     {r.deduction > 0 ? `−${inr(r.deduction)}` : "—"}
                   </td>
-                  <td className="td font-bold text-emerald-700">{inr(r.net)}</td>
+                  <td className="td font-bold text-ok">{inr(r.net)}</td>
                 </tr>
               ))}
               {rows.length > 0 && (
@@ -209,10 +209,10 @@ export default async function PayoutsPage({
                   </td>
                   <td className="td font-bold text-ink">{inr(totalGross)}</td>
                   <td className="td" />
-                  <td className="td font-bold text-rose-600">
+                  <td className="td font-bold text-bad">
                     {totalDeductions > 0 ? `−${inr(totalDeductions)}` : "—"}
                   </td>
-                  <td className="td font-bold text-emerald-700">{inr(totalNet)}</td>
+                  <td className="td font-bold text-ok">{inr(totalNet)}</td>
                 </tr>
               )}
             </tbody>
@@ -259,7 +259,7 @@ export default async function PayoutsPage({
                       />
                       <button
                         title="Save per-post pay"
-                        className="rounded-lg border border-line bg-white px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
+                        className="rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
                       >
                         Save
                       </button>
