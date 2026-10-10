@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import ScrollExpand from "@/components/scroll-expand";
+import LightRays from "@/components/light-rays";
 
 /* Brand colors lifted from the logo: flame red-orange + deep navy */
 const FLAME = "#ff4a36";
@@ -225,7 +226,24 @@ export default function Home() {
           style={{ background: `radial-gradient(closest-side, ${FLAME}44, transparent)`, animationDelay: "-5s" }}
         />
 
-        <div className="relative mx-auto max-w-6xl px-6 pb-24 pt-28 text-center md:pt-36">
+        {/* WebGL light rays — flame beams from the top, subtly mouse-reactive */}
+        <div className="absolute inset-0">
+          <LightRays
+            raysOrigin="top-center"
+            raysColor="#ff5a3c"
+            raysSpeed={0.55}
+            lightSpread={1.35}
+            rayLength={1.7}
+            fadeDistance={0.85}
+            saturation={1.15}
+            followMouse
+            mouseInfluence={0.08}
+            noiseAmount={0.06}
+            distortion={0.15}
+          />
+        </div>
+
+        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-28 text-center md:pt-36">
           <p className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-muted backdrop-blur">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: FLAME }} />
