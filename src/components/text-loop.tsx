@@ -72,6 +72,7 @@ type TextLoopProps = {
   color?: string;
   ribbon?: boolean;
   ribbonColor?: string;
+  ribbonGradient?: string[];
   ribbonWidth?: number;
   pauseOnHover?: boolean;
   className?: string;
@@ -93,6 +94,7 @@ const TextLoop = ({
   color = "#ffffff",
   ribbon = true,
   ribbonColor = "#5227FF",
+  ribbonGradient,
   ribbonWidth = 86,
   pauseOnHover = true,
   className = "",
@@ -222,12 +224,31 @@ const TextLoop = ({
         role="img"
         aria-label={text}
       >
+        {ribbon && ribbonGradient && ribbonGradient.length > 1 && (
+          <defs>
+            <linearGradient id={`${pathId}-ribbon`} x1="0%" y1="0%" x2="100%" y2="0%">
+              {ribbonGradient.map((c, i) => (
+                <stop
+                  key={i}
+                  offset={`${(i / (ribbonGradient.length - 1)) * 100}%`}
+                  stopColor={c}
+                />
+              ))}
+            </linearGradient>
+          </defs>
+        )}
         <path
           ref={pathRef}
           id={pathId}
           d={d}
           fill="none"
-          stroke={ribbon ? ribbonColor : "none"}
+          stroke={
+            ribbon
+              ? ribbonGradient && ribbonGradient.length > 1
+                ? `url(#${pathId}-ribbon)`
+                : ribbonColor
+              : "none"
+          }
           strokeWidth={ribbon ? ribbonWidth : 0}
           strokeLinecap="round"
           strokeLinejoin="round"

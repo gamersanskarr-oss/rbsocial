@@ -3,6 +3,9 @@ import { Logo } from "@/components/logo";
 import ScrollExpand from "@/components/scroll-expand";
 import LightRays from "@/components/light-rays";
 import TextLoop from "@/components/text-loop";
+import SideRays from "@/components/side-rays";
+
+
 
 /* Brand colors lifted from the logo: flame red-orange + deep navy */
 const FLAME = "#ff4a36";
@@ -146,61 +149,31 @@ const marqueeWords = [
   "Web support",
 ];
 
-/* Two-layer scrolling wave — seamless because the path repeats every 600 units
-   across a 2400-wide viewBox, and the animation slides exactly -50%. */
-function WaveDivider({
-  back,
-  front,
-  flip = false,
-  className = "",
-}: {
-  back: string;
-  front: string;
-  flip?: boolean;
-  className?: string;
-}) {
-  return (
-    <div
-      aria-hidden
-      className={`pointer-events-none absolute inset-x-0 bottom-0 h-20 overflow-hidden md:h-28 ${flip ? "rotate-180" : ""} ${className}`}
-    >
-      <svg className="animate-wave-slow absolute inset-x-0 bottom-0 h-full w-[200%] opacity-70" viewBox="0 0 2400 120" preserveAspectRatio="none">
-        <path
-          fill={back}
-          d="M0 58 Q150 6 300 58 T600 58 T900 58 T1200 58 T1500 58 T1800 58 T2100 58 T2400 58 V120 H0 Z"
-        />
-      </svg>
-      <svg className="animate-wave absolute inset-x-0 bottom-0 h-full w-[200%]" viewBox="0 0 2400 120" preserveAspectRatio="none">
-        <path
-          fill={front}
-          d="M0 72 Q150 26 300 72 T600 72 T900 72 T1200 72 T1500 72 T1800 72 T2100 72 T2400 72 V120 H0 Z"
-        />
-      </svg>
-    </div>
-  );
-}
-
 export default function Home() {
   return (
     <div className="theme-dark min-h-screen bg-[#07080d] text-ink">
-      {/* ══ Nav ════════════════════════════════════════════════════════ */}
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#07080d]/80 backdrop-blur-xl">
-        <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
-          <span className="flex items-center gap-2.5">
-            <Logo size={40} />
+      {/* ══ Nav — floating glass capsule ═══════════════════════════════ */}
+      <header className="absolute inset-x-0 top-4 z-40 px-4">
+        <nav className="relative mx-auto flex max-w-4xl items-center justify-between overflow-hidden rounded-full border border-white/10 bg-white/[0.06] py-2 pl-4 pr-2 shadow-[0_20px_60px_-24px_rgba(0,0,0,0.8)] backdrop-blur-2xl backdrop-saturate-150">
+          {/* glass sheen + top hairline */}
+          <span aria-hidden className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/[0.10] via-white/[0.03] to-transparent" />
+          <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+
+          <span className="relative flex items-center gap-2.5">
+            <Logo size={32} />
             <span className="text-sm font-bold tracking-tight">RB Social Branding</span>
           </span>
-          <div className="hidden items-center gap-8 text-sm font-medium text-muted md:flex">
-            <a href="#services" className="transition hover:text-ink">Services</a>
-            <a href="#work" className="transition hover:text-ink">Work</a>
-            <a href="#process" className="transition hover:text-ink">Process</a>
-            <a href="#pricing" className="transition hover:text-ink">Pricing</a>
-            <a href="#faq" className="transition hover:text-ink">FAQ</a>
+          <div className="relative hidden items-center gap-0.5 text-[13px] font-medium text-muted md:flex">
+            <a href="#services" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Services</a>
+            <a href="#work" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Work</a>
+            <a href="#process" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Process</a>
+            <a href="#pricing" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Pricing</a>
+            <a href="#faq" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">FAQ</a>
           </div>
           <Link
             href="/login"
-            className="rounded-full px-4 py-2 text-sm font-semibold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
-            style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` }}
+            className="relative rounded-full px-5 py-2 text-[13px] font-bold text-white ring-1 ring-white/20 transition duration-200 hover:opacity-90 active:scale-[0.98]"
+            style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 8px 24px -10px ${FLAME}90` }}
           >
             Team Login
           </Link>
@@ -244,8 +217,8 @@ export default function Home() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-24 pt-28 text-center md:pt-36">
-          <p className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-muted backdrop-blur">
+        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-24 text-center md:pt-28">
+          <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-muted backdrop-blur">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: FLAME }} />
               <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: FLAME }} />
@@ -253,7 +226,7 @@ export default function Home() {
             Design team for growing businesses — onboarding this month
           </p>
 
-          <h1 className="mx-auto max-w-4xl text-5xl font-extrabold leading-[1.04] tracking-tight md:text-7xl">
+          <h1 className="mx-auto max-w-3xl text-4xl font-extrabold leading-[1.04] tracking-tight md:text-6xl">
             Your brand,{" "}
             <span
               className="animate-gradient-pan bg-clip-text text-transparent"
@@ -265,32 +238,32 @@ export default function Home() {
             and delivered on time.
           </h1>
 
-          <p className="mx-auto mt-7 max-w-2xl text-lg font-medium leading-relaxed text-muted">
+          <p className="mx-auto mt-6 max-w-xl text-sm font-medium leading-relaxed text-muted">
             RB Social Branding pairs your business with a dedicated graphic designer and a
             reliable IT team — every post tracked in one clear dashboard with real deadlines.
           </p>
 
-          <div className="mt-11 flex flex-wrap items-center justify-center gap-3.5">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <a
               href="#contact"
-              className="rounded-full px-8 py-3.5 text-sm font-bold text-white shadow-lg transition duration-200 hover:opacity-90 hover:shadow-xl active:scale-[0.98]"
+              className="rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:opacity-90 hover:shadow-xl active:scale-[0.98]"
               style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 12px 32px -12px ${FLAME}80` }}
             >
               Get Started
             </a>
             <a
               href="#work"
-              className="rounded-full border border-white/10 bg-white/5 px-8 py-3.5 text-sm font-bold text-ink backdrop-blur transition duration-200 hover:bg-white/10 active:scale-[0.98]"
+              className="rounded-full border border-white/10 bg-white/5 px-7 py-3 text-sm font-bold text-ink backdrop-blur transition duration-200 hover:bg-white/10 active:scale-[0.98]"
             >
               See the work
             </a>
           </div>
 
           {/* stats strip */}
-          <div className="mx-auto mt-20 grid max-w-4xl grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 backdrop-blur md:grid-cols-4">
+          <div className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 backdrop-blur md:grid-cols-4">
             {stats.map((s) => (
-              <div key={s.l} className="bg-[#0a0c12]/90 px-6 py-7">
-                <p className="text-3xl font-extrabold tracking-tight" style={{ color: FLAME }}>
+              <div key={s.l} className="bg-[#0a0c12]/90 px-5 py-6">
+                <p className="text-2xl font-extrabold tracking-tight" style={{ color: FLAME }}>
                   {s.v}
                 </p>
                 <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-faint">{s.l}</p>
@@ -298,27 +271,27 @@ export default function Home() {
             ))}
           </div>
         </div>
-
-        <WaveDivider back={`${NAVY}2e`} front="#07080d" />
       </section>
 
       {/* ══ Curved moving text loop ════════════════════════════════════ */}
-      <div className="relative border-y border-white/5 bg-white/[0.02] py-8">
-        <TextLoop
-          text={marqueeWords.join("  ✦  ")}
-          shape="wave"
-          curviness={64}
-          speed={85}
-          fontSize={34}
-          fontWeight={800}
-          letterSpacing={3}
-          separator=""
-          color="#ffffff"
-          ribbon
-          ribbonColor={FLAME}
-          ribbonWidth={72}
-          pauseOnHover
-        />
+      <div className="relative h-[max(9rem,18vw)] overflow-hidden bg-transparent md:h-[11vw]">
+        <div className="absolute left-1/2 top-1/2 w-[160%] -translate-x-1/2 -translate-y-1/2 md:w-full">
+          <TextLoop
+            text={marqueeWords.join("  ✦  ")}
+            shape="wave"
+            curviness={40}
+            speed={42}
+            fontSize={18}
+            fontWeight={800}
+            letterSpacing={2.5}
+            separator=""
+            color="#ffffff"
+            ribbon
+            ribbonGradient={["#ff8a5c", FLAME, "#d92c1c"]}
+            ribbonWidth={40}
+            pauseOnHover={false}
+          />
+        </div>
       </div>
 
       {/* ══ Services ═══════════════════════════════════════════════════ */}
@@ -367,8 +340,19 @@ export default function Home() {
       </section>
 
       {/* ══ Work showcase ══════════════════════════════════════════════ */}
-      <section id="work" className="border-y border-white/5 bg-white/[0.015]">
-        <div className="mx-auto max-w-6xl px-6 py-28">
+      <section id="work" className="relative overflow-hidden border-y border-white/5">
+        {/* ambient glow behind the grid */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-32 right-[10%] h-80 w-[520px] rounded-full opacity-25 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${NAVY}99, transparent)` }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -bottom-24 left-[6%] h-72 w-[420px] rounded-full opacity-20 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${FLAME}66, transparent)` }}
+        />
+        <div className="relative mx-auto max-w-6xl px-6 py-28">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-2xl">
               <p className="section-label" style={{ color: FLAME }}>Selected work</p>
@@ -385,10 +369,10 @@ export default function Home() {
             {audiences.map((a, i) => (
               <div
                 key={a}
-                className="group relative h-52 overflow-hidden rounded-3xl border border-white/10"
+                className="group relative h-56 overflow-hidden rounded-3xl border border-white/10 transition duration-300 hover:-translate-y-1.5 hover:border-white/25 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)]"
               >
                 <div
-                  className="absolute inset-0 transition duration-500 group-hover:scale-105"
+                  className="absolute inset-0 transition duration-500 group-hover:scale-[1.04]"
                   style={{
                     background:
                       i % 3 === 0
@@ -398,15 +382,34 @@ export default function Home() {
                           : `linear-gradient(135deg, #101528, ${NAVY}55 60%, ${FLAME}44)`,
                   }}
                 />
+                {/* light sheen sweep on hover */}
+                <div className="pointer-events-none absolute inset-0 -translate-x-[110%] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent transition duration-700 ease-out group-hover:translate-x-[110%]" />
                 <div
                   className={`animate-drift absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-40 blur-2xl transition-opacity group-hover:opacity-70 ${i % 2 ? "" : "animate-drift-alt"}`}
                   style={{ background: "radial-gradient(closest-side, #ffffff66, transparent)" }}
                 />
-                <div className="absolute inset-x-0 bottom-0 p-6">
-                  <p className="text-lg font-bold tracking-tight text-white">{a}</p>
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-white/50">
-                    Content system · active
-                  </p>
+                {/* ghost index */}
+                <span className="pointer-events-none absolute right-5 top-3 text-5xl font-extrabold tracking-tight text-white/[0.07] transition duration-300 group-hover:text-white/[0.14]">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                {/* live status pill */}
+                <span className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/25 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/60 backdrop-blur">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  Live
+                </span>
+                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6">
+                  <div>
+                    <p className="text-lg font-bold tracking-tight text-white">{a}</p>
+                    <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-white/50">
+                      Content system · active
+                    </p>
+                  </div>
+                  <span className="flex h-9 w-9 translate-y-1 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white opacity-0 backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                    ↗
+                  </span>
                 </div>
               </div>
             ))}
@@ -426,8 +429,8 @@ export default function Home() {
           startHeight={62}
           startRadius={28}
           mediaZoom={1.3}
-          scrollDistance={1.1}
-          holdDistance={0.3}
+          scrollDistance={0.9}
+          holdDistance={0.45}
           smoothing={0.09}
           overlayScrim={0.55}
         >
@@ -495,7 +498,7 @@ export default function Home() {
       </section>
 
       {/* ══ Dashboard teaser ═══════════════════════════════════════════ */}
-      <section className="border-y border-white/5 bg-white/[0.015]">
+      <section className="border-y border-white/5">
         <div className="mx-auto grid max-w-6xl items-center gap-14 px-6 py-28 lg:grid-cols-2">
           <div>
             <p className="section-label" style={{ color: FLAME }}>The dashboard</p>
@@ -578,8 +581,23 @@ export default function Home() {
       </section>
 
       {/* ══ Pricing ════════════════════════════════════════════════════ */}
-      <section id="pricing" className="mx-auto max-w-6xl px-6 py-28">
-        <div className="mx-auto max-w-2xl text-center">
+      <section id="pricing" className="relative py-28">
+        {/* animated light rays — full-width background, edge to edge */}
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          <SideRays
+            origin="top-right"
+            rayColor1={FLAME}
+            rayColor2={NAVY}
+            speed={2}
+            intensity={1.4}
+            spread={2.4}
+            saturation={1.2}
+            blend={0.6}
+            opacity={0.5}
+          />
+        </div>
+        <div className="relative mx-auto max-w-6xl px-6">
+          <div className="mx-auto max-w-2xl text-center">
           <p className="section-label" style={{ color: FLAME }}>Pricing</p>
           <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
             Monthly retainers. Zero surprises.
@@ -635,12 +653,12 @@ export default function Home() {
               </a>
             </div>
           ))}
+          </div>
         </div>
       </section>
 
       {/* ══ FAQ ════════════════════════════════════════════════════════ */}
-      <section id="faq" className="relative bg-white/[0.015]">
-        <WaveDivider back={`${NAVY}30`} front="#090b10" flip />
+      <section id="faq" className="relative">
         <div className="mx-auto max-w-3xl px-6 pb-28 pt-32">
           <div className="text-center">
             <p className="section-label" style={{ color: FLAME }}>FAQ</p>
@@ -709,7 +727,7 @@ export default function Home() {
       </section>
 
       {/* ══ Footer ═════════════════════════════════════════════════════ */}
-      <footer className="border-t border-white/5 bg-white/[0.015]">
+      <footer className="border-t border-white/5">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
             <div>

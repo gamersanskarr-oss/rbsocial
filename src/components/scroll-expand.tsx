@@ -20,7 +20,7 @@ type ScrollExpandProps = {
   mediaType?: "image" | "video";
   poster?: string;
   alt?: string;
-  title?: string;
+  title?: ReactNode;
   scrollHint?: string;
   startWidth?: number;
   startHeight?: number;
@@ -163,7 +163,11 @@ export default function ScrollExpand({
       const span = stageH * Math.max(0.01, c.scrollDistance);
       if (c.useWindowScroll) {
         const top = track.getBoundingClientRect().top;
-        return clamp(-top / span, 0, 1);
+        // Begin expanding while the card is still rising into view
+        // (top ≈ half a viewport from the bottom) instead of waiting
+        // for the section to pin — makes the effect feel responsive.
+        const early = stageH * 0.5;
+        return clamp((early - top) / (span + early), 0, 1);
       }
       return clamp(root.scrollTop / span, 0, 1);
     };
