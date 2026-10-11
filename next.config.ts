@@ -5,9 +5,6 @@ const nextConfig: NextConfig = {
   // while the dev server sees x-forwarded-host localhost:3000, so both the
   // dev-resource allowlist and the server-action CSRF allowlist need it.
   allowedDevOrigins: ["127.0.0.1", "localhost"],
-  // firebase-admin uses dynamic requires (grpc/google-gax) that break when
-  // bundled — keep it external so Node resolves it from node_modules.
-  serverExternalPackages: ["firebase-admin"],
   images: {
     remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
