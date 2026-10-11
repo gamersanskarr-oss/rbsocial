@@ -12,8 +12,19 @@ function serviceAccount(): ServiceAccount {
   // 1) FIREBASE_SERVICE_ACCOUNT env var (JSON on one line, or base64)
   const raw = process.env.FIREBASE_SERVICE_ACCOUNT?.trim();
   if (raw) {
-    const json = raw.startsWith("{") ? raw : Buffer.from(raw, "base64").toString("utf8");
-    return JSON.parse(json) as ServiceAccount;
+    const json = raw.startsWith("{")
+      ? raw
+      : raw.startsWith('"')
+        ? JSON.parse(raw) // value pasted with surrounding quotes
+        : Buffer.from(raw, "base64").toString("utf8");
+    try {
+      return JSON.parse(json) as ServiceAccount;
+    } catch {
+      throw new Error(
+        "FIREBASE_SERVICE_ACCOUNT is set but is not valid service-account JSON. " +
+          "Paste the whole service-account.json on one line (no surrounding quotes) or base64-encode it."
+      );
+    }
   }
   // 2) service-account.json dropped into the project root (gitignored)
   const file = process.env.FIREBASE_SERVICE_ACCOUNT_FILE ?? "service-account.json";

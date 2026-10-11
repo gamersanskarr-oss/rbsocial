@@ -54,22 +54,26 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   const cached = sessionCache().get(cookie);
   if (cached && cached.exp > Date.now()) return cached.user;
 
-  const decoded = await adminAuth.verifySessionCookie(cookie, true).catch(() => null);
-  if (!decoded) return null;
+  // try/catch (not .catch) — the lazy Admin init can throw synchronously
+  // when credentials are missing/malformed, before a promise exists.
+  try {
+    const decoded = await adminAuth.verifySessionCookie(cookie, true);
+    const user = await getUser(decoded.uid);
+    if (!user) return null;
 
-  const user = await getUser(decoded.uid);
-  if (!user) return null;
-
-  const sessionUser: SessionUser = {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    team: user.team,
-    missedDeadlines: user.missedDeadlines,
-  };
-  sessionCache().set(cookie, { user: sessionUser, exp: Date.now() + 60_000 });
-  return sessionUser;
+    const sessionUser: SessionUser = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      team: user.team,
+      missedDeadlines: user.missedDeadlines,
+    };
+    sessionCache().set(cookie, { user: sessionUser, exp: Date.now() + 60_000 });
+    return sessionUser;
+  } catch {
+    return null;
+  }
 }
 
 export function roleHome(role: string) {
