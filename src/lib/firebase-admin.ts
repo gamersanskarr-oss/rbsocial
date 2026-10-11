@@ -29,7 +29,9 @@ function serviceAccount(): ServiceAccount {
   // 2) service-account.json dropped into the project root (gitignored)
   const file = process.env.FIREBASE_SERVICE_ACCOUNT_FILE ?? "service-account.json";
   try {
-    return JSON.parse(readFileSync(path.join(process.cwd(), file), "utf8")) as ServiceAccount;
+    return JSON.parse(
+      readFileSync(path.join(/*turbopackIgnore: true*/ process.cwd(), file), "utf8")
+    ) as ServiceAccount;
   } catch {
     // fall through to split env vars
   }
