@@ -2,9 +2,21 @@
 
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { clientAuth } from "@/lib/firebase-client";
 import { createSessionFromIdToken } from "@/app/actions/auth";
+
+// Next.js redirects thrown inside server actions carry a NEXT_REDIRECT
+// digest — re-throw them so the router can navigate instead of
+// swallowing them as form errors.
+function isRedirectError(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "digest" in err &&
+    typeof (err as { digest?: unknown }).digest === "string" &&
+    (err as { digest: string }).digest.startsWith("NEXT_REDIRECT")
+  );
+}
 
 export default function LoginForm() {
   const [error, setError] = useState("");
