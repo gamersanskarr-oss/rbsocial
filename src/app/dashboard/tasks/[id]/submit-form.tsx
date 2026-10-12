@@ -5,7 +5,13 @@ import { submitTask, type SubmitState } from "@/app/actions/tasks";
 
 const initial: SubmitState = {};
 
-export default function SubmitTaskForm({ taskId }: { taskId: string }) {
+export default function SubmitTaskForm({
+  taskId,
+  defaultAmount,
+}: {
+  taskId: string;
+  defaultAmount: number | null;
+}) {
   const [state, formAction, pending] = useActionState(submitTask, initial);
 
   return (
@@ -24,6 +30,23 @@ export default function SubmitTaskForm({ taskId }: { taskId: string }) {
           className="input"
           placeholder="https://canva.com/design/…"
         />
+      </div>
+      <div>
+        <label className="mb-1 block text-sm text-muted">Amount for this task (₹)</label>
+        <input
+          name="payAmount"
+          type="number"
+          min="0"
+          step="1"
+          className="input"
+          defaultValue={defaultAmount ?? ""}
+          placeholder="Your per-post rate"
+        />
+        <p className="mt-1 text-xs font-medium text-faint">
+          {defaultAmount != null
+            ? `Prefilled with ₹${defaultAmount.toLocaleString("en-IN")} — bump it up if this one took extra work 💪`
+            : "No rate set — enter what this task should pay."}
+        </p>
       </div>
       <button type="submit" disabled={pending} className="btn-primary">
         {pending ? "Submitting…" : "Submit & Mark Completed"}

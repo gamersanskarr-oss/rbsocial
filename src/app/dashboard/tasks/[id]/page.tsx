@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireEmployee } from "@/lib/auth";
-import { getTaskDetail } from "@/lib/data";
+import { getTaskDetail, getUser } from "@/lib/data";
 import { StatusBadge } from "@/components/ui";
 import { deleteRequest } from "@/app/actions/requests";
 import SubmitTaskForm from "./submit-form";
@@ -28,6 +28,9 @@ export default async function TaskDetailPage({
 
   const task = await getTaskDetail(id);
   if (!task || task.assignedToId !== user.id) notFound();
+
+  const fresh = await getUser(user.id);
+  const defaultAmount = task.payAmount ?? fresh?.perPostPay ?? null;
 
   const isPending = task.status === "PENDING";
   const isCompleted = task.status === "COMPLETED";
@@ -90,7 +93,7 @@ export default async function TaskDetailPage({
               <p className="mt-1.5 mb-5 text-sm font-medium text-muted">
                 Paste the final design link (e.g. your Canva link) and mark the task as completed.
               </p>
-              <SubmitTaskForm taskId={task.id} />
+              <SubmitTaskForm taskId={task.id} defaultAmount={defaultAmount} />
             </div>
           )}
 
@@ -107,6 +110,12 @@ export default async function TaskDetailPage({
               <p className="mt-3 text-sm font-medium text-ok">
                 Submitted on {task.completedAt?.toLocaleDateString()}
               </p>
+              {(task.payAmount ?? defaultAmount) != null && (
+                <p className="mt-1 text-sm font-semibold text-ok">
+                  💰 Earned ₹{(task.payAmount ?? defaultAmount)!.toLocaleString("en-IN")} on this
+                  task
+                </p>
+              )}
               {task.submissionLink && (
                 <a
                   href={task.submissionLink}

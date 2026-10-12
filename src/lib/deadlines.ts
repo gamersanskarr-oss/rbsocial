@@ -3,6 +3,8 @@ import { adminDb, FieldValue, overduePendingTasks } from "./data";
 
 export const MISSED_DEADLINE_LIMIT = 3;
 export const PAYOUT_REDUCTION = 0.1; // 10%
+export const PAYOUT_BONUS = 0.1; // 10% monthly on-time bonus
+export const BONUS_GRACE_MISSES = 1; // ≤1 missed deadline in the month still earns the bonus
 
 // Scans for overdue pending tasks, marks them MISSED and bumps the
 // assignee's missed-deadline counter. Called on dashboard/admin loads.

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listClientOptions, listEmployeeOptions, listTasksWithRefs } from "@/lib/data";
+import { listClientOptions, listEmployeeOptions, listTasksWithRefs, listTaskTypes } from "@/lib/data";
 import { checkMissedDeadlines } from "@/lib/deadlines";
 import { PageHeader, StatusBadge } from "@/components/ui";
 import CreateTaskForm from "./create-task-form";
@@ -7,10 +7,11 @@ import CreateTaskForm from "./create-task-form";
 export default async function TasksView({ basePath }: { basePath: string }) {
   await checkMissedDeadlines();
 
-  const [tasks, clients, employees] = await Promise.all([
+  const [tasks, clients, employees, taskTypes] = await Promise.all([
     listTasksWithRefs(),
     listClientOptions(),
     listEmployeeOptions(),
+    listTaskTypes(),
   ]);
 
   return (
@@ -22,7 +23,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
 
       <div className="card p-6">
         <h2 className="mb-4 text-sm font-bold text-ink">Assign a task</h2>
-        <CreateTaskForm clients={clients} employees={employees} basePath={basePath} />
+        <CreateTaskForm clients={clients} employees={employees} taskTypes={taskTypes} basePath={basePath} />
       </div>
 
       <div className="card overflow-hidden">
@@ -31,6 +32,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
             <thead className="border-b border-line bg-panel/70">
               <tr>
                 <th className="th">Topic</th>
+                <th className="th">Type</th>
                 <th className="th">Client</th>
                 <th className="th">Assigned to</th>
                 <th className="th">Deadline</th>
@@ -42,7 +44,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
             <tbody className="divide-y divide-line">
               {tasks.length === 0 && (
                 <tr>
-                  <td className="td py-10 text-center text-faint" colSpan={7}>
+                  <td className="td py-10 text-center text-faint" colSpan={8}>
                     No tasks yet — assign the first one above.
                   </td>
                 </tr>
@@ -54,6 +56,15 @@ export default async function TasksView({ basePath }: { basePath: string }) {
                     <td className="td max-w-56">
                       <p className="truncate font-semibold text-ink">{t.topic}</p>
                       <p className="truncate text-xs text-faint">{t.description}</p>
+                    </td>
+                    <td className="td">
+                      {t.type ? (
+                        <span className="inline-block whitespace-nowrap rounded-full bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand ring-1 ring-inset ring-brand-line">
+                          {t.type}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-faint">—</span>
+                      )}
                     </td>
                     <td className="td font-medium text-ink">{t.client.name}</td>
                     <td className="td text-muted">{t.assignedTo.name}</td>

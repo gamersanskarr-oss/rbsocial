@@ -1,9 +1,11 @@
 import Link from "next/link";
-import { completedTasksBetween, listEmployees } from "@/lib/data";
+import { completedTasksBetween, listEmployees, missedTasksBetween } from "@/lib/data";
 import { requireAdmin } from "@/lib/auth";
 import {
+  BONUS_GRACE_MISSES,
   checkMissedDeadlines,
   MISSED_DEADLINE_LIMIT,
+  PAYOUT_BONUS,
   PAYOUT_REDUCTION,
   payoutStatus,
 } from "@/lib/deadlines";
@@ -35,9 +37,10 @@ export default async function PayoutsPage({
     year: "numeric",
   });
 
-  const [employees, monthTasksAll] = await Promise.all([
+  const [employees, monthTasksAll, monthMissedAll] = await Promise.all([
     listEmployees(),
     completedTasksBetween(monthStart, monthEnd),
+    missedTasksBetween(monthStart, monthEnd),
   ]);
 
   // Apply filters: specific employee wins over team filter
@@ -50,23 +53,36 @@ export default async function PayoutsPage({
   const monthTasks = monthTasksAll.filter((t) => visibleIds.has(t.assignedToId));
 
   const postsByUser = new Map<string, number>();
+  const grossByUser = new Map<string, number>();
+  const rateByUser = new Map(employees.map((e) => [e.id, e.perPostPay]));
   for (const t of monthTasks) {
     postsByUser.set(t.assignedToId, (postsByUser.get(t.assignedToId) ?? 0) + 1);
+    const earned = t.payAmount ?? rateByUser.get(t.assignedToId) ?? 0;
+    grossByUser.set(t.assignedToId, (grossByUser.get(t.assignedToId) ?? 0) + earned);
+  }
+  const missesByUser = new Map<string, number>();
+  for (const t of monthMissedAll) {
+    missesByUser.set(t.assignedToId, (missesByUser.get(t.assignedToId) ?? 0) + 1);
   }
 
   const rows = visibleEmployees.map((e) => {
     const posts = postsByUser.get(e.id) ?? 0;
+    const misses = missesByUser.get(e.id) ?? 0;
     const rate = e.perPostPay;
-    const gross = rate == null ? 0 : posts * rate;
+    const gross = grossByUser.get(e.id) ?? 0;
     const reduced = payoutStatus(e.missedDeadlines).reduced;
     const deduction = reduced ? gross * PAYOUT_REDUCTION : 0;
-    return { employee: e, posts, rate, gross, reduced, deduction, net: gross - deduction };
+    // On-time bonus: +10% of monthly earnings when misses ≤ grace limit
+    // (and payout isn't already in reduction territory).
+    const bonus = !reduced && misses <= BONUS_GRACE_MISSES ? gross * PAYOUT_BONUS : 0;
+    return { employee: e, posts, misses, rate, gross, reduced, deduction, bonus, net: gross - deduction + bonus };
   });
 
   const totalPosts = monthTasks.length;
   const totalGross = rows.reduce((s, r) => s + r.gross, 0);
   const totalDeductions = rows.reduce((s, r) => s + r.deduction, 0);
-  const totalNet = totalGross - totalDeductions;
+  const totalBonus = rows.reduce((s, r) => s + r.bonus, 0);
+  const totalNet = totalGross - totalDeductions + totalBonus;
   const missingRates = rows.filter((r) => r.posts > 0 && r.rate == null).length;
 
   return (
@@ -126,13 +142,18 @@ export default async function PayoutsPage({
       </div>
 
       {/* Month summary */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Card title="Posts completed" value={totalPosts} hint={monthLabel} />
-        <Card title="Gross payout" value={inr(totalGross)} hint="Posts × per-post rate" />
+        <Card title="Gross payout" value={inr(totalGross)} hint="Sum of per-task amounts" />
         <Card
           title="Deductions"
           value={inr(totalDeductions)}
           hint={`${PAYOUT_REDUCTION * 100}% if ${MISSED_DEADLINE_LIMIT}+ misses`}
+        />
+        <Card
+          title="On-time bonus"
+          value={inr(totalBonus)}
+          hint={`+${PAYOUT_BONUS * 100}% if ≤${BONUS_GRACE_MISSES} miss`}
         />
         <Card title="Net payable" value={inr(totalNet)} hint={monthLabel} />
       </div>
@@ -161,13 +182,14 @@ export default async function PayoutsPage({
                 <th className="th">Gross</th>
                 <th className="th">Payout status</th>
                 <th className="th">Deduction</th>
+                <th className="th">Bonus</th>
                 <th className="th">Net payable</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {rows.length === 0 && (
                 <tr>
-                  <td className="td py-10 text-center text-faint" colSpan={8}>
+                  <td className="td py-10 text-center text-faint" colSpan={9}>
                     No employees match these filters.
                   </td>
                 </tr>
@@ -199,6 +221,11 @@ export default async function PayoutsPage({
                   <td className="td font-medium text-bad">
                     {r.deduction > 0 ? `−${inr(r.deduction)}` : "—"}
                   </td>
+                  <td className="td font-medium text-ok">
+                    {r.bonus > 0 ? `+${inr(r.bonus)}` : r.misses <= BONUS_GRACE_MISSES ? "—" : (
+                      <span className="text-xs text-faint" title="Missed too many deadlines">lost</span>
+                    )}
+                  </td>
                   <td className="td font-bold text-ok">{inr(r.net)}</td>
                 </tr>
               ))}
@@ -211,6 +238,9 @@ export default async function PayoutsPage({
                   <td className="td" />
                   <td className="td font-bold text-bad">
                     {totalDeductions > 0 ? `−${inr(totalDeductions)}` : "—"}
+                  </td>
+                  <td className="td font-bold text-ok">
+                    {totalBonus > 0 ? `+${inr(totalBonus)}` : "—"}
                   </td>
                   <td className="td font-bold text-ok">{inr(totalNet)}</td>
                 </tr>

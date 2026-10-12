@@ -1,6 +1,7 @@
 import "server-only";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "./firebase-admin";
+import { DEFAULT_TASK_TYPES } from "./constants";
 
 // ---------------------------------------------------------------------------
 // Records (mirror the old Prisma models; timestamps are converted to Date)
@@ -54,6 +55,8 @@ export type TaskRecord = {
   assignedToId: string;
   deadline: Date;
   status: string; // PENDING | COMPLETED | MISSED
+  type: string | null; // e.g. "Static Post" | "Carousel" | custom category
+  payAmount: number | null; // per-task amount (falls back to assignee's perPostPay)
   referenceLink: string | null;
   submissionLink: string | null;
   completedAt: Date | null;
@@ -180,9 +183,14 @@ export async function listDesigners(): Promise<{ id: string; name: string }[]> {
 }
 
 export async function listEmployeeOptions(): Promise<
-  { id: string; name: string; team: string | null }[]
+  { id: string; name: string; team: string | null; perPostPay: number | null }[]
 > {
-  return (await listEmployees()).map((u) => ({ id: u.id, name: u.name, team: u.team }));
+  return (await listEmployees()).map((u) => ({
+    id: u.id,
+    name: u.name,
+    team: u.team,
+    perPostPay: u.perPostPay,
+  }));
 }
 
 export async function userNameMap(): Promise<Map<string, string>> {
@@ -343,6 +351,18 @@ export async function completedTasksBetween(start: Date, end: Date): Promise<Tas
     .filter((t) => t.status === "COMPLETED");
 }
 
+/** Missed tasks whose deadline falls inside [start, end). */
+export async function missedTasksBetween(start: Date, end: Date): Promise<TaskRecord[]> {
+  const snap = await adminDb
+    .collection("tasks")
+    .where("deadline", ">=", Timestamp.fromDate(start))
+    .where("deadline", "<", Timestamp.fromDate(end))
+    .get();
+  return snap.docs
+    .map((d) => withDates<TaskRecord>(d, TASK_DATES))
+    .filter((t) => t.status === "MISSED");
+}
+
 export async function overduePendingTasks(): Promise<TaskRecord[]> {
   const snap = await adminDb.collection("tasks").where("status", "==", "PENDING").get();
   const now = Date.now();
@@ -371,6 +391,13 @@ export async function countCompletedTasks(userId: string): Promise<number> {
     .where("status", "==", "COMPLETED")
     .get();
   return snap.size;
+}
+
+/** Built-in task types merged with any custom ones saved in settings/taskTypes. */
+export async function listTaskTypes(): Promise<string[]> {
+  const doc = await adminDb.collection("settings").doc("taskTypes").get();
+  const custom = Array.isArray(doc.data()?.options) ? (doc.data()!.options as string[]) : [];
+  return [...new Set([...DEFAULT_TASK_TYPES, ...custom])];
 }
 
 // ---------------------------------------------------------------------------

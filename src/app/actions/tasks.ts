@@ -10,8 +10,13 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
   const user = await requireUser();
   const taskId = String(formData.get("taskId") ?? "");
   const submissionLink = String(formData.get("submissionLink") ?? "").trim();
+  const payRaw = String(formData.get("payAmount") ?? "").trim();
+  const payAmount = payRaw === "" ? null : Number(payRaw);
 
   if (!submissionLink) return { error: "Please paste the final link (e.g. Canva design link)." };
+  if (payAmount !== null && (isNaN(payAmount) || payAmount < 0)) {
+    return { error: "Amount must be a valid number." };
+  }
   try {
     new URL(submissionLink);
   } catch {
@@ -26,6 +31,7 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
   await doc.ref.update({
     status: "COMPLETED",
     submissionLink,
+    payAmount,
     completedAt: Timestamp.now(),
   });
 

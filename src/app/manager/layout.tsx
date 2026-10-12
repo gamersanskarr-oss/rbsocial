@@ -15,6 +15,12 @@ export default async function ManagerLayout({ children }: { children: React.Reac
         { href: "/manager/requests", label: "Requests", icon: "requests" as const, badge: openRequests },
       ],
     },
+    {
+      label: "More",
+      items: [
+        { href: "/manager/team", label: "My Team", icon: "employees" as const },
+      ],
+    },
   ];
 
   return (

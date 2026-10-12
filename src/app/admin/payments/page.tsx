@@ -10,8 +10,13 @@ import { requireAdminOrAccountant } from "@/lib/auth";
 import { deletePayment, logFollowUp, markPaymentReceived } from "@/app/actions/finance";
 import { PageHeader } from "@/components/ui";
 import RecordPaymentForm from "./record-payment-form";
+import EditPaymentDialog from "./edit-payment-dialog";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
+
+// "YYYY-MM-DD" for <input type="date"> — local timezone, not UTC
+const dateInput = (d: Date | null) =>
+  d ? new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10) : "";
 
 const monthLabel = (key: string | null) => {
   if (!key) return "—";
@@ -26,10 +31,46 @@ const STATUS_STYLE: Record<string, { label: string; cls: string }> = {
   PENDING: { label: "Pending", cls: "bg-panel text-muted ring-line" },
 };
 
-export default async function PaymentsPage() {
+export default async function PaymentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    client?: string;
+    status?: string;
+    month?: string;
+    from?: string;
+    to?: string;
+  }>;
+}) {
   await requireAdminOrAccountant();
   await ensureMonthlyCharges();
+  const { client, status, month, from, to } = await searchParams;
   const [clients, payments] = await Promise.all([listClients(), listPaymentsWithClient()]);
+
+  const fromDate = from ? new Date(`${from}T00:00:00`) : null;
+  const toDate = to ? new Date(`${to}T23:59:59`) : null;
+  const statusFilter =
+    status === "RECEIVED" || status === "OVERDUE" || status === "DUE_TODAY" || status === "PENDING"
+      ? status
+      : "";
+
+  // Date range applies to the row's effective date: receivedAt, else dueDate
+  const filtered = payments.filter((p) => {
+    if (client && p.client.id !== client) return false;
+    if (statusFilter && paymentStatus(p) !== statusFilter) return false;
+    if (month && p.forMonth !== month) return false;
+    const eff = p.receivedAt ?? p.dueDate;
+    if (fromDate && (!eff || eff < fromDate)) return false;
+    if (toDate && (!eff || eff > toDate)) return false;
+    return true;
+  });
+
+  const filteredReceived = filtered
+    .filter((p) => p.receivedAt)
+    .reduce((s, p) => s + p.amount, 0);
+  const filteredOutstanding = filtered
+    .filter((p) => paymentStatus(p) !== "RECEIVED")
+    .reduce((s, p) => s + p.amount, 0);
 
   const thisMonth = payments
     .filter((p) => p.receivedAt && monthKeyOf(p.receivedAt) === monthKeyOf(new Date()))
@@ -40,6 +81,8 @@ export default async function PaymentsPage() {
   const outstanding = payments
     .filter((p) => paymentStatus(p) !== "RECEIVED")
     .reduce((s, p) => s + p.amount, 0);
+
+  const filtering = Boolean(client || statusFilter || month || from || to);
 
   return (
     <div className="space-y-8">
@@ -54,14 +97,67 @@ export default async function PaymentsPage() {
           .map((c) => ({ id: c.id, name: c.name, monthlyFee: c.monthlyFee }))}
       />
 
+      {/* Filters */}
+      <div className="card p-4">
+        <form className="flex flex-wrap items-end gap-3">
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-faint">Client</label>
+            <select name="client" defaultValue={client ?? ""} className="input w-auto min-w-44 px-3 py-2 text-sm">
+              <option value="">All clients</option>
+              {clients.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-faint">Status</label>
+            <select name="status" defaultValue={statusFilter} className="input w-auto px-3 py-2 text-sm">
+              <option value="">All statuses</option>
+              <option value="RECEIVED">Received</option>
+              <option value="OVERDUE">Overdue</option>
+              <option value="DUE_TODAY">Due today</option>
+              <option value="PENDING">Pending</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-faint">Billing month</label>
+            <input type="month" name="month" defaultValue={month ?? ""} className="input w-auto px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-faint">From</label>
+            <input type="date" name="from" defaultValue={from ?? ""} className="input w-auto px-3 py-2 text-sm" />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs font-semibold text-faint">To</label>
+            <input type="date" name="to" defaultValue={to ?? ""} className="input w-auto px-3 py-2 text-sm" />
+          </div>
+          <button className="btn-primary px-4 py-2">Apply filters</button>
+          <Link
+            href="/admin/payments"
+            className="rounded-xl px-3 py-2.5 text-sm font-semibold text-muted transition hover:bg-hover hover:text-ink"
+          >
+            Reset
+          </Link>
+        </form>
+      </div>
+
       <div className="card overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-panel/70 px-5 py-4">
-          <h2 className="text-sm font-bold text-ink">All payments</h2>
-          <div className="flex gap-4 text-xs font-semibold text-muted">
-            <span>This month received: <span className="text-ok">{inr(thisMonth)}</span></span>
-            <span>Outstanding: <span className="text-bad">{inr(outstanding)}</span></span>
-            <span>All time: <span className="text-ink">{inr(allTime)}</span></span>
-          </div>
+          <h2 className="text-sm font-bold text-ink">
+            {filtering ? `Filtered payments (${filtered.length})` : "All payments"}
+          </h2>
+          {filtering ? (
+            <div className="flex gap-4 text-xs font-semibold text-muted">
+              <span>Received: <span className="text-ok">{inr(filteredReceived)}</span></span>
+              <span>Outstanding: <span className="text-bad">{inr(filteredOutstanding)}</span></span>
+            </div>
+          ) : (
+            <div className="flex gap-4 text-xs font-semibold text-muted">
+              <span>This month received: <span className="text-ok">{inr(thisMonth)}</span></span>
+              <span>Outstanding: <span className="text-bad">{inr(outstanding)}</span></span>
+              <span>All time: <span className="text-ink">{inr(allTime)}</span></span>
+            </div>
+          )}
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -80,14 +176,14 @@ export default async function PaymentsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {payments.length === 0 && (
+              {filtered.length === 0 && (
                 <tr>
                   <td colSpan={10} className="td py-10 text-center text-faint">
-                    No payments recorded yet.
+                    {filtering ? "No payments match these filters." : "No payments recorded yet."}
                   </td>
                 </tr>
               )}
-              {payments.map((p) => {
+              {filtered.map((p) => {
                 const st = paymentStatus(p);
                 const style = STATUS_STYLE[st];
                 return (
@@ -119,6 +215,18 @@ export default async function PaymentsPage() {
                     </td>
                     <td className="td">
                       <div className="flex items-center justify-end gap-1.5">
+                        <EditPaymentDialog
+                          payment={{
+                            id: p.id,
+                            clientName: p.client.name,
+                            amount: p.amount,
+                            forMonth: p.forMonth ?? "",
+                            dueDate: dateInput(p.dueDate),
+                            receivedAt: dateInput(p.receivedAt),
+                            method: p.method ?? "",
+                            note: p.note ?? "",
+                          }}
+                        />
                         {st !== "RECEIVED" ? (
                           <>
                             <form action={logFollowUp}>

@@ -156,6 +156,40 @@ export async function deletePayment(formData: FormData) {
   revalidateFinance();
 }
 
+export async function updatePayment(_prev: FinState, formData: FormData): Promise<FinState> {
+  await requireAdminOrAccountant();
+  const id = String(formData.get("paymentId") ?? "");
+  const amount = parseAmount(String(formData.get("amount") ?? "").trim());
+  const forMonth = String(formData.get("forMonth") ?? "").trim();
+  const dueDate = parseDate(String(formData.get("dueDate") ?? "").trim());
+  const receivedAt = parseDate(String(formData.get("receivedAt") ?? "").trim());
+  const method = String(formData.get("method") ?? "") || null;
+  const note = String(formData.get("note") ?? "").trim() || null;
+
+  if (!id || amount == null) return { error: "A valid amount is required." };
+  if (forMonth && !/^\d{4}-\d{2}$/.test(forMonth)) return { error: "Invalid billing month." };
+
+  const ref = adminDb.collection("clientPayments").doc(id);
+  const doc = await ref.get();
+  if (!doc.exists) return { error: "Payment not found." };
+
+  await ref.update({
+    amount,
+    forMonth: forMonth || null,
+    dueDate: dueDate ? Timestamp.fromDate(dueDate) : null,
+    receivedAt: receivedAt ? Timestamp.fromDate(receivedAt) : null,
+    method,
+    note,
+  });
+  const client = await getClient(String(doc.data()!.clientId));
+  await logActivity(
+    "payment",
+    `Edited a ₹${amount.toLocaleString("en-IN")} payment record${client ? ` for ${client.name}` : ""}.`
+  );
+  revalidateFinance();
+  return { success: "Payment updated." };
+}
+
 // ---------------------------------------------------------------------------
 // Expenses
 // ---------------------------------------------------------------------------

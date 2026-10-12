@@ -129,9 +129,15 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
   const assignedToId = String(formData.get("assignedToId") ?? "");
   const deadline = String(formData.get("deadline") ?? "");
   const referenceLink = String(formData.get("referenceLink") ?? "").trim() || null;
+  const taskType = String(formData.get("taskType") ?? "").trim();
+  const payRaw = String(formData.get("payAmount") ?? "").trim();
+  const payAmount = payRaw === "" ? null : Number(payRaw);
 
-  if (!topic || !description || !clientId || !assignedToId || !deadline) {
-    return { error: "Topic, client, assignee, description and deadline are required." };
+  if (!topic || !description || !clientId || !assignedToId || !deadline || !taskType) {
+    return { error: "Topic, type, client, assignee, description and deadline are required." };
+  }
+  if (payAmount !== null && (isNaN(payAmount) || payAmount < 0)) {
+    return { error: "Pay amount must be a valid number (leave blank to use the per-post rate)." };
   }
   const deadlineDate = new Date(deadline);
   if (isNaN(deadlineDate.getTime())) return { error: "Invalid deadline date." };
@@ -140,6 +146,8 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
     await adminDb.collection("tasks").add({
       topic,
       description,
+      type: taskType,
+      payAmount,
       clientId,
       assignedToId,
       deadline: Timestamp.fromDate(deadlineDate),
@@ -160,4 +168,20 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
   revalidatePath("/admin");
   revalidatePath("/dashboard");
   return { success: `Task "${topic}" assigned.` };
+}
+
+/** Admin + manager: add a custom task category (shown in the assign-task dropdown). */
+export async function addTaskType(name: string): Promise<ActionState> {
+  await requireAdminOrManager();
+  const label = name.trim().slice(0, 40);
+  if (!label) return { error: "Type name is required." };
+
+  await adminDb
+    .collection("settings")
+    .doc("taskTypes")
+    .set({ options: FieldValue.arrayUnion(label) }, { merge: true });
+
+  revalidatePath("/admin/tasks");
+  revalidatePath("/manager/tasks");
+  return { success: `"${label}" added to task types.` };
 }

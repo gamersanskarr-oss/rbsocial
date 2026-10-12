@@ -12,6 +12,16 @@ export const EXPENSE_CATEGORIES = [
   "Miscellaneous",
 ];
 
+export const DEFAULT_TASK_TYPES = [
+  "Static Post",
+  "Carousel",
+  "Story",
+  "Cover Page",
+  "Video Edit",
+  "Videography",
+  "Shoot + Edit",
+];
+
 export const BILLING_MODELS = [
   { value: "PREPAID", label: "Prepaid (billed at month start)" },
   { value: "POST_WORK", label: "Post-work (after delivery)" },

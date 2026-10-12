@@ -11,6 +11,7 @@ export type CalendarTask = {
   status: string;
   deadline: string; // ISO
   clientName: string;
+  assignee?: string | null;
 };
 
 export type CalendarOption = { id: string; name: string; team?: string | null };
@@ -157,9 +158,26 @@ export function TaskCalendar({
   const now = new Date();
   const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() });
   const [modalDay, setModalDay] = useState<{ y: number; m: number; d: number } | null>(null);
+  const [fClient, setFClient] = useState("");
+  const [fStatus, setFStatus] = useState("");
+  const [fAssignee, setFAssignee] = useState("");
+
+  // Client filter options: prefer the option list, else derive from tasks
+  const clientNames = clients.length
+    ? clients.map((c) => c.name)
+    : [...new Set(tasks.map((t) => t.clientName))];
+  const showAssigneeFilter = employees.length > 0 && tasks.some((t) => t.assignee);
+
+  const filteredTasks = tasks.filter((t) => {
+    if (fClient && t.clientName !== fClient) return false;
+    if (fStatus && t.status !== fStatus) return false;
+    if (fAssignee && t.assignee !== fAssignee) return false;
+    return true;
+  });
+  const filtering = Boolean(fClient || fStatus || fAssignee);
 
   const byDay = new Map<string, CalendarTask[]>();
-  for (const t of tasks) {
+  for (const t of filteredTasks) {
     const d = new Date(t.deadline);
     const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
     const list = byDay.get(key) ?? [];
@@ -182,7 +200,7 @@ export function TaskCalendar({
     setView({ y: d.getFullYear(), m: d.getMonth() });
   };
 
-  const monthTasks = tasks.filter((t) => {
+  const monthTasks = filteredTasks.filter((t) => {
     const d = new Date(t.deadline);
     return d.getFullYear() === view.y && d.getMonth() === view.m;
   });
@@ -216,15 +234,58 @@ export function TaskCalendar({
               <path d="M9 18l6-6-6-6" />
             </svg>
           </button>
-          <span className="ml-2 text-sm font-bold text-ink">
-            {MONTHS[view.m]} {view.y}
+          <span className="ml-3 text-xl font-extrabold tracking-tight text-ink">
+            {MONTHS[view.m]} <span className="text-faint">{view.y}</span>
           </span>
         </div>
 
-        <div className="flex items-center gap-4 text-xs font-medium text-muted">
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-400" />Pending</span>
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-ok-soft0" />Completed</span>
-          <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-bad-soft0" />Missed</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            value={fClient}
+            onChange={(e) => setFClient(e.target.value)}
+            className="input w-auto min-w-36 px-3 py-1.5 text-xs font-semibold"
+          >
+            <option value="">All clients</option>
+            {clientNames.map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+          {showAssigneeFilter && (
+            <select
+              value={fAssignee}
+              onChange={(e) => setFAssignee(e.target.value)}
+              className="input w-auto min-w-36 px-3 py-1.5 text-xs font-semibold"
+            >
+              <option value="">All members</option>
+              {employees.map((e) => (
+                <option key={e.id} value={e.name}>{e.name}</option>
+              ))}
+            </select>
+          )}
+          <select
+            value={fStatus}
+            onChange={(e) => setFStatus(e.target.value)}
+            className="input w-auto px-3 py-1.5 text-xs font-semibold"
+          >
+            <option value="">All statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="MISSED">Missed</option>
+          </select>
+          {filtering && (
+            <button
+              type="button"
+              onClick={() => { setFClient(""); setFStatus(""); setFAssignee(""); }}
+              className="rounded-lg px-2.5 py-1.5 text-xs font-bold text-muted transition hover:bg-hover hover:text-ink"
+            >
+              Clear
+            </button>
+          )}
+          <div className="hidden items-center gap-4 text-xs font-medium text-muted lg:flex">
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-400" />Pending</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-ok-soft0" />Completed</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-bad-soft0" />Missed</span>
+          </div>
         </div>
       </div>
 
