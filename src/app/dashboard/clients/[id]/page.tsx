@@ -7,11 +7,14 @@ import { ClientLogo } from "@/components/client-logo";
 
 export default async function MyClientDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ status?: string }>;
 }) {
   const user = await requireEmployee();
   const { id } = await params;
+  const { status } = await searchParams;
 
   const [client, assets, clientTasks] = await Promise.all([
     getClient(id),
@@ -20,6 +23,11 @@ export default async function MyClientDetailPage({
   ]);
   if (!client || client.assignedToId !== user.id) notFound();
   const tasks = clientTasks.filter((t) => t.assignedToId === user.id);
+
+  const statusFilter = ["PENDING", "COMPLETED", "MISSED"].includes(status ?? "")
+    ? status!
+    : "";
+  const shown = statusFilter ? tasks.filter((t) => t.status === statusFilter) : tasks;
 
   const socials = [
     { label: "Instagram", url: client.instagram },
@@ -100,15 +108,44 @@ export default async function MyClientDetailPage({
         </div>
 
         <div className="card p-6">
-          <h2 className="mb-3 text-sm font-bold text-ink">My tasks for this client</h2>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="text-sm font-bold text-ink">My tasks for this client</h2>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { v: "", label: "All", n: tasks.length },
+                { v: "PENDING", label: "Pending", n: tasks.filter((t) => t.status === "PENDING").length },
+                { v: "COMPLETED", label: "Completed", n: tasks.filter((t) => t.status === "COMPLETED").length },
+                { v: "MISSED", label: "Missed", n: tasks.filter((t) => t.status === "MISSED").length },
+              ].map((f) => (
+                <Link
+                  key={f.v}
+                  href={f.v ? `/dashboard/clients/${id}?status=${f.v}` : `/dashboard/clients/${id}`}
+                  className={`rounded-full px-2.5 py-1 text-[11px] font-bold ring-1 ring-inset transition ${
+                    statusFilter === f.v
+                      ? "bg-ink text-canvas ring-ink"
+                      : "bg-panel text-muted ring-line hover:text-ink"
+                  }`}
+                >
+                  {f.label} {f.n}
+                </Link>
+              ))}
+            </div>
+          </div>
           <ul className="divide-y divide-line">
-            {tasks.length === 0 && (
-              <li className="py-3 text-sm font-medium text-faint">No tasks for this client yet.</li>
+            {shown.length === 0 && (
+              <li className="py-3 text-sm font-medium text-faint">
+                {statusFilter ? "No tasks match this filter." : "No tasks for this client yet."}
+              </li>
             )}
-            {tasks.map((t) => (
+            {shown.map((t) => (
               <li key={t.id} className="flex items-center justify-between gap-3 py-2.5">
                 <Link href={`/dashboard/tasks/${t.id}`} className="text-sm font-semibold text-ink hover:underline">
                   {t.topic}
+                  {t.type && (
+                    <span className="ml-1.5 rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-bold text-brand ring-1 ring-inset ring-brand-line">
+                      {t.type}
+                    </span>
+                  )}
                 </Link>
                 <StatusBadge status={t.status} />
               </li>

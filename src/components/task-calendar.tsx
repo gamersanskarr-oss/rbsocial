@@ -221,9 +221,10 @@ export function TaskCalendar({
           </button>
           <button
             onClick={() => setView({ y: now.getFullYear(), m: now.getMonth() })}
-            className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-xs font-bold text-ink shadow-sm transition hover:bg-hover"
+            title="Back to current month"
+            className="min-w-32 rounded-xl border border-line bg-elevated px-3.5 py-2 text-sm font-bold text-ink shadow-sm transition hover:bg-hover"
           >
-            Today
+            {MONTHS[view.m]} <span className="text-faint">{view.y}</span>
           </button>
           <button
             onClick={() => move(1)}
@@ -234,9 +235,6 @@ export function TaskCalendar({
               <path d="M9 18l6-6-6-6" />
             </svg>
           </button>
-          <span className="ml-3 text-xl font-extrabold tracking-tight text-ink">
-            {MONTHS[view.m]} <span className="text-faint">{view.y}</span>
-          </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -283,8 +281,8 @@ export function TaskCalendar({
           )}
           <div className="hidden items-center gap-4 text-xs font-medium text-muted lg:flex">
             <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-400" />Pending</span>
-            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-ok-soft0" />Completed</span>
-            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-bad-soft0" />Missed</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" />Completed</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-rose-500" />Missed</span>
           </div>
         </div>
       </div>

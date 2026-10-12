@@ -253,10 +253,9 @@ export function DashboardShell({
       </nav>
 
       {payBox && (
-        <div className="mx-3 mb-3 rounded-2xl border border-line bg-elevated p-3.5 shadow-soft">
+        <div className="mx-3 mb-3 rounded-2xl border border-line bg-elevated p-3.5 shadow-soft md:hidden">
           <div className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-ok-soft text-ok">
-              {/* cash / banknote */}
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
                 <rect x="2" y="6" width="20" height="12" rx="2" />
                 <circle cx="12" cy="12" r="2.5" />
@@ -266,38 +265,13 @@ export function DashboardShell({
             </span>
             <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Earnings</p>
           </div>
-          {payBox.perPostPay != null || payBox.completedCount > 0 ? (
-            <>
-              <p className="mt-2 text-lg font-bold tracking-tight text-ink">
-                ₹{(
-                  payBox.totalEarned ??
-                  (payBox.perPostPay ?? 0) * payBox.completedCount
-                ).toLocaleString("en-IN")}
-                <span className="text-xs font-medium text-faint"> earned</span>
-              </p>
-              <p className="mt-0.5 text-xs font-medium text-muted">
-                {payBox.completedCount} post{payBox.completedCount === 1 ? "" : "s"}
-                {payBox.perPostPay != null &&
-                  ` · ₹${payBox.perPostPay.toLocaleString("en-IN")}/post`}
-              </p>
-              {payBox.monthEarned != null && (
-                <p className="mt-1.5 border-t border-line pt-1.5 text-xs font-medium text-muted">
-                  This month:{" "}
-                  <span className="font-semibold text-ink">
-                    ₹{payBox.monthEarned.toLocaleString("en-IN")}
-                  </span>
-                  {payBox.monthBonus ? (
-                    <span className="font-semibold text-ok">
-                      {" "}
-                      +₹{payBox.monthBonus.toLocaleString("en-IN")} bonus 🎁
-                    </span>
-                  ) : null}
-                </p>
-              )}
-            </>
-          ) : (
-            <p className="mt-1.5 text-xs font-medium text-faint">Rate not set by admin yet.</p>
-          )}
+          <p className="mt-2 text-lg font-bold tracking-tight text-ink">
+            ₹{(
+              payBox.totalEarned ??
+              (payBox.perPostPay ?? 0) * payBox.completedCount
+            ).toLocaleString("en-IN")}
+            <span className="text-xs font-medium text-faint"> earned</span>
+          </p>
         </div>
       )}
 
@@ -379,7 +353,54 @@ export function DashboardShell({
       )}
 
       <main className="md:pl-64">
-        <div className="px-6 py-10 lg:px-10">{children}</div>
+        <div className="px-6 py-10 lg:px-10">
+          {payBox && (
+            <div className="mb-6 hidden justify-end md:flex">
+              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-elevated to-elevated p-[1px] shadow-lift">
+                <div className="rounded-2xl bg-elevated/90 px-5 py-3.5 backdrop-blur">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-soft">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4.5 w-4.5" aria-hidden>
+                        <rect x="2" y="6" width="20" height="12" rx="2" />
+                        <circle cx="12" cy="12" r="2.5" />
+                        <path d="M5.5 12h.01" />
+                        <path d="M18.5 12h.01" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-faint">
+                        Earnings
+                      </p>
+                      <p className="text-lg font-extrabold leading-tight tracking-tight text-ink">
+                        ₹{(
+                          payBox.totalEarned ??
+                          (payBox.perPostPay ?? 0) * payBox.completedCount
+                        ).toLocaleString("en-IN")}
+                      </p>
+                    </div>
+                    {payBox.monthEarned != null && (
+                      <div className="ml-2 border-l border-line pl-3 text-right">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-faint">
+                          This month
+                        </p>
+                        <p className="text-sm font-bold text-ink">
+                          ₹{payBox.monthEarned.toLocaleString("en-IN")}
+                          {payBox.monthBonus ? (
+                            <span className="text-ok">
+                              {" "}
+                              +₹{payBox.monthBonus.toLocaleString("en-IN")} 🎁
+                            </span>
+                          ) : null}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {children}
+        </div>
       </main>
     </div>
   );

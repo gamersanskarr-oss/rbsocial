@@ -163,22 +163,19 @@ export default async function PaymentsPage({
           <table className="w-full">
             <thead className="border-b border-line">
               <tr>
-                <th className="th">Client</th>
-                <th className="th">Month</th>
-                <th className="th">Due date</th>
-                <th className="th">Amount</th>
-                <th className="th">Status</th>
-                <th className="th">Received</th>
-                <th className="th">Method</th>
-                <th className="th">Follow-ups</th>
-                <th className="th">Note</th>
-                <th className="th w-32"></th>
+                <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Client</th>
+                <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Billing</th>
+                <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Amount</th>
+                <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Status</th>
+                <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Received</th>
+                <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Note</th>
+                <th className="px-4 py-2"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="td py-10 text-center text-faint">
+                  <td colSpan={7} className="px-4 py-10 text-center text-sm text-faint">
                     {filtering ? "No payments match these filters." : "No payments recorded yet."}
                   </td>
                 </tr>
@@ -188,32 +185,32 @@ export default async function PaymentsPage({
                 const style = STATUS_STYLE[st];
                 return (
                   <tr key={p.id} className="transition hover:bg-panel/50">
-                    <td className="td">
+                    <td className="px-4 py-2.5 text-[13px]">
                       <Link href={`/admin/clients/${p.client.id}`} className="link font-semibold text-ink">
                         {p.client.name}
                       </Link>
                     </td>
-                    <td className="td text-muted">{monthLabel(p.forMonth)}</td>
-                    <td className="td text-muted">
-                      {p.dueDate?.toLocaleDateString("en-IN", { day: "numeric", month: "short" }) ?? "—"}
+                    <td className="whitespace-nowrap px-4 py-2.5 text-[13px] text-muted">
+                      {monthLabel(p.forMonth)}
+                      {p.dueDate && (
+                        <span className="text-faint"> · due {p.dueDate.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                      )}
                     </td>
-                    <td className="td font-bold text-ink">{inr(p.amount)}</td>
-                    <td className="td">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset ${style.cls}`}>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-[13px] font-bold text-ink">{inr(p.amount)}</td>
+                    <td className="px-4 py-2.5">
+                      <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ring-inset ${style.cls}`}>
                         {style.label}
                       </span>
                     </td>
-                    <td className="td text-muted">
-                      {p.receivedAt?.toLocaleDateString("en-IN", { day: "numeric", month: "short" }) ?? "—"}
+                    <td className="whitespace-nowrap px-4 py-2.5 text-[13px] text-muted">
+                      {p.receivedAt
+                        ? `${p.receivedAt.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}${p.method ? ` · ${p.method === "ONLINE" ? "Online" : "Cash"}` : ""}`
+                        : "—"}
                     </td>
-                    <td className="td text-muted">{p.method ?? "—"}</td>
-                    <td className="td text-muted" title={p.lastContactedAt ? `Last: ${p.lastContactedAt.toLocaleDateString("en-IN")}` : ""}>
-                      {p.followUps}
-                    </td>
-                    <td className="td max-w-40 truncate text-muted" title={p.note ?? ""}>
+                    <td className="max-w-32 truncate px-4 py-2.5 text-[13px] text-muted" title={p.note ?? ""}>
                       {p.note ?? "—"}
                     </td>
-                    <td className="td">
+                    <td className="px-4 py-2">
                       <div className="flex items-center justify-end gap-1.5">
                         <EditPaymentDialog
                           payment={{
@@ -231,14 +228,17 @@ export default async function PaymentsPage({
                           <>
                             <form action={logFollowUp}>
                               <input type="hidden" name="paymentId" value={p.id} />
-                              <button className="rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel">
-                                + Follow-up
+                              <button
+                                title={p.lastContactedAt ? `Last nudged ${p.lastContactedAt.toLocaleDateString("en-IN")}` : "Log a follow-up"}
+                                className="whitespace-nowrap rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel"
+                              >
+                                +{p.followUps || ""} Nudge
                               </button>
                             </form>
                             <form action={markPaymentReceived}>
                               <input type="hidden" name="paymentId" value={p.id} />
                               <input type="hidden" name="method" value="ONLINE" />
-                              <button className="rounded-lg bg-ink px-2 py-1 text-[11px] font-semibold text-canvas shadow-sm transition hover:bg-accent-hover">
+                              <button className="whitespace-nowrap rounded-lg bg-ink px-2 py-1 text-[11px] font-semibold text-canvas shadow-sm transition hover:bg-accent-hover">
                                 Received
                               </button>
                             </form>
@@ -246,14 +246,14 @@ export default async function PaymentsPage({
                         ) : (
                           <Link
                             href={`/admin/payments/${p.id}`}
-                            className="rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel"
+                            className="whitespace-nowrap rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel"
                           >
                             Invoice
                           </Link>
                         )}
                         <form action={deletePayment}>
                           <input type="hidden" name="paymentId" value={p.id} />
-                          <button className="text-xs font-semibold text-faint transition hover:text-rose-500">
+                          <button className="px-1 text-xs font-semibold text-faint transition hover:text-rose-500">
                             Del
                           </button>
                         </form>

@@ -122,7 +122,7 @@ export async function waiveMiss(formData: FormData) {
 }
 
 export async function createTask(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  await requireAdminOrManager();
+  const actor = await requireAdminOrManager();
   const topic = String(formData.get("topic") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const clientId = String(formData.get("clientId") ?? "");
@@ -131,7 +131,8 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
   const referenceLink = String(formData.get("referenceLink") ?? "").trim() || null;
   const taskType = String(formData.get("taskType") ?? "").trim();
   const payRaw = String(formData.get("payAmount") ?? "").trim();
-  const payAmount = payRaw === "" ? null : Number(payRaw);
+  const payAmount =
+    actor.role === "ADMIN" && payRaw !== "" ? Number(payRaw) : null; // managers can't set pay
 
   if (!topic || !description || !clientId || !assignedToId || !deadline || !taskType) {
     return { error: "Topic, type, client, assignee, description and deadline are required." };

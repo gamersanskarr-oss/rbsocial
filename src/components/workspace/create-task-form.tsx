@@ -116,6 +116,7 @@ export default function CreateTaskForm({
             ))}
           </select>
         </div>
+        {basePath === "/admin" && (
         <div>
           <label className="mb-1 block text-sm text-muted">Pay for this task (₹)</label>
           <input
@@ -133,6 +134,7 @@ export default function CreateTaskForm({
             the task took extra work.
           </p>
         </div>
+        )}
       </div>
       <div>
         <label className="mb-1 block text-sm text-muted">Description</label>
