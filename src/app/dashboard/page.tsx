@@ -4,6 +4,28 @@ import { listTasksForUser } from "@/lib/data";
 import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT, payoutStatus } from "@/lib/deadlines";
 import { PageHeader, StatusBadge } from "@/components/ui";
 
+const firstName = (name: string) => name.split(" ")[0];
+
+function greeting(pending: number) {
+  const h = new Date().getHours();
+  const tod = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+  const vibe =
+    pending === 0
+      ? "Zero tasks on your plate — either you're a machine or admin's on a break. 🌴"
+      : pending <= 3
+        ? `${pending} quest${pending === 1 ? "" : "s"} waiting. Small mountain, big you. ⛰️`
+        : `${pending} tasks?! Okay, admin really believes in you. No pressure. 😅`;
+  return { tod, vibe };
+}
+
+function payoutLine(missed: number, reduced: boolean, percent: number) {
+  if (reduced)
+    return `🚨 Full gremlin mode: ${missed} missed deadlines, ${percent}% payout cut active. Time to become a deadline ninja. 🥷`;
+  if (missed > 0)
+    return `👀 You've used ${missed} of ${MISSED_DEADLINE_LIMIT} strikes. The payout gremlin is stirring… keep it sleeping.`;
+  return "✨ Flawless record — zero missed deadlines. The payout gremlin is fast asleep.";
+}
+
 export default async function DashboardPage() {
   const user = await requireEmployee();
   await checkMissedDeadlines();
@@ -13,13 +35,33 @@ export default async function DashboardPage() {
   const payout = payoutStatus(user.missedDeadlines);
   const pending = tasks.filter((t) => t.status === "PENDING");
   const done = tasks.filter((t) => t.status !== "PENDING");
+  const shipped = done.filter((t) => t.status === "COMPLETED").length;
+  const { tod, vibe } = greeting(pending.length);
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title={`Hi ${user.name.split(" ")[0]}`}
-        subtitle={`You have ${pending.length} open task${pending.length === 1 ? "" : "s"}.`}
-      />
+      <PageHeader title={`${tod}, ${firstName(user.name)} 👋`} subtitle={vibe} />
+
+      {/* vibe stats */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="card p-4 text-center">
+          <p className="text-2xl">🎯</p>
+          <p className="mt-1 text-xl font-extrabold text-ink">{pending.length}</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Open quests</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-2xl">🏆</p>
+          <p className="mt-1 text-xl font-extrabold text-ink">{shipped}</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Shipped</p>
+        </div>
+        <div className="card p-4 text-center">
+          <p className="text-2xl">{user.missedDeadlines === 0 ? "😌" : "😬"}</p>
+          <p className="mt-1 text-xl font-extrabold text-ink">
+            {user.missedDeadlines}/{MISSED_DEADLINE_LIMIT}
+          </p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Strikes used</p>
+        </div>
+      </div>
 
       {/* Deadline / payout status */}
       <div
@@ -31,28 +73,17 @@ export default async function DashboardPage() {
               : "border-emerald-200 bg-ok-soft text-ok"
         }`}
       >
-        {payout.reduced ? (
-          <>
-            <strong>Warning:</strong> You have missed {user.missedDeadlines} deadlines. A{" "}
-            {payout.percent}% payout reduction is in effect. Complete tasks on time to rebuild
-            your record.
-          </>
-        ) : user.missedDeadlines > 0 ? (
-          <>
-            You have missed {user.missedDeadlines} of {MISSED_DEADLINE_LIMIT} allowed deadlines.
-            Missing {MISSED_DEADLINE_LIMIT} leads to a 10% payout reduction.
-          </>
-        ) : (
-          <>Great record — no missed deadlines. Keep it up!</>
-        )}
+        {payoutLine(user.missedDeadlines, payout.reduced, payout.percent)}
       </div>
 
       {/* Open tasks */}
       <section>
-        <h2 className="section-label mb-3">Open tasks</h2>
+        <h2 className="section-label mb-3">🔥 Open quests</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {pending.length === 0 && (
-            <p className="text-sm font-medium text-faint">No open tasks. Enjoy the calm.</p>
+            <p className="text-sm font-medium text-faint">
+              Nothing here. Go touch grass, you've earned it. 🌱
+            </p>
           )}
           {pending.map((t) => {
             const overdue = t.deadline < new Date();
@@ -69,14 +100,14 @@ export default async function DashboardPage() {
                 <p className="mt-1.5 text-xs font-medium text-muted">{t.client.name}</p>
                 {t.requests.length > 0 && (
                   <p className="mt-1 text-xs font-semibold text-warn">
-                    {t.requests.length} request{t.requests.length === 1 ? "" : "s"} waiting on
+                    📬 {t.requests.length} request{t.requests.length === 1 ? "" : "s"} waiting on
                     admin
                   </p>
                 )}
                 <p className={`mt-4 text-xs font-semibold ${overdue ? "text-bad" : "text-faint"}`}>
                   Due {t.deadline.toLocaleDateString()}{" "}
                   {t.deadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                  {overdue ? " · overdue" : ""}
+                  {overdue ? " · overdue 👀" : ""}
                 </p>
               </Link>
             );
@@ -86,7 +117,7 @@ export default async function DashboardPage() {
 
       {/* Past tasks */}
       <section>
-        <h2 className="section-label mb-3">Completed &amp; missed</h2>
+        <h2 className="section-label mb-3">🏆 Trophy shelf</h2>
         <div className="card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -102,7 +133,7 @@ export default async function DashboardPage() {
                 {done.length === 0 && (
                   <tr>
                     <td className="td py-10 text-center text-faint" colSpan={4}>
-                      Nothing here yet.
+                      Empty shelf. First win incoming. 🥇
                     </td>
                   </tr>
                 )}
