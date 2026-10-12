@@ -18,6 +18,8 @@ const smoothstep = (edge0: number, edge1: number, x: number) => {
 type ScrollExpandProps = {
   src?: string;
   mediaType?: "image" | "video";
+  /** Custom media node (e.g. animated SVG) — replaces the img/video. */
+  media?: ReactNode;
   poster?: string;
   alt?: string;
   title?: ReactNode;
@@ -46,6 +48,7 @@ type ScrollExpandProps = {
 export default function ScrollExpand({
   src = "",
   mediaType = "image",
+  media: mediaProp,
   poster = "",
   alt = "",
   title = "",
@@ -70,7 +73,7 @@ export default function ScrollExpand({
   const trackRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
-  const mediaRef = useRef<HTMLImageElement | HTMLVideoElement>(null);
+  const mediaRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const scrimRef = useRef<HTMLDivElement>(null);
@@ -163,10 +166,10 @@ export default function ScrollExpand({
       const span = stageH * Math.max(0.01, c.scrollDistance);
       if (c.useWindowScroll) {
         const top = track.getBoundingClientRect().top;
-        // Begin expanding while the card is still rising into view
-        // (top ≈ half a viewport from the bottom) instead of waiting
-        // for the section to pin — makes the effect feel responsive.
-        const early = stageH * 0.5;
+        // Begin expanding as soon as the card enters the viewport
+        // (top ≈ 90% down the screen) — progress feels immediate and
+        // completes while the pinned card is on screen, not past it.
+        const early = stageH * 0.9;
         return clamp((early - top) / (span + early), 0, 1);
       }
       return clamp(root.scrollTop / span, 0, 1);
@@ -227,7 +230,14 @@ export default function ScrollExpand({
   }, [applyProgress, useWindowScroll]);
 
   const media =
-    mediaType === "video" ? (
+    mediaProp !== undefined ? (
+      <div
+        ref={mediaRef as React.RefObject<HTMLDivElement>}
+        className="absolute inset-0 h-full w-full origin-center select-none [will-change:transform]"
+      >
+        {mediaProp}
+      </div>
+    ) : mediaType === "video" ? (
       <video
         ref={mediaRef as React.RefObject<HTMLVideoElement>}
         className="absolute inset-0 h-full w-full origin-center object-cover select-none [will-change:transform]"

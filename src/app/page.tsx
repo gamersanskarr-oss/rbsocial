@@ -4,6 +4,7 @@ import ScrollExpand from "@/components/scroll-expand";
 import LightRays from "@/components/light-rays";
 import TextLoop from "@/components/text-loop";
 import SideRays from "@/components/side-rays";
+import ContactArt from "@/components/contact-art";
 
 
 
@@ -181,7 +182,7 @@ export default function Home() {
       </header>
 
       {/* ══ Hero ═══════════════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden">
+      <section className="relative flex min-h-svh items-center overflow-hidden">
         {/* drifting gradient orbs — navy base, flame edge */}
         <div
           className="animate-drift pointer-events-none absolute -top-64 left-1/2 h-[640px] w-[1100px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
@@ -217,7 +218,7 @@ export default function Home() {
           />
         </div>
 
-        <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-24 text-center md:pt-28">
+        <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-24 text-center">
           <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-muted backdrop-blur">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: FLAME }} />
@@ -418,7 +419,21 @@ export default function Home() {
       </section>
 
       {/* ══ Featured — scroll-expand showcase ══════════════════════════ */}
-      <section className="relative py-24">
+      <section className="relative overflow-hidden py-24">
+        {/* drifting gradient blobs — visible around the card pre/post expand */}
+        <div
+          className="animate-drift pointer-events-none absolute -left-40 top-10 h-[420px] w-[420px] rounded-full opacity-30 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${NAVY}88, transparent)` }}
+        />
+        <div
+          className="animate-drift-alt pointer-events-none absolute -right-44 top-1/3 h-[460px] w-[460px] rounded-full opacity-25 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${FLAME}66, transparent)` }}
+        />
+        <div
+          className="animate-drift pointer-events-none absolute bottom-0 left-1/3 h-[320px] w-[320px] rounded-full opacity-20 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, #ff8a5c55, transparent)`, animationDelay: "-6s" }}
+        />
+
         <ScrollExpand
           useWindowScroll
           src="/showcase.svg"
@@ -429,10 +444,10 @@ export default function Home() {
           startHeight={62}
           startRadius={28}
           mediaZoom={1.3}
-          scrollDistance={0.9}
-          holdDistance={0.45}
-          smoothing={0.09}
-          overlayScrim={0.55}
+          scrollDistance={0.7}
+          holdDistance={0.3}
+          smoothing={0.12}
+          overlayScrim={0.5}
         >
           <div className="max-w-xl">
             <p className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ff8a5c" }}>
@@ -686,86 +701,124 @@ export default function Home() {
       </section>
 
       {/* ══ Contact CTA ════════════════════════════════════════════════ */}
-      <section id="contact" className="px-6 pb-28 pt-4">
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] border border-white/10 px-6 py-24 text-center">
-          <div
-            className="absolute inset-0"
-            style={{ background: `linear-gradient(140deg, ${NAVY}52, #0a0c14 45%, ${FLAME}30)` }}
-          />
-          <div
-            className="animate-drift pointer-events-none absolute -left-24 top-0 h-72 w-72 rounded-full opacity-40 blur-3xl"
-            style={{ background: `radial-gradient(closest-side, ${FLAME}66, transparent)` }}
-          />
-          <div
-            className="animate-drift-alt pointer-events-none absolute -right-24 bottom-0 h-80 w-80 rounded-full opacity-50 blur-3xl"
-            style={{ background: `radial-gradient(closest-side, ${NAVY}88, transparent)` }}
-          />
-          <div className="relative">
-            <h2 className="mx-auto max-w-2xl text-4xl font-extrabold tracking-tight md:text-5xl">
-              Ready to hand off design work?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg font-medium text-muted">
-              Tell us about your business and we&apos;ll match you with a designer within 24 hours.
+      <section
+        id="contact"
+        className="relative"
+        style={{ background: "linear-gradient(180deg, transparent 0%, transparent 45%, #5c1408 78%, #932312 100%)" }}
+      >
+        <ScrollExpand
+          useWindowScroll
+          media={<ContactArt />}
+          title="Your brand, upgraded"
+          scrollHint="Scroll to expand"
+          startWidth={38}
+          startHeight={54}
+          startRadius={48}
+          mediaZoom={1.28}
+          scrollDistance={0.65}
+          holdDistance={0.25}
+          smoothing={0.1}
+          overlayScrim={0.7}
+        >
+          <div className="pointer-events-none absolute inset-0">
+            <LightRays
+              raysOrigin="top-center"
+              raysColor="#ff5a3c"
+              raysSpeed={0.45}
+              lightSpread={1.0}
+              rayLength={1.2}
+              fadeDistance={0.9}
+              saturation={1.1}
+              followMouse
+              mouseInfluence={0.1}
+              noiseAmount={0.05}
+              distortion={0.12}
+            />
+          </div>
+          <div className="relative max-w-2xl">
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-white/80 backdrop-blur">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: FLAME }} />
+              Start a project
             </p>
-            <form className="mx-auto mt-10 flex max-w-md flex-col gap-3 sm:flex-row">
+            <h2 className="mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl">
+              Ready to hand off{" "}
+              <span
+                className="bg-clip-text text-transparent"
+                style={{ backgroundImage: `linear-gradient(100deg, #ff8a5c, ${FLAME} 60%, #ffd7a8)` }}
+              >
+                design work?
+              </span>
+            </h2>
+            <p className="mx-auto mt-5 max-w-lg text-base font-medium leading-relaxed text-white/65">
+              Tell us about your business — we&apos;ll match you with a dedicated
+              designer within 24 hours.
+            </p>
+            <form className="mx-auto mt-9 flex max-w-md items-center gap-1.5 rounded-full border border-white/15 bg-black/30 p-1.5 backdrop-blur-xl">
               <input
                 type="email"
                 required
                 placeholder="you@company.com"
-                className="w-full rounded-full border border-white/15 bg-white/10 px-5 py-3.5 text-sm text-white outline-none backdrop-blur transition placeholder:text-white/40 focus:border-white/40 focus:ring-4 focus:ring-white/10 sm:flex-1"
+                className="w-full min-w-0 flex-1 rounded-full bg-transparent px-5 py-3 text-sm text-white outline-none placeholder:text-white/40"
               />
               <button
                 type="button"
-                className="shrink-0 rounded-full px-8 py-3.5 text-sm font-bold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
-                style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` }}
+                className="shrink-0 rounded-full px-7 py-3 text-sm font-bold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
+                style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 10px 30px -10px ${FLAME}90` }}
               >
                 Contact Us
               </button>
             </form>
           </div>
-        </div>
+        </ScrollExpand>
       </section>
 
-      {/* ══ Footer ═════════════════════════════════════════════════════ */}
-      <footer className="border-t border-white/5">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
-            <div>
-              <span className="flex items-center gap-2.5">
-                <Logo size={44} />
-                <span className="text-sm font-bold tracking-tight">RB Social Branding</span>
+      {/* ══ Footer — deep flame red, merged into the expand section ════ */}
+      <footer className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #932312 0%, #7a1c0f 55%, #571107 100%)" }}>
+        {/* soft top glow so it blends out of the artwork above */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/20 to-transparent" />
+
+        <div className="relative mx-auto max-w-6xl px-6 pb-10 pt-20">
+          <div className="flex flex-col justify-between gap-12 md:flex-row md:items-start">
+            <div className="max-w-sm">
+              <span className="flex items-center gap-3">
+                <Logo size={48} rounded="rounded-2xl" />
+                <span className="text-base font-extrabold tracking-tight text-white">RB Social Branding</span>
               </span>
-              <p className="mt-4 max-w-xs text-sm font-medium leading-relaxed text-muted">
+              <p className="mt-5 text-sm font-medium leading-relaxed text-white/60">
                 A design agency and delivery system for growing businesses — powered by ROSHAN
                 BHARAT.
               </p>
             </div>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-faint">Services</p>
-              <ul className="mt-4 space-y-2.5 text-sm font-medium text-muted">
-                {services.slice(0, 4).map((s) => (
-                  <li key={s.title}>
-                    <a href="#services" className="transition hover:text-ink">{s.title}</a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-faint">Company</p>
-              <ul className="mt-4 space-y-2.5 text-sm font-medium text-muted">
-                <li><a href="#process" className="transition hover:text-ink">Process</a></li>
-                <li><a href="#pricing" className="transition hover:text-ink">Pricing</a></li>
-                <li><a href="#faq" className="transition hover:text-ink">FAQ</a></li>
-                <li><Link href="/login" className="transition hover:text-ink">Team Login</Link></li>
-              </ul>
+
+            <div className="grid grid-cols-2 gap-14">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/45">Services</p>
+                <ul className="mt-5 space-y-3 text-sm font-semibold text-white/75">
+                  {services.slice(0, 4).map((s) => (
+                    <li key={s.title}>
+                      <a href="#services" className="transition duration-200 hover:text-white">{s.title}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/45">Company</p>
+                <ul className="mt-5 space-y-3 text-sm font-semibold text-white/75">
+                  <li><a href="#process" className="transition duration-200 hover:text-white">Process</a></li>
+                  <li><a href="#pricing" className="transition duration-200 hover:text-white">Pricing</a></li>
+                  <li><a href="#faq" className="transition duration-200 hover:text-white">FAQ</a></li>
+                  <li><Link href="/login" className="transition duration-200 hover:text-white">Team Login</Link></li>
+                </ul>
+              </div>
             </div>
           </div>
-          <div className="mt-14 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-8 text-sm font-medium text-faint sm:flex-row">
+
+          <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-7 text-[13px] font-medium text-white/50 sm:flex-row">
             <span>© {new Date().getFullYear()} RB Social Branding. All rights reserved.</span>
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5">
               Powered by
-              <span className="font-bold" style={{ color: NAVY }}>ROSHAN</span>
-              <span className="font-bold" style={{ color: FLAME }}>BHARAT</span>
+              <span className="font-bold text-white">ROSHAN</span>
+              <span className="font-bold" style={{ color: "#ffd7a8" }}>BHARAT</span>
             </span>
           </div>
         </div>
