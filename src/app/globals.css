@@ -275,3 +275,66 @@ html {
     animation: none;
   }
 }
+
+@keyframes scroll-rise {
+  from { opacity: 0; transform: translateY(56px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.scroll-rise {
+  animation: scroll-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 60%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-rise { animation: none; }
+}
+
+@keyframes scroll-zoom {
+  from { transform: scale(1.18); }
+  to { transform: scale(1); }
+}
+.scroll-zoom {
+  animation: scroll-zoom 1.15s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-timeline: view();
+  animation-range: entry 0% entry 70%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-zoom { animation: none; }
+}
+
+@keyframes scroll-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.scroll-fill {
+  animation: scroll-fill 1s linear both;
+  animation-timeline: view();
+  animation-range: entry 10% cover 60%;
+  transform-origin: left;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-fill { animation: none; }
+}
+
+@keyframes clip-in {
+  from { clip-path: inset(0 100% 0 0 round 1.25rem); }
+  to { clip-path: inset(0 0 0 0 round 1.25rem); }
+}
+.scroll-clip {
+  animation: clip-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 55%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-clip { animation: none; }
+}
+
+.btn-outline-navy {
+  border: 1px solid rgba(30, 47, 125, 0.22);
+  color: #1e2f7d;
+  background: transparent;
+}
+.btn-outline-navy:hover {
+  background: #1e2f7d;
+  color: #ffffff;
+}

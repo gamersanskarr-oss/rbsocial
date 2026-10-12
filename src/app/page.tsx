@@ -1,41 +1,41 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
 import ScrollExpand from "@/components/scroll-expand";
-import LightRays from "@/components/light-rays";
-import TextLoop from "@/components/text-loop";
+import ScrollReveal from "@/components/scroll-reveal";
+import Beams from "@/components/beams";
+import FlexCarousel from "@/components/flex-carousel";
+import AccordionGallery from "@/components/accordion-gallery";
 import SideRays from "@/components/side-rays";
-import ContactArt from "@/components/contact-art";
+import TextLoop from "@/components/text-loop";
 
-
-
-/* Brand colors lifted from the logo: flame red-orange + deep navy */
-const FLAME = "#ff4a36";
-const NAVY = "#2b3a8f";
+/* Brand colors lifted from the logo: crimson red + deep navy */
+const FLAME = "#e52b3f";
+const NAVY = "#1e2f7d";
 
 const services = [
   {
     n: "01",
-    title: "Social Media Design",
-    desc: "Feed posts, carousels and stories designed around your brand system — consistent grids, on a schedule you can plan around.",
-    tags: ["Posts", "Carousels", "Stories"],
+    title: "Branding",
+    desc: "Brand audits, identity systems and guidelines that make your business instantly recognizable — and impossible to ignore.",
+    tags: ["Logo", "Identity system", "Guidelines", "Rebranding"],
   },
   {
     n: "02",
-    title: "Brand Identity",
-    desc: "Logos, color systems, typography and guidelines that make your business instantly recognizable across every touchpoint.",
-    tags: ["Logo", "Colors", "Guidelines"],
+    title: "Design",
+    desc: "Feed posts, carousels, stories and campaign creatives that don't just look good — they perform, convert and build equity.",
+    tags: ["Posts", "Carousels", "Stories", "Ad creatives", "Print"],
   },
   {
     n: "03",
-    title: "Campaign Creatives",
-    desc: "Ad creatives and campaign assets engineered to convert — festive sales, launches, offers and seasonal pushes.",
-    tags: ["Ads", "Launches", "Offers"],
+    title: "Social Media",
+    desc: "Monthly content engines — calendars, captions and creatives on a schedule you can actually plan around.",
+    tags: ["Content calendar", "Captions", "Scheduling"],
   },
   {
     n: "04",
-    title: "Reels & Video Covers",
-    desc: "Scroll-stopping reel covers, thumbnails and motion-ready frames that keep your video content looking premium.",
-    tags: ["Reels", "Thumbnails", "Covers"],
+    title: "Video & Reels",
+    desc: "Scroll-stopping reel covers, thumbnails, edits and shoot-plus-edit packages for brands that need motion.",
+    tags: ["Reel covers", "Video edits", "Videography", "Shoot + Edit"],
   },
   {
     n: "05",
@@ -45,8 +45,8 @@ const services = [
   },
   {
     n: "06",
-    title: "IT & Automation Support",
-    desc: "Our IT team keeps your tools, pages and workflows running — form fixes, integrations and behind-the-scenes reliability.",
+    title: "IT & Support",
+    desc: "Our IT team keeps your tools, pages and workflows running — fixes, integrations and quiet reliability behind the scenes.",
     tags: ["Fixes", "Integrations", "Support"],
   },
 ];
@@ -65,13 +65,13 @@ const stats = [
   { v: "20+", l: "brands managed" },
 ];
 
-const audiences = [
-  "Cafés & Restaurants",
-  "Fitness Studios",
-  "Real Estate",
-  "Retail & Fashion",
-  "Clinics & Wellness",
-  "Startups",
+const works = [
+  { img: "/work/acme.jpg", name: "Acme Cafe", tag: "Social media · retainer" },
+  { img: "/work/glowup.jpg", name: "GlowUp Fitness", tag: "Branding + content" },
+  { img: "/work/nova.jpg", name: "Nova Realty", tag: "Campaign creatives" },
+  { img: "/work/pixel.jpg", name: "Pixel & Co.", tag: "Identity system" },
+  { img: "/work/urban.jpg", name: "Urban Nest", tag: "Reels & covers" },
+  { img: "/work/brightly.jpg", name: "Brightly", tag: "Web + social" },
 ];
 
 const plans = [
@@ -152,130 +152,210 @@ const marqueeWords = [
 
 export default function Home() {
   return (
-    <div className="theme-dark min-h-screen bg-[#07080d] text-ink">
-      {/* ══ Nav — floating glass capsule ═══════════════════════════════ */}
-      <header className="absolute inset-x-0 top-4 z-40 px-4">
-        <nav className="relative mx-auto flex max-w-4xl items-center justify-between overflow-hidden rounded-full border border-white/10 bg-white/[0.06] py-2 pl-4 pr-2 shadow-[0_20px_60px_-24px_rgba(0,0,0,0.8)] backdrop-blur-2xl backdrop-saturate-150">
-          {/* glass sheen + top hairline */}
-          <span aria-hidden className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/[0.10] via-white/[0.03] to-transparent" />
-          <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
-
-          <span className="relative flex items-center gap-2.5">
-            <Logo size={32} />
-            <span className="text-sm font-bold tracking-tight">RB Social Branding</span>
-          </span>
-          <div className="relative hidden items-center gap-0.5 text-[13px] font-medium text-muted md:flex">
-            <a href="#services" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Services</a>
-            <a href="#work" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Work</a>
-            <a href="#process" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Process</a>
-            <a href="#pricing" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Pricing</a>
-            <a href="#faq" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">FAQ</a>
+    <div className="min-h-screen bg-[#f6f3ee] text-[#141417]">
+      {/* ══ Nav — socials left · logo centered · menu right ════════════ */}
+      <header className="absolute inset-x-0 top-0 z-40">
+        <nav className="relative mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center px-6 py-5">
+          {/* left — social links */}
+          <div className="flex items-center gap-4 text-[11px] font-bold uppercase tracking-[0.14em] text-[#141417]">
+            {[
+              { l: "WA", href: "https://wa.me/919999999999" },
+              { l: "IG", href: "https://instagram.com/" },
+              { l: "LI", href: "https://linkedin.com/" },
+              { l: "Email", href: "mailto:hello@rbsocial.co" },
+            ].map((s) => (
+              <a key={s.l} href={s.href} className="hidden transition duration-200 hover:text-[#e52b3f] sm:inline">
+                {s.l}
+              </a>
+            ))}
           </div>
-          <Link
-            href="/login"
-            className="relative rounded-full px-5 py-2 text-[13px] font-bold text-white ring-1 ring-white/20 transition duration-200 hover:opacity-90 active:scale-[0.98]"
-            style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 8px 24px -10px ${FLAME}90` }}
-          >
-            Team Login
-          </Link>
+
+          {/* center — logo */}
+          <a href="#" className="flex items-center gap-2.5 justify-self-center">
+            <Logo size={34} />
+            <span className="text-[15px] font-extrabold tracking-tight">RB Social Branding</span>
+          </a>
+
+          {/* right — hamburger menu */}
+          <div className="relative justify-self-end">
+            <details className="group/menu relative">
+              <summary className="flex h-11 w-11 cursor-pointer list-none items-center justify-center rounded-full border border-black/10 bg-white/70 shadow-sm backdrop-blur transition duration-200 hover:bg-white [&::-webkit-details-marker]:hidden">
+                <span className="relative flex w-5 flex-col items-end gap-[5px]">
+                  <span className="h-[2px] w-5 rounded bg-[#141417] transition-all duration-300 group-open/menu:w-5 group-open/menu:rotate-45 group-open/menu:translate-y-[7px]" />
+                  <span className="h-[2px] w-3.5 rounded bg-[#e52b3f] transition-all duration-300 group-open/menu:opacity-0" />
+                  <span className="h-[2px] w-5 rounded bg-[#141417] transition-all duration-300 group-open/menu:-rotate-45 group-open/menu:-translate-y-[7px]" />
+                </span>
+              </summary>
+              <div className="absolute right-0 top-14 w-64 overflow-hidden rounded-3xl border border-black/[0.08] bg-white/90 p-3 shadow-[0_30px_70px_-24px_rgba(0,0,0,0.4)] backdrop-blur-2xl">
+                {[
+                  ["Services", "#services"],
+                  ["Work", "#work"],
+                  ["Process", "#process"],
+                  ["Pricing", "#pricing"],
+                  ["FAQ", "#faq"],
+                  ["Contact", "#contact"],
+                ].map(([l, href]) => (
+                  <a key={l} href={href} className="block rounded-xl px-4 py-2.5 text-sm font-bold text-[#141417] transition duration-200 hover:bg-black/[0.05]">
+                    {l}
+                  </a>
+                ))}
+                <Link
+                  href="/login"
+                  className="mt-2 block rounded-xl px-4 py-3 text-center text-sm font-bold text-white transition duration-200 hover:opacity-90"
+                  style={{ background: `linear-gradient(135deg, ${FLAME}, #bd1f30)` }}
+                >
+                  Team Login
+                </Link>
+              </div>
+            </details>
+          </div>
         </nav>
       </header>
 
-      {/* ══ Hero ═══════════════════════════════════════════════════════ */}
-      <section className="relative flex min-h-svh items-center overflow-hidden">
-        {/* drifting gradient orbs — navy base, flame edge */}
-        <div
-          className="animate-drift pointer-events-none absolute -top-64 left-1/2 h-[640px] w-[1100px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${NAVY}66, transparent)` }}
-        />
-        <div
-          className="animate-drift-alt pointer-events-none absolute -right-40 top-24 h-[440px] w-[440px] rounded-full opacity-30 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${FLAME}55, transparent)` }}
-        />
-        <div
-          className="animate-drift pointer-events-none absolute -left-52 top-72 h-[400px] w-[400px] rounded-full opacity-25 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${NAVY}88, transparent)`, animationDelay: "-8s" }}
-        />
-        <div
-          className="animate-drift-alt pointer-events-none absolute bottom-0 left-1/3 h-[300px] w-[300px] rounded-full opacity-20 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${FLAME}44, transparent)`, animationDelay: "-5s" }}
-        />
-
-        {/* WebGL light rays — flame beams from the top, subtly mouse-reactive */}
-        <div className="absolute inset-0">
-          <LightRays
-            raysOrigin="top-center"
-            raysColor="#ff5a3c"
-            raysSpeed={0.55}
-            lightSpread={1.35}
-            rayLength={1.7}
-            fadeDistance={0.85}
-            saturation={1.15}
-            followMouse
-            mouseInfluence={0.08}
-            noiseAmount={0.06}
-            distortion={0.15}
+      {/* ══ Hero — editorial, oversized type ═══════════════════════════ */}
+      <section className="relative overflow-hidden">
+        {/* corner light rays — flame tinted */}
+        <div className="pointer-events-none absolute inset-0 mix-blend-multiply opacity-90">
+          <SideRays
+            rayColor1="#e52b3f"
+            rayColor2="#ff8a7a"
+            intensity={1.6}
+            spread={2.2}
+            origin="top-right"
+            tilt={-8}
+            saturation={1.4}
+            blend={0.65}
+            falloff={1.7}
+            opacity={0.8}
+            speed={1.2}
           />
         </div>
 
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-24 text-center">
-          <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-muted backdrop-blur">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: FLAME }} />
-              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: FLAME }} />
-            </span>
-            Design team for growing businesses — onboarding this month
+        {/* animated light beams backdrop — multiply so flame glow reads on cream */}
+        <div className="pointer-events-none absolute inset-0 mix-blend-multiply">
+          <Beams
+            color="#e52b3f"
+            beamWidth={130}
+            rotation={-24}
+            speed={0.9}
+            waveLength={260}
+            depth={1.1}
+            sharpness={0.65}
+            twist={0.4}
+            fillLight={0.45}
+            glow={1.1}
+            brightness={3.2}
+            grain={0.15}
+            quality={0.7}
+            fade={0.3}
+            opacity={1}
+          />
+        </div>
+
+        {/* soft washes — light theme ambience */}
+        <div
+          className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[720px] rounded-full opacity-50 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${FLAME}30, transparent)` }}
+        />
+        <div
+          className="pointer-events-none absolute -left-40 top-64 h-[420px] w-[520px] rounded-full opacity-40 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${NAVY}22, transparent)` }}
+        />
+
+        <div className="relative mx-auto w-full max-w-6xl px-6 pb-16 pt-36 md:pt-44">
+          <p className="mb-8 text-xs font-bold uppercase tracking-[0.28em] text-[#8a8a94]">
+            RB Social Branding — design &amp; content studio
           </p>
 
-          <h1 className="mx-auto max-w-3xl text-4xl font-extrabold leading-[1.04] tracking-tight md:text-6xl">
-            Your brand,{" "}
+          <h1 className="text-[13.5vw] font-extrabold leading-[0.98] tracking-tight text-[#141417] sm:text-7xl md:text-[6.8rem]">
+            Design that
+            <br />
+            ships{" "}
             <span
               className="animate-gradient-pan bg-clip-text text-transparent"
-              style={{ backgroundImage: `linear-gradient(100deg, ${FLAME} 10%, #ff8a5c 40%, #ffd7a8 50%, ${NAVY} 90%)` }}
+              style={{ backgroundImage: `linear-gradient(100deg, ${NAVY} 10%, #4a5db8 45%, #8fa0e0 55%, ${NAVY} 95%)` }}
             >
-              designed daily
+              on time,
             </span>
             <br />
-            and delivered on time.
+            <span className="italic font-bold" style={{ color: FLAME }}>every</span> single month.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-xl text-sm font-medium leading-relaxed text-muted">
-            RB Social Branding pairs your business with a dedicated graphic designer and a
-            reliable IT team — every post tracked in one clear dashboard with real deadlines.
-          </p>
+          <div className="mt-10 flex flex-wrap items-center gap-8">
+            <p className="max-w-md text-[15px] font-medium leading-relaxed text-[#5b5b66]">
+              A dedicated designer, a live delivery dashboard and one monthly invoice —
+              the whole content engine for your brand, handled.
+            </p>
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href="#contact"
+                className="rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:opacity-90 hover:shadow-xl active:scale-[0.98]"
+                style={{ background: `linear-gradient(135deg, ${FLAME}, #bd1f30)`, boxShadow: `0 12px 32px -12px ${FLAME}80` }}
+              >
+                Start a project
+              </a>
+              <a
+                href="#services"
+                className="rounded-full border border-black/10 bg-white/60 px-7 py-3 text-sm font-bold text-[#141417] backdrop-blur transition duration-200 hover:bg-white active:scale-[0.98]"
+              >
+                What we do ↓
+              </a>
+            </div>
+          </div>
+        </div>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
-            <a
-              href="#contact"
-              className="rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:opacity-90 hover:shadow-xl active:scale-[0.98]"
-              style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 12px 32px -12px ${FLAME}80` }}
-            >
-              Get Started
-            </a>
-            <a
-              href="#work"
-              className="rounded-full border border-white/10 bg-white/5 px-7 py-3 text-sm font-bold text-ink backdrop-blur transition duration-200 hover:bg-white/10 active:scale-[0.98]"
-            >
-              See the work
-            </a>
+        {/* showreel band — wide image card */}
+        <div className="relative mx-auto max-w-6xl px-6 pb-20">
+          <div className="group relative overflow-hidden rounded-[2rem] border border-black/[0.08] shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/hero-marketing.jpg"
+              alt="Marketing dashboard and campaign artwork"
+              className="h-[52vw] max-h-[540px] min-h-[280px] w-full object-cover transition duration-700 group-hover:scale-[1.02]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10" />
+            <span className="absolute left-6 top-6 rounded-full border border-white/20 bg-black/30 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white/85 backdrop-blur">
+              Showreel · 2026
+            </span>
+            <span className="absolute left-1/2 top-1/2 flex h-20 w-20 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-2xl transition duration-300 group-hover:scale-110">
+              <svg viewBox="0 0 24 24" fill="#141417" className="ml-1 h-7 w-7" aria-hidden>
+                <path d="M8 5.5v13l11-6.5z" />
+              </svg>
+            </span>
+            <span className="absolute bottom-6 left-6 text-sm font-bold text-white">
+              A year of launches, rebrands &amp; daily content — in one reel
+            </span>
           </div>
 
-          {/* stats strip */}
-          <div className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 backdrop-blur md:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.l} className="bg-[#0a0c12]/90 px-5 py-6">
-                <p className="text-2xl font-extrabold tracking-tight" style={{ color: FLAME }}>
-                  {s.v}
-                </p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-faint">{s.l}</p>
-              </div>
-            ))}
+          {/* client accordion gallery */}
+          <div className="mt-14">
+            <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.22em] text-[#8a8a94]">
+              Brands we run content for — hover to peek inside
+            </p>
+            <AccordionGallery
+              items={[
+                { image: "/work/acme.jpg", label: "Acme Cafe" },
+                { image: "/work/glowup.jpg", label: "GlowUp Fitness" },
+                { image: "/work/nova.jpg", label: "Nova Realty" },
+                { image: "/work/pixel.jpg", label: "Pixel & Co." },
+                { image: "/work/urban.jpg", label: "Urban Nest" },
+                { image: "/work/brightly.jpg", label: "Brightly" },
+              ]}
+              height={300}
+              gap={12}
+              radius={20}
+              accentColor={FLAME}
+              expandRatio={0.5}
+              tilt={6}
+              grayscale
+              trigger="hover"
+            />
           </div>
         </div>
       </section>
 
       {/* ══ Curved moving text loop ════════════════════════════════════ */}
-      <div className="relative h-[max(9rem,18vw)] overflow-hidden bg-transparent md:h-[11vw]">
+      <div className="relative h-[max(9rem,18vw)] overflow-hidden md:h-[11vw]">
         <div className="absolute left-1/2 top-1/2 w-[160%] -translate-x-1/2 -translate-y-1/2 md:w-full">
           <TextLoop
             text={marqueeWords.join("  ✦  ")}
@@ -288,308 +368,333 @@ export default function Home() {
             separator=""
             color="#ffffff"
             ribbon
-            ribbonGradient={["#ff8a5c", FLAME, "#d92c1c"]}
+            ribbonGradient={[NAVY, FLAME, NAVY]}
             ribbonWidth={40}
             pauseOnHover={false}
           />
         </div>
       </div>
 
-      {/* ══ Services ═══════════════════════════════════════════════════ */}
-      <section id="services" className="relative mx-auto max-w-6xl px-6 py-28">
-        <div className="max-w-2xl">
-          <p className="section-label" style={{ color: FLAME }}>Services</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-            Everything your brand posts, ships and runs on.
-          </h2>
-          <p className="mt-4 text-lg font-medium text-muted">
-            Six capabilities, one accountable team — retainer pricing, no per-design surprises.
+      {/* ══ Statement + performance snapshot ═══════════════════════════ */}
+      <section className="relative mx-auto max-w-6xl px-6 py-24">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: FLAME }}>
+            Why us
+          </p>
+          <ScrollReveal
+            containerClassName="mt-3"
+            textClassName="text-4xl font-extrabold tracking-tight leading-[1.12] text-[#141417] md:text-5xl"
+            baseOpacity={0.12}
+            baseRotation={2}
+          >
+            Most agencies add noise. We ship on schedule.
+          </ScrollReveal>
+          <p className="mt-5 text-lg font-medium leading-relaxed text-[#5b5b66]">
+            Built for brands that want more than just &ldquo;creative&rdquo; — a real
+            delivery system with real deadlines, tracked in the open.
           </p>
         </div>
-
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((s) => (
-            <div
-              key={s.n}
-              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-7 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05]"
-            >
-              <div
-                className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-0 blur-2xl transition duration-500 group-hover:opacity-30"
-                style={{ background: `radial-gradient(closest-side, ${FLAME}, transparent)` }}
-              />
-              <div className="flex items-center justify-between">
-                <span
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-extrabold"
-                  style={{ background: `${NAVY}33`, color: "#9db1ff" }}
-                >
-                  {s.n}
-                </span>
-                <span className="h-px flex-1 mx-4 bg-gradient-to-r from-white/10 to-transparent" />
-              </div>
-              <h3 className="mt-6 text-lg font-bold tracking-tight">{s.title}</h3>
-              <p className="mt-2.5 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {s.tags.map((t) => (
-                  <span key={t} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-muted">
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ══ Work showcase ══════════════════════════════════════════════ */}
-      <section id="work" className="relative overflow-hidden border-y border-white/5">
-        {/* ambient glow behind the grid */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-32 right-[10%] h-80 w-[520px] rounded-full opacity-25 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${NAVY}99, transparent)` }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-24 left-[6%] h-72 w-[420px] rounded-full opacity-20 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${FLAME}66, transparent)` }}
-        />
-        <div className="relative mx-auto max-w-6xl px-6 py-28">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div className="max-w-2xl">
-              <p className="section-label" style={{ color: FLAME }}>Selected work</p>
-              <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-                Industries we make look good.
-              </h2>
-            </div>
-            <p className="max-w-sm text-sm font-medium text-muted">
-              Every tile below is a live engagement — content systems we run month after month.
-            </p>
-          </div>
-
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {audiences.map((a, i) => (
-              <div
-                key={a}
-                className="group relative h-56 overflow-hidden rounded-3xl border border-white/10 transition duration-300 hover:-translate-y-1.5 hover:border-white/25 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)]"
-              >
-                <div
-                  className="absolute inset-0 transition duration-500 group-hover:scale-[1.04]"
-                  style={{
-                    background:
-                      i % 3 === 0
-                        ? `linear-gradient(135deg, ${NAVY}cc, #0a0c14 70%)`
-                        : i % 3 === 1
-                          ? `linear-gradient(135deg, ${FLAME}b3, #0a0c14 75%)`
-                          : `linear-gradient(135deg, #101528, ${NAVY}55 60%, ${FLAME}44)`,
-                  }}
-                />
-                {/* light sheen sweep on hover */}
-                <div className="pointer-events-none absolute inset-0 -translate-x-[110%] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent transition duration-700 ease-out group-hover:translate-x-[110%]" />
-                <div
-                  className={`animate-drift absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-40 blur-2xl transition-opacity group-hover:opacity-70 ${i % 2 ? "" : "animate-drift-alt"}`}
-                  style={{ background: "radial-gradient(closest-side, #ffffff66, transparent)" }}
-                />
-                {/* ghost index */}
-                <span className="pointer-events-none absolute right-5 top-3 text-5xl font-extrabold tracking-tight text-white/[0.07] transition duration-300 group-hover:text-white/[0.14]">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                {/* live status pill */}
-                <span className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/25 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/60 backdrop-blur">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  </span>
-                  Live
-                </span>
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6">
-                  <div>
-                    <p className="text-lg font-bold tracking-tight text-white">{a}</p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-white/50">
-                      Content system · active
-                    </p>
-                  </div>
-                  <span className="flex h-9 w-9 translate-y-1 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white opacity-0 backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    ↗
-                  </span>
-                </div>
+        <div className="mt-12">
+          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-px overflow-hidden rounded-3xl border border-black/10 bg-black/10 md:grid-cols-4">
+            {stats.map((s, i) => (
+              <div key={s.l} className="bg-white px-6 py-6">
+                <p className="text-3xl font-extrabold tracking-tight" style={{ color: i % 2 ? NAVY : FLAME }}>
+                  {s.v}
+                </p>
+                <p className="mt-1.5 text-[11px] font-semibold uppercase tracking-wider text-[#8a8a94]">
+                  {s.l}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ Featured — scroll-expand showcase ══════════════════════════ */}
-      <section className="relative overflow-hidden py-24">
-        {/* drifting gradient blobs — visible around the card pre/post expand */}
-        <div
-          className="animate-drift pointer-events-none absolute -left-40 top-10 h-[420px] w-[420px] rounded-full opacity-30 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${NAVY}88, transparent)` }}
-        />
-        <div
-          className="animate-drift-alt pointer-events-none absolute -right-44 top-1/3 h-[460px] w-[460px] rounded-full opacity-25 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${FLAME}66, transparent)` }}
-        />
-        <div
-          className="animate-drift pointer-events-none absolute bottom-0 left-1/3 h-[320px] w-[320px] rounded-full opacity-20 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, #ff8a5c55, transparent)`, animationDelay: "-6s" }}
-        />
-
-        <ScrollExpand
-          useWindowScroll
-          src="/showcase.svg"
-          alt="RB Social Branding — brand waves artwork"
-          title="RB Social Branding"
-          scrollHint="Scroll to expand"
-          startWidth={46}
-          startHeight={62}
-          startRadius={28}
-          mediaZoom={1.3}
-          scrollDistance={0.7}
-          holdDistance={0.3}
-          smoothing={0.12}
-          overlayScrim={0.5}
-        >
-          <div className="max-w-xl">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ff8a5c" }}>
-              Featured system
-            </p>
-            <h3 className="mt-4 text-4xl font-extrabold tracking-tight text-white md:text-5xl">
-              Every post, on brand and on schedule.
-            </h3>
-            <p className="mt-4 text-base font-medium leading-relaxed text-white/70">
-              One dedicated designer, one live dashboard, one monthly invoice — the whole
-              content engine, handled.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <a
-                href="#contact"
-                className="rounded-full px-7 py-3 text-sm font-bold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
-                style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` }}
-              >
-                Start a project
-              </a>
-              <a
-                href="#pricing"
-                className="rounded-full border border-white/20 bg-white/10 px-7 py-3 text-sm font-bold text-white backdrop-blur transition duration-200 hover:bg-white/20 active:scale-[0.98]"
-              >
-                See pricing
-              </a>
-            </div>
-          </div>
-        </ScrollExpand>
-      </section>
-
-      {/* ══ Process ════════════════════════════════════════════════════ */}
-      <section id="process" className="mx-auto max-w-6xl px-6 py-28">
-        <div className="max-w-2xl">
-          <p className="section-label" style={{ color: FLAME }}>Process</p>
+      {/* ══ Services — numbered editorial rows ═════════════════════════ */}
+      <section id="services" className="relative mx-auto max-w-6xl px-6 pb-28">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: FLAME }}>
+            Services
+          </p>
           <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-            How it works.
+            Creative and delivery expertise, perfectly aligned.
           </h2>
-          <p className="mt-4 text-lg font-medium text-muted">
-            Simple, transparent, on schedule — the same four steps for every brand.
+          <p className="mt-4 text-lg font-medium text-[#5b5b66]">
+            Six capabilities, one accountable team — retainer pricing, no per-design surprises.
           </p>
         </div>
 
-        <div className="mt-14 grid gap-5 md:grid-cols-4">
-          {steps.map((s, i) => (
-            <div key={s.n} className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-7">
-              {i < steps.length - 1 && (
-                <span className="absolute right-[-13px] top-1/2 z-10 hidden h-6 w-6 -translate-y-1/2 items-center justify-center md:flex">
-                  <span className="h-px w-6 bg-gradient-to-r from-white/20 to-transparent" />
+        <div className="mt-14 border-t border-black/10">
+          {services.map((s) => (
+            <div
+              key={s.n}
+              className="group relative border-b border-black/10 py-7 transition duration-300 md:py-9"
+            >
+              <div
+                className="pointer-events-none absolute inset-y-0 left-0 w-0 transition-all duration-500 group-hover:w-1.5"
+                style={{ background: `linear-gradient(180deg, ${FLAME}, ${NAVY})` }}
+              />
+              <div className="grid items-start gap-4 pl-5 md:grid-cols-[90px_1fr_1.4fr_auto] md:items-center md:gap-8">
+                <span className="text-sm font-extrabold tracking-wider" style={{ color: Number(s.n) % 2 ? NAVY : FLAME }}>
+                  {"{"}{s.n}{"}"}
                 </span>
-              )}
-              <span
-                className="inline-block rounded-full px-3 py-1 text-xs font-extrabold"
-                style={{ background: `${FLAME}1f`, color: FLAME }}
-              >
-                {s.n}
-              </span>
-              <h3 className="mt-5 text-lg font-bold tracking-tight">{s.title}</h3>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
+                <h3 className="text-2xl font-extrabold tracking-tight transition duration-300 group-hover:translate-x-1 md:text-3xl">
+                  {s.title} <span className="text-[#141417]/30">—</span>
+                </h3>
+                <p className="max-w-xl text-sm font-medium leading-relaxed text-[#5b5b66]">
+                  {s.desc}
+                </p>
+                <div className="flex max-w-xs flex-wrap gap-1.5 md:justify-end">
+                  {s.tags.map((t) => (
+                    <span key={t} className="whitespace-nowrap rounded-full border border-black/10 bg-white/70 px-2.5 py-1 text-[11px] font-semibold text-[#5b5b66]">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ══ Dashboard teaser ═══════════════════════════════════════════ */}
-      <section className="border-y border-white/5">
-        <div className="mx-auto grid max-w-6xl items-center gap-14 px-6 py-28 lg:grid-cols-2">
-          <div>
-            <p className="section-label" style={{ color: FLAME }}>The dashboard</p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-              Not just pretty posts — a real delivery system.
-            </h2>
-            <p className="mt-4 text-lg font-medium leading-relaxed text-muted">
-              Every task, deadline, revision and invoice lives in your client portal. You see
-              exactly what&apos;s in design, what&apos;s queued and what&apos;s delivered — no
-              chasing anyone on WhatsApp.
-            </p>
-            <ul className="mt-8 space-y-4">
-              {[
-                "Live task board with real deadlines per post",
-                "Approve designs from a single Canva link",
-                "Monthly invoices with downloadable receipts",
-                "Content calendar for every scheduled post",
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-3 text-sm font-medium text-muted">
+      {/* ══ CTA pill banner ════════════════════════════════════════════ */}
+      <div className="mx-auto max-w-6xl px-6 pb-10">
+        <a
+          href="#contact"
+          className="group flex items-center justify-between gap-4 rounded-full border border-black/10 bg-white px-8 py-5 shadow-sm transition duration-300 hover:shadow-lg"
+        >
+          <span className="text-lg font-extrabold tracking-tight md:text-2xl">
+            <span className="italic text-[#141417]/40">Ready to create?</span>{" "}
+            <span style={{ color: NAVY }}>Let&apos;s talk.</span>
+          </span>
+          <span
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-white transition duration-300 group-hover:scale-110"
+            style={{ background: `linear-gradient(135deg, ${NAVY}, #141f5c)` }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
+              <path d="M5 12h14" /><path d="M12 5l7 7-7 7" />
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      {/* ══ Work — project image grid ══════════════════════════════════ */}
+      <section id="work" className="relative mx-auto max-w-6xl px-6 py-24">
+        <div className="scroll-rise mx-auto max-w-2xl text-center">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: FLAME }}>
+            Selected work
+          </p>
+          <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
+            Projects that started with a challenge.
+          </h2>
+          <p className="mt-4 text-lg font-medium text-[#5b5b66]">
+            Every engagement below is a live content system we run month after month.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {works.map((w, i) => (
+            <a
+              key={w.name}
+              href="#contact"
+              className="scroll-rise group block"
+              style={{ animationRange: `entry 0% entry ${42 + i * 7}%` }}
+            >
+              <div
+                className="scroll-clip relative overflow-hidden rounded-[1.25rem] border border-black/[0.08] bg-white"
+                style={{ animationRange: `entry 0% entry ${50 + i * 7}%` }}
+              >
+                {/* HUD corner ticks */}
+                <span className="pointer-events-none absolute left-3 top-3 z-10 h-3.5 w-3.5 border-l-2 border-t-2 border-white/70 opacity-0 transition duration-300 group-hover:opacity-100" />
+                <span className="pointer-events-none absolute right-3 top-3 z-10 h-3.5 w-3.5 border-r-2 border-t-2 border-white/70 opacity-0 transition duration-300 group-hover:opacity-100" />
+                <span className="pointer-events-none absolute bottom-3 left-3 z-10 h-3.5 w-3.5 border-b-2 border-l-2 border-white/70 opacity-0 transition duration-300 group-hover:opacity-100" />
+                <span className="pointer-events-none absolute bottom-3 right-3 z-10 h-3.5 w-3.5 border-b-2 border-r-2 border-white/70 opacity-0 transition duration-300 group-hover:opacity-100" />
+
+                <div className="relative overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={w.img}
+                    alt={`${w.name} — project`}
+                    className="scroll-zoom aspect-[16/10] w-full object-cover transition duration-700 ease-out group-hover:scale-[1.08]"
+                    style={{ animationRange: `entry 0% entry ${60 + i * 7}%` }}
+                  />
+                  <span className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent opacity-60 transition duration-500 group-hover:opacity-90" />
+                  {/* scanline sweep on hover */}
+                  <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent opacity-0 transition duration-500 group-hover:animate-[wave-scroll_2.4s_linear_infinite] group-hover:opacity-100" />
                   <span
-                    className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
-                    style={{ background: `${FLAME}1f` }}
+                    className="absolute bottom-3 left-3.5 rounded-md px-2 py-1 font-mono text-[10px] font-bold tracking-[0.2em] text-white backdrop-blur-sm"
+                    style={{ fontFamily: "ui-monospace, monospace", background: `${NAVY}cc` }}
                   >
-                    <svg viewBox="0 0 24 24" fill="none" stroke={FLAME} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
-                      <path d="M20 6L9 17l-5-5" />
-                    </svg>
+                    {String(i + 1).padStart(2, "0")}
                   </span>
-                  {f}
-                </li>
-              ))}
-            </ul>
+                  <span className="absolute right-3.5 top-3.5 flex h-8 w-8 translate-y-1 items-center justify-center rounded-full bg-white text-xs text-[#141417] opacity-0 shadow-lg transition duration-400 group-hover:translate-y-0 group-hover:opacity-100">
+                    ↗
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 px-4 py-3">
+                  <p className="truncate text-sm font-extrabold tracking-tight">{w.name}</p>
+                  <p className="shrink-0 text-[10px] font-bold uppercase tracking-[0.16em] text-[#8a8a94]">
+                    {w.tag}
+                  </p>
+                </div>
+                {/* bottom accent — alternates flame/navy */}
+                <span
+                  className="absolute inset-x-0 bottom-0 h-[2px] w-0 transition-all duration-500 group-hover:w-full"
+                  style={{ background: i % 2 ? `linear-gradient(90deg, ${NAVY}, #4a5db8)` : `linear-gradient(90deg, ${FLAME}, #ff7a6d)` }}
+                />
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* ══ Portfolio — WebGL flex carousel ════════════════════════════ */}
+      <section className="relative py-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="scroll-rise mx-auto max-w-2xl text-center">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: FLAME }}>
+              Portfolio
+            </p>
+            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
+              Drag through the work.
+            </h2>
+            <p className="mt-4 text-lg font-medium text-[#5b5b66]">
+              Pull, flick, click to focus — Esc to close.
+            </p>
+          </div>
+        </div>
+        <div className="mt-12 h-[420px] w-full md:h-[520px]">
+          <FlexCarousel
+            items={[
+              { src: "/work/acme.jpg", title: "Acme Cafe", subtitle: "Social media retainer" },
+              { src: "/work/glowup.jpg", title: "GlowUp Fitness", subtitle: "Branding + content" },
+              { src: "/work/nova.jpg", title: "Nova Realty", subtitle: "Campaign creatives" },
+              { src: "/work/pixel.jpg", title: "Pixel & Co.", subtitle: "Identity system" },
+              { src: "/work/urban.jpg", title: "Urban Nest", subtitle: "Reels & covers" },
+              { src: "/work/brightly.jpg", title: "Brightly", subtitle: "Web + social" },
+              { src: "/hero-marketing.jpg", title: "Analytics", subtitle: "Growth dashboards" },
+              { src: "/contact.jpg", title: "Studio", subtitle: "The team at work" },
+            ]}
+            preset="arch"
+            intro="rise"
+            cardHeight={0.72}
+            gap={18}
+            radius={24}
+            captureWheel={false}
+            captions
+          />
+        </div>
+      </section>
+
+      {/* ══ Why us — feature grid ══════════════════════════════════════ */}
+      <section className="mx-auto max-w-6xl px-6 py-24">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: FLAME }}>
+            Partnership, not just projects
+          </p>
+          <ScrollReveal
+            containerClassName="mt-3"
+            textClassName="text-4xl font-extrabold tracking-tight leading-[1.15] text-[#141417] md:text-5xl"
+            baseOpacity={0.12}
+            baseRotation={2}
+          >
+            Clear scope, clear deadlines, clear invoices. No surprises.
+          </ScrollReveal>
+          <p className="mt-4 text-lg font-medium leading-relaxed text-[#5b5b66]">
+            Your vision, our creativity — unlimited iterations within your plan, and a
+            single point of contact for everything.
+          </p>
+        </div>
+        <div className="mt-12">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { t: "Flat monthly pricing", d: "Predictable retainer — the same invoice every cycle, no per-design math." },
+              { t: "Live dashboard", d: "Every task, deadline and revision tracked in one portal — nothing hides in chats." },
+              { t: "95% on-time rate", d: "Deadlines are real here. The rare miss is visible to you, not buried." },
+              { t: "Dedicated designer", d: "One designer learns your brand and owns your account end to end." },
+            ].map((f) => (
+              <div
+                key={f.t}
+                className="rounded-3xl border border-black/[0.08] bg-white p-6 shadow-sm transition duration-300 hover:shadow-md"
+              >
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-xl"
+                  style={{ background: `${NAVY}14` }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke={NAVY} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
+                    <path d="M20 6L9 17l-5-5" />
+                  </svg>
+                </span>
+                <h3 className="mt-4 text-base font-bold tracking-tight">{f.t}</h3>
+                <p className="mt-1.5 text-sm font-medium leading-relaxed text-[#5b5b66]">{f.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ Process ════════════════════════════════════════════════════ */}
+      <section id="process" className="border-y border-black/[0.07] bg-white/60">
+        <div className="mx-auto max-w-6xl px-6 py-28">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: FLAME }}>
+              Process
+            </p>
+            <ScrollReveal
+              containerClassName="mt-3"
+              textClassName="text-4xl font-extrabold tracking-tight leading-[1.12] text-[#141417] md:text-5xl"
+              baseOpacity={0.12}
+              baseRotation={2}
+            >
+              Simple, transparent, on schedule — four steps, every brand.
+            </ScrollReveal>
+            <p className="mt-4 text-lg font-medium text-[#5b5b66]">
+              The same four steps for every brand — no guesswork.
+            </p>
           </div>
 
-          {/* stylized dashboard mock */}
-          <div className="relative">
-            <div
-              className="pointer-events-none absolute -inset-8 rounded-[2.5rem] opacity-40 blur-3xl"
-              style={{ background: `radial-gradient(closest-side, ${NAVY}55, transparent)` }}
-            />
-            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0c0e15] shadow-2xl">
-              <div className="flex items-center gap-2 border-b border-white/5 px-5 py-3.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-                <span className="ml-3 text-xs font-semibold text-faint">rbsocial — client portal</span>
-              </div>
-              <div className="space-y-3 p-5">
-                {[
-                  { t: "Diwali sale carousel", c: "Acme Cafe", s: "In design", tone: FLAME },
-                  { t: "Membership reel cover", c: "GlowUp Fitness", s: "In review", tone: "#fbbf24" },
-                  { t: "Project listing flyer", c: "Nova Realty", s: "Delivered", tone: "#34d399" },
-                  { t: "Weekend story set", c: "Acme Cafe", s: "Queued", tone: "#8b8f9c" },
-                ].map((r) => (
-                  <div key={r.t} className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3.5">
-                    <div>
-                      <p className="text-sm font-semibold text-ink">{r.t}</p>
-                      <p className="text-xs font-medium text-faint">{r.c}</p>
-                    </div>
-                    <span
-                      className="rounded-full px-2.5 py-1 text-[11px] font-bold"
-                      style={{ background: `${r.tone}1f`, color: r.tone }}
-                    >
-                      {r.s}
-                    </span>
-                  </div>
-                ))}
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3.5">
-                  <div className="flex items-center justify-between text-xs font-semibold text-faint">
-                    <span>OCTOBER RETAINER</span>
-                    <span style={{ color: FLAME }}>DUE IN 5 DAYS</span>
-                  </div>
-                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/5">
-                    <div className="h-full w-2/3 rounded-full" style={{ background: `linear-gradient(90deg, ${NAVY}, ${FLAME})` }} />
-                  </div>
+          <div className="relative mt-14">
+            {/* scroll-driven progress line behind the cards */}
+            <div className="absolute left-0 right-0 top-1/2 hidden h-px -translate-y-1/2 bg-black/[0.08] md:block">
+              <div
+                className="scroll-fill h-full"
+                style={{ background: `linear-gradient(90deg, ${FLAME}, ${NAVY})` }}
+              />
+            </div>
+
+            <div className="relative grid gap-5 md:grid-cols-4">
+              {steps.map((s, i) => (
+                <div
+                  key={s.n}
+                  className="scroll-rise group relative overflow-hidden rounded-3xl border border-black/[0.08] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_50px_-24px_rgba(0,0,0,0.28)]"
+                  style={{ animationRange: `entry 0% entry ${48 + i * 12}%` }}
+                >
+                  {/* ghost index */}
+                  <span className="pointer-events-none absolute -right-1 -top-4 select-none text-[5.5rem] font-extrabold leading-none tracking-tighter text-black/[0.05] transition duration-500 group-hover:text-[#e52b3f12]">
+                    {s.n}
+                  </span>
+                  {/* top accent line grows on hover */}
+                  <span
+                    className="absolute left-0 top-0 h-[3px] w-0 rounded-r transition-all duration-500 group-hover:w-full"
+                    style={{ background: `linear-gradient(90deg, ${FLAME}, #ff7a6d)` }}
+                  />
+                  <span
+                    className="relative inline-flex h-9 w-9 items-center justify-center rounded-xl text-xs font-extrabold transition duration-300 group-hover:scale-110"
+                    style={i % 2 ? { background: `${NAVY}14`, color: NAVY } : { background: `${FLAME}1a`, color: FLAME }}
+                  >
+                    {s.n}
+                  </span>
+                  <h3 className="mt-5 text-lg font-bold tracking-tight">{s.title}</h3>
+                  <p className="mt-2 text-sm font-medium leading-relaxed text-[#5b5b66]">{s.desc}</p>
+                  <span
+                    className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-[0.14em] opacity-0 transition duration-300 group-hover:opacity-100"
+                    style={{ color: FLAME }}
+                  >
+                    Step {s.n} →
+                  </span>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -597,103 +702,111 @@ export default function Home() {
 
       {/* ══ Pricing ════════════════════════════════════════════════════ */}
       <section id="pricing" className="relative py-28">
-        {/* animated light rays — full-width background, edge to edge */}
-        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <SideRays
-            origin="top-right"
-            rayColor1={FLAME}
-            rayColor2={NAVY}
-            speed={2}
-            intensity={1.4}
-            spread={2.4}
-            saturation={1.2}
-            blend={0.6}
-            opacity={0.5}
-          />
-        </div>
         <div className="relative mx-auto max-w-6xl px-6">
           <div className="mx-auto max-w-2xl text-center">
-          <p className="section-label" style={{ color: FLAME }}>Pricing</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-            Monthly retainers. Zero surprises.
-          </h2>
-          <p className="mt-4 text-lg font-medium text-muted">
-            Pick a pace — scale up or pause at any month boundary.
-          </p>
-        </div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: FLAME }}>
+              Pricing
+            </p>
+            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
+              Monthly retainers. Zero surprises.
+            </h2>
+            <p className="mt-4 text-lg font-medium text-[#5b5b66]">
+              Pick a pace — scale up or pause at any month boundary.
+            </p>
+          </div>
 
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {plans.map((p) => (
-            <div
-              key={p.name}
-              className={`relative rounded-3xl border p-8 transition duration-300 hover:-translate-y-1 ${
-                p.featured
-                  ? "border-transparent bg-[#0d101c]"
-                  : "border-white/10 bg-white/[0.03] hover:bg-white/[0.05]"
-              }`}
-              style={p.featured ? { boxShadow: `0 0 0 1px ${FLAME}55, 0 24px 60px -24px ${FLAME}40` } : undefined}
-            >
-              {p.featured && (
-                <span
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white"
-                  style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` }}
-                >
-                  Most popular
-                </span>
-              )}
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted">{p.name}</h3>
-              <p className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold tracking-tight">{p.price}</span>
-                <span className="text-sm font-medium text-faint">{p.period}</span>
-              </p>
-              <p className="mt-2 text-sm font-medium text-muted">{p.desc}</p>
-              <ul className="mt-7 space-y-3">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm font-medium text-muted">
-                    <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: p.featured ? FLAME : NAVY }} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a
-                href="#contact"
-                className={`mt-8 block rounded-xl px-5 py-3 text-center text-sm font-bold transition duration-200 active:scale-[0.98] ${
+          <div className="mx-auto mt-16 grid max-w-5xl gap-6 md:grid-cols-3">
+            {plans.map((p) => (
+              <div
+                key={p.name}
+                className={`scroll-rise group relative flex flex-col rounded-[1.75rem] p-8 transition duration-300 hover:-translate-y-1.5 ${
                   p.featured
-                    ? "text-white hover:opacity-90"
-                    : "border border-white/10 bg-white/5 text-ink hover:bg-white/10"
+                    ? "text-white shadow-[0_30px_70px_-30px_rgba(30,47,125,0.55)]"
+                    : "border border-black/[0.07] bg-white shadow-sm hover:shadow-[0_24px_50px_-28px_rgba(0,0,0,0.25)]"
                 }`}
-                style={p.featured ? { background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` } : undefined}
+                style={p.featured ? { background: `linear-gradient(160deg, ${NAVY} 0%, #141f5c 70%, #101845 100%)` } : undefined}
               >
-                {p.cta}
-              </a>
-            </div>
-          ))}
+                {p.featured && (
+                  <span
+                    className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-[0.16em] text-white shadow-lg"
+                    style={{ background: `linear-gradient(135deg, ${FLAME}, #bd1f30)` }}
+                  >
+                    Most popular
+                  </span>
+                )}
+
+                <div className="flex items-baseline justify-between">
+                  <h3 className={`text-[11px] font-extrabold uppercase tracking-[0.22em] ${p.featured ? "text-white/60" : "text-[#8a8a94]"}`}>
+                    {p.name}
+                  </h3>
+                  {p.featured && <span className="h-2 w-2 rounded-full" style={{ background: FLAME }} />}
+                </div>
+
+                <p className="mt-5 flex items-baseline gap-1.5">
+                  <span className="text-[2.6rem] font-extrabold leading-none tracking-tight">{p.price}</span>
+                  <span className={`text-sm font-semibold ${p.featured ? "text-white/50" : "text-[#8a8a94]"}`}>{p.period}</span>
+                </p>
+                <p className={`mt-2.5 text-[13px] font-medium leading-relaxed ${p.featured ? "text-white/65" : "text-[#5b5b66]"}`}>
+                  {p.desc}
+                </p>
+
+                <span className={`my-6 h-px w-full ${p.featured ? "bg-white/15" : "bg-black/[0.07]"}`} />
+
+                <ul className="flex-1 space-y-3.5">
+                  {p.features.map((f) => (
+                    <li key={f} className={`flex items-center gap-3 text-[13px] font-medium ${p.featured ? "text-white/80" : "text-[#5b5b66]"}`}>
+                      <span
+                        className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full"
+                        style={{ background: p.featured ? `${FLAME}30` : `${NAVY}12` }}
+                      >
+                        <svg viewBox="0 0 24 24" fill="none" stroke={p.featured ? "#ff8a7a" : NAVY} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="h-2.5 w-2.5" aria-hidden>
+                          <path d="M20 6L9 17l-5-5" />
+                        </svg>
+                      </span>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href="#contact"
+                  className={`mt-8 block rounded-full px-5 py-3.5 text-center text-[13px] font-extrabold tracking-wide transition duration-200 active:scale-[0.98] ${
+                    p.featured ? "text-white hover:opacity-90" : "btn-outline-navy"
+                  }`}
+                  style={p.featured ? { background: `linear-gradient(135deg, ${FLAME}, #bd1f30)` } : undefined}
+                >
+                  {p.cta}
+                </a>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* ══ FAQ ════════════════════════════════════════════════════════ */}
       <section id="faq" className="relative">
-        <div className="mx-auto max-w-3xl px-6 pb-28 pt-32">
+        <div className="mx-auto max-w-3xl px-6 pb-28">
           <div className="text-center">
-            <p className="section-label" style={{ color: FLAME }}>FAQ</p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em]" style={{ color: FLAME }}>
+              FAQ
+            </p>
             <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
               Questions, answered.
             </h2>
           </div>
           <div className="mt-12 space-y-3">
             {faqs.map((f) => (
-              <details key={f.q} className="group rounded-2xl border border-white/10 bg-white/[0.03] transition duration-200 hover:border-white/20 open:bg-white/[0.05]">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-sm font-bold text-ink [&::-webkit-details-marker]:hidden">
+              <details key={f.q} className="group rounded-2xl border border-black/[0.08] bg-white shadow-sm transition duration-200 open:shadow-md">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-sm font-bold text-[#141417] [&::-webkit-details-marker]:hidden">
                   {f.q}
                   <span
                     className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-lg font-bold leading-none transition duration-300 group-open:rotate-45"
-                    style={{ background: `${FLAME}1f`, color: FLAME }}
+                    style={{ background: `${NAVY}14`, color: NAVY }}
                   >
                     +
                   </span>
                 </summary>
-                <p className="px-6 pb-6 text-sm font-medium leading-relaxed text-muted">{f.a}</p>
+                <p className="px-6 pb-6 text-sm font-medium leading-relaxed text-[#5b5b66]">{f.a}</p>
               </details>
             ))}
           </div>
@@ -708,7 +821,18 @@ export default function Home() {
       >
         <ScrollExpand
           useWindowScroll
-          media={<ContactArt />}
+          media={
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/contact.jpg"
+                alt="A team collaborating on a project"
+                className="absolute inset-0 h-full w-full object-cover"
+                draggable={false}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.75),rgba(0,0,0,0.45)_50%,rgba(0,0,0,0.55))]" />
+            </>
+          }
           title="Your brand, upgraded"
           scrollHint="Scroll to expand"
           startWidth={38}
@@ -718,23 +842,8 @@ export default function Home() {
           scrollDistance={0.65}
           holdDistance={0.25}
           smoothing={0.1}
-          overlayScrim={0.7}
+          overlayScrim={0.35}
         >
-          <div className="pointer-events-none absolute inset-0">
-            <LightRays
-              raysOrigin="top-center"
-              raysColor="#ff5a3c"
-              raysSpeed={0.45}
-              lightSpread={1.0}
-              rayLength={1.2}
-              fadeDistance={0.9}
-              saturation={1.1}
-              followMouse
-              mouseInfluence={0.1}
-              noiseAmount={0.05}
-              distortion={0.12}
-            />
-          </div>
           <div className="relative max-w-2xl">
             <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-white/80 backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: FLAME }} />
@@ -744,7 +853,7 @@ export default function Home() {
               Ready to hand off{" "}
               <span
                 className="bg-clip-text text-transparent"
-                style={{ backgroundImage: `linear-gradient(100deg, #ff8a5c, ${FLAME} 60%, #ffd7a8)` }}
+                style={{ backgroundImage: `linear-gradient(100deg, #ff7a6d, ${FLAME} 60%, #ffc4bd)` }}
               >
                 design work?
               </span>
@@ -763,7 +872,7 @@ export default function Home() {
               <button
                 type="button"
                 className="shrink-0 rounded-full px-7 py-3 text-sm font-bold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
-                style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 10px 30px -10px ${FLAME}90` }}
+                style={{ background: `linear-gradient(135deg, ${FLAME}, #bd1f30)`, boxShadow: `0 10px 30px -10px ${FLAME}90` }}
               >
                 Contact Us
               </button>
@@ -774,7 +883,6 @@ export default function Home() {
 
       {/* ══ Footer — deep flame red, merged into the expand section ════ */}
       <footer className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #932312 0%, #7a1c0f 55%, #571107 100%)" }}>
-        {/* soft top glow so it blends out of the artwork above */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/20 to-transparent" />
 
         <div className="relative mx-auto max-w-6xl px-6 pb-10 pt-20">
@@ -818,7 +926,7 @@ export default function Home() {
             <span className="flex items-center gap-1.5">
               Powered by
               <span className="font-bold text-white">ROSHAN</span>
-              <span className="font-bold" style={{ color: "#ffd7a8" }}>BHARAT</span>
+              <span className="font-bold" style={{ color: "#ffc4bd" }}>BHARAT</span>
             </span>
           </div>
         </div>
