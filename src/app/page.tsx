@@ -4,6 +4,7 @@ import ScrollExpand from "@/components/scroll-expand";
 import ScrollReveal from "@/components/scroll-reveal";
 import FlexCarousel from "@/components/flex-carousel";
 import AccordionGallery from "@/components/accordion-gallery";
+import SideRays from "@/components/side-rays";
 import TextLoop from "@/components/text-loop";
 
 /* Brand colors lifted from the logo: crimson red + deep navy */
@@ -212,6 +213,23 @@ export default function Home() {
 
       {/* ══ Hero — editorial, oversized type ═══════════════════════════ */}
       <section className="relative overflow-hidden">
+        {/* corner light rays — flame tinted */}
+        <div className="pointer-events-none absolute inset-0 mix-blend-multiply opacity-90">
+          <SideRays
+            rayColor1="#e52b3f"
+            rayColor2="#ff8a7a"
+            intensity={1.6}
+            spread={2.2}
+            origin="top-right"
+            tilt={-8}
+            saturation={1.4}
+            blend={0.65}
+            falloff={1.7}
+            opacity={0.8}
+            speed={1.2}
+          />
+        </div>
+
         {/* soft washes — light theme ambience */}
         <div
           className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[720px] rounded-full opacity-50 blur-3xl"
