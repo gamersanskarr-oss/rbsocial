@@ -7,7 +7,7 @@ import {
   paymentStatus,
 } from "@/lib/data";
 import { requireAdminOrAccountant } from "@/lib/auth";
-import { deletePayment, logFollowUp, markPaymentReceived } from "@/app/actions/finance";
+import { deletePayment, markPaymentReceived } from "@/app/actions/finance";
 import { PageHeader } from "@/components/ui";
 import RecordPaymentForm from "./record-payment-form";
 import EditPaymentDialog from "./edit-payment-dialog";
@@ -226,15 +226,6 @@ export default async function PaymentsPage({
                         />
                         {st !== "RECEIVED" ? (
                           <>
-                            <form action={logFollowUp}>
-                              <input type="hidden" name="paymentId" value={p.id} />
-                              <button
-                                title={p.lastContactedAt ? `Last nudged ${p.lastContactedAt.toLocaleDateString("en-IN")}` : "Log a follow-up"}
-                                className="whitespace-nowrap rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel"
-                              >
-                                +{p.followUps || ""} Nudge
-                              </button>
-                            </form>
                             <form action={markPaymentReceived}>
                               <input type="hidden" name="paymentId" value={p.id} />
                               <input type="hidden" name="method" value="ONLINE" />
