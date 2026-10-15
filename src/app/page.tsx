@@ -170,6 +170,7 @@ export default function Home() {
             <a href="#process" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Process</a>
             <a href="#pricing" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Pricing</a>
             <a href="#faq" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">FAQ</a>
+            <Link href="/careers" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Careers</Link>
           </div>
           <Link
             href="/login"
@@ -746,6 +747,7 @@ export default function Home() {
                   <li><a href="#process" className="transition duration-200 hover:text-white">Process</a></li>
                   <li><a href="#pricing" className="transition duration-200 hover:text-white">Pricing</a></li>
                   <li><a href="#faq" className="transition duration-200 hover:text-white">FAQ</a></li>
+                  <li><Link href="/careers" className="transition duration-200 hover:text-white">Careers</Link></li>
                   <li><Link href="/login" className="transition duration-200 hover:text-white">Team Login</Link></li>
                 </ul>
               </div>

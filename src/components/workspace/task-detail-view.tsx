@@ -36,7 +36,7 @@ export default async function TaskDetailView({
               {task.topic}
               {task.type && (
                 <span className="ml-2 align-middle rounded-full bg-brand-soft px-2.5 py-1 text-xs font-bold text-brand ring-1 ring-inset ring-brand-line">
-                  {task.type}
+                  {task.type}{task.slideCount ? ` · ${task.slideCount} slides` : ""}
                 </span>
               )}
             </h1>

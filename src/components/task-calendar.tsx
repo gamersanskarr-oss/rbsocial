@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { createTask, type ActionState } from "@/app/actions/admin";
+import { moveTaskDeadline } from "@/app/actions/tasks";
 
 export type CalendarTask = {
   id: string;
@@ -14,7 +16,7 @@ export type CalendarTask = {
   assignee?: string | null;
 };
 
-export type CalendarOption = { id: string; name: string; team?: string | null };
+export type CalendarOption = { id: string; name: string; team?: string | null; perPostPay?: number | null };
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
@@ -38,15 +40,21 @@ function AssignModal({
   date,
   clients,
   employees,
+  taskTypes,
+  canSetPay,
   onClose,
 }: {
   date: { y: number; m: number; d: number };
   clients: CalendarOption[];
   employees: CalendarOption[];
+  taskTypes: string[];
+  canSetPay: boolean;
   onClose: () => void;
 }) {
   const initial: ActionState = {};
   const [state, formAction, pending] = useActionState(createTask, initial);
+  const [selType, setSelType] = useState("");
+  const [payAmt, setPayAmt] = useState("");
 
   useEffect(() => {
     if (state.success) onClose();
@@ -89,6 +97,32 @@ function AssignModal({
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
+              <label className="mb-1 block text-sm font-medium text-muted">Task type</label>
+              <select
+                name="taskType"
+                required
+                className="input"
+                value={selType}
+                onChange={(e) => setSelType(e.target.value)}
+              >
+                <option value="" disabled>Select type</option>
+                {taskTypes.map((t) => (
+                  <option key={t} value={t}>{t}</option>
+                ))}
+              </select>
+              {selType === "Carousel" && (
+                <input
+                  name="slideCount"
+                  type="number"
+                  min="1"
+                  max="99"
+                  required
+                  className="input mt-2 px-2.5 py-1.5 text-xs"
+                  placeholder="Number of slides, e.g. 8"
+                />
+              )}
+            </div>
+            <div>
               <label className="mb-1 block text-sm font-medium text-muted">Client</label>
               <select name="clientId" required className="input" defaultValue="">
                 <option value="" disabled>Select client</option>
@@ -99,7 +133,16 @@ function AssignModal({
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-muted">Assign to</label>
-              <select name="assignedToId" required className="input" defaultValue="">
+              <select
+                name="assignedToId"
+                required
+                className="input"
+                defaultValue=""
+                onChange={(e) => {
+                  const emp = employees.find((x) => x.id === e.target.value);
+                  setPayAmt(emp?.perPostPay != null ? String(emp.perPostPay) : "");
+                }}
+              >
                 <option value="" disabled>Select team member</option>
                 {employees.map((e) => (
                   <option key={e.id} value={e.id}>
@@ -109,6 +152,23 @@ function AssignModal({
               </select>
             </div>
           </div>
+          {canSetPay && (
+            <div>
+              <label className="mb-1 block text-sm font-medium text-muted">
+                Pay for this task (₹) — optional
+              </label>
+              <input
+                name="payAmount"
+                type="number"
+                min="0"
+                step="1"
+                className="input"
+                placeholder="Defaults to per-post rate"
+                value={payAmt}
+                onChange={(e) => setPayAmt(e.target.value)}
+              />
+            </div>
+          )}
           <div>
             <label className="mb-1 block text-sm font-medium text-muted">Description</label>
             <textarea
@@ -146,21 +206,32 @@ export function TaskCalendar({
   tasks,
   basePath,
   canCreate = false,
+  canSetPay = false,
   clients = [],
   employees = [],
+  taskTypes = [],
 }: {
   tasks: CalendarTask[];
   basePath?: string;
   canCreate?: boolean;
+  canSetPay?: boolean;
   clients?: CalendarOption[];
   employees?: CalendarOption[];
+  taskTypes?: string[];
 }) {
   const now = new Date();
+  const router = useRouter();
   const [view, setView] = useState({ y: now.getFullYear(), m: now.getMonth() });
   const [modalDay, setModalDay] = useState<{ y: number; m: number; d: number } | null>(null);
   const [fClient, setFClient] = useState("");
   const [fStatus, setFStatus] = useState("");
   const [fAssignee, setFAssignee] = useState("");
+
+  // Drag-to-reschedule (admin/manager calendars only — gated by canCreate)
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dropKey, setDropKey] = useState<string | null>(null);
+  const [moved, setMoved] = useState<Record<string, Date>>({}); // taskId -> new deadline (optimistic)
+  const [, startMove] = useTransition();
 
   // Client filter options: prefer the option list, else derive from tasks
   const clientNames = clients.length
@@ -178,12 +249,28 @@ export function TaskCalendar({
 
   const byDay = new Map<string, CalendarTask[]>();
   for (const t of filteredTasks) {
-    const d = new Date(t.deadline);
+    const d = moved[t.id] ?? new Date(t.deadline);
     const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
     const list = byDay.get(key) ?? [];
     list.push(t);
     byDay.set(key, list);
   }
+
+  const dropTask = (taskId: string, day: number) => {
+    // keep the original time-of-day, move the date
+    const t = tasks.find((x) => x.id === taskId);
+    if (!t) return;
+    const next = new Date(t.deadline);
+    next.setFullYear(view.y, view.m, day);
+    const iso = `${view.y}-${String(view.m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    setMoved((m) => ({ ...m, [taskId]: next }));
+    setDropKey(null);
+    setDragId(null);
+    startMove(async () => {
+      await moveTaskDeadline(taskId, iso);
+      router.refresh();
+    });
+  };
 
   const first = new Date(view.y, view.m, 1);
   const startOffset = first.getDay();
@@ -201,7 +288,7 @@ export function TaskCalendar({
   };
 
   const monthTasks = filteredTasks.filter((t) => {
-    const d = new Date(t.deadline);
+    const d = moved[t.id] ?? new Date(t.deadline);
     return d.getFullYear() === view.y && d.getMonth() === view.m;
   });
 
@@ -304,15 +391,23 @@ export function TaskCalendar({
             const weekend = i % 7 === 0 || i % 7 === 6;
             const rowEnd = i % 7 === 6;
 
+            const dayKey = day ? `${view.y}-${view.m}-${day}` : null;
             return (
               <div
                 key={key}
                 onClick={canCreate && day ? () => setModalDay({ y: view.y, m: view.m, d: day }) : undefined}
+                onDragOver={canCreate && day ? (e) => { if (dragId) { e.preventDefault(); setDropKey(dayKey); } } : undefined}
+                onDragLeave={canCreate && day ? () => { if (dropKey === dayKey) setDropKey(null); } : undefined}
+                onDrop={canCreate && day ? (e) => {
+                  e.preventDefault();
+                  const id = e.dataTransfer.getData("text/task-id") || dragId;
+                  if (id) dropTask(id, day);
+                } : undefined}
                 className={`group relative min-h-[92px] border-b border-line p-1.5 transition ${
                   rowEnd ? "" : "border-r"
                 } ${!day ? "bg-panel/30" : ""} ${weekend && day ? "bg-panel/40" : ""} ${
                   canCreate && day ? "cursor-pointer hover:bg-hover/60" : ""
-                }`}
+                } ${dropKey && dropKey === dayKey ? "bg-hover/80 ring-1 ring-inset ring-brand-line" : ""}`}
               >
                 {day && (
                   <>
@@ -341,13 +436,24 @@ export function TaskCalendar({
                         );
                         const cls = `flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-semibold ring-1 ring-inset transition ${
                           chipStyles[t.status] ?? "bg-panel text-muted ring-line"
-                        }`;
+                        } ${canCreate ? "cursor-grab active:cursor-grabbing" : ""} ${dragId === t.id ? "opacity-40" : ""}`;
+                        const dragProps = canCreate
+                          ? {
+                              draggable: true,
+                              onDragStart: (e: React.DragEvent) => {
+                                e.dataTransfer.setData("text/task-id", t.id);
+                                e.dataTransfer.effectAllowed = "move";
+                                setDragId(t.id);
+                              },
+                              onDragEnd: () => { setDragId(null); setDropKey(null); },
+                            }
+                          : {};
                         return basePath ? (
-                          <Link key={t.id} href={`${basePath}/${t.id}`} title={`${t.topic} · ${t.clientName}`} className={cls}>
+                          <Link key={t.id} href={`${basePath}/${t.id}`} title={`${t.topic} · ${t.clientName}`} className={cls} {...dragProps}>
                             {chip}
                           </Link>
                         ) : (
-                          <div key={t.id} title={`${t.topic} · ${t.clientName}`} className={cls}>
+                          <div key={t.id} title={`${t.topic} · ${t.clientName}`} className={cls} {...dragProps}>
                             {chip}
                           </div>
                         );
@@ -368,7 +474,7 @@ export function TaskCalendar({
 
       <p className="mt-3 text-xs font-medium text-faint">
         {monthTasks.length} task{monthTasks.length === 1 ? "" : "s"} scheduled in {MONTHS[view.m]}.
-        {canCreate && " Click any day to assign a task directly."}
+        {canCreate && " Click a day to assign a task, or drag a task to another day to reschedule."}
       </p>
 
       {modalDay && (
@@ -376,6 +482,8 @@ export function TaskCalendar({
           date={modalDay}
           clients={clients}
           employees={employees}
+          taskTypes={taskTypes}
+          canSetPay={canSetPay}
           onClose={() => setModalDay(null)}
         />
       )}

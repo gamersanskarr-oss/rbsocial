@@ -1,4 +1,4 @@
-import { listClientOptions, listEmployeeOptions, listTasksWithRefs } from "@/lib/data";
+import { listClientOptions, listEmployeeOptions, listTaskTypes, listTasksWithRefs } from "@/lib/data";
 import { checkMissedDeadlines } from "@/lib/deadlines";
 import { PageHeader } from "@/components/ui";
 import { TaskCalendar } from "@/components/task-calendar";
@@ -6,10 +6,11 @@ import { TaskCalendar } from "@/components/task-calendar";
 export default async function CalendarView({ basePath }: { basePath: string }) {
   await checkMissedDeadlines();
 
-  const [tasks, clients, employees] = await Promise.all([
+  const [tasks, clients, employees, taskTypes] = await Promise.all([
     listTasksWithRefs(),
     listClientOptions(),
     listEmployeeOptions(),
+    listTaskTypes(),
   ]);
 
   return (
@@ -20,9 +21,11 @@ export default async function CalendarView({ basePath }: { basePath: string }) {
       />
       <TaskCalendar
         canCreate
+        canSetPay={basePath === "/admin"}
         basePath={`${basePath}/tasks`}
         clients={clients}
         employees={employees}
+        taskTypes={taskTypes}
         tasks={tasks.map((t) => ({
           id: t.id,
           topic: `${t.topic} · ${t.assignedTo.name}`,

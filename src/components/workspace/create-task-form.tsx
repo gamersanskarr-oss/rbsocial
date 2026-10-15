@@ -22,6 +22,7 @@ export default function CreateTaskForm({
   const router = useRouter();
 
   const [payAmt, setPayAmt] = useState("");
+  const [selType, setSelType] = useState("");
   const [newType, setNewType] = useState("");
   const [typeMsg, setTypeMsg] = useState<ActionState>({});
   const [addingType, startAddingType] = useTransition();
@@ -56,12 +57,31 @@ export default function CreateTaskForm({
         </div>
         <div>
           <label className="mb-1 block text-sm text-muted">Task type</label>
-          <select name="taskType" required className="input" defaultValue="">
+          <select
+            name="taskType"
+            required
+            className="input"
+            value={selType}
+            onChange={(e) => setSelType(e.target.value)}
+          >
             <option value="" disabled>Select type</option>
             {taskTypes.map((t) => (
               <option key={t} value={t}>{t}</option>
             ))}
           </select>
+          {selType === "Carousel" && (
+            <div className="mt-2">
+              <input
+                name="slideCount"
+                type="number"
+                min="1"
+                max="99"
+                required
+                className="input px-2.5 py-1.5 text-xs"
+                placeholder="Number of slides, e.g. 8"
+              />
+            </div>
+          )}
           <div className="mt-2 flex items-center gap-2">
             <input
               value={newType}

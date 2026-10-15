@@ -21,6 +21,7 @@ export type NavIcon =
   | "expenses"
   | "subscriptions"
   | "dharam"
+  | "jobs"
   | "reports";
 
 const iconPaths: Record<NavIcon, React.ReactNode> = {
@@ -121,6 +122,14 @@ const iconPaths: Record<NavIcon, React.ReactNode> = {
   ),
   dharam: (
     <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+  ),
+  jobs: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="9" cy="10" r="2" />
+      <path d="M5.5 15.5c.6-1.6 1.9-2.5 3.5-2.5s2.9.9 3.5 2.5" />
+      <path d="M15 9h4M15 13h4" />
+    </>
   ),
   reports: (
     <>

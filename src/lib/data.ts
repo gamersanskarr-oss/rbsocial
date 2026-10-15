@@ -56,6 +56,7 @@ export type TaskRecord = {
   deadline: Date;
   status: string; // PENDING | COMPLETED | MISSED
   type: string | null; // e.g. "Static Post" | "Carousel" | custom category
+  slideCount: number | null; // e.g. 8 for a Carousel task
   payAmount: number | null; // per-task amount (falls back to assignee's perPostPay)
   referenceLink: string | null;
   submissionLink: string | null;
@@ -115,6 +116,19 @@ export type DisbursementRecord = {
   cause: string | null;
   amount: number;
   date: Date;
+  createdAt: Date | null;
+};
+
+export type JobRecord = {
+  id: string;
+  title: string;
+  team: string | null; // DESIGN | IT | MARKETING | OPS
+  type: string; // FULL_TIME | PART_TIME | INTERNSHIP | CONTRACT
+  location: string;
+  salary: string | null; // e.g. "₹15,000–25,000/mo"
+  description: string;
+  applyLink: string | null; // mailto: or https URL — defaults to careers@ inbox
+  active: boolean;
   createdAt: Date | null;
 };
 
@@ -351,6 +365,22 @@ export async function completedTasksBetween(start: Date, end: Date): Promise<Tas
     .filter((t) => t.status === "COMPLETED");
 }
 
+/** All tasks whose deadline falls inside [start, end), with client name attached. */
+export async function tasksDueBetween(
+  start: Date,
+  end: Date
+): Promise<(TaskRecord & { client: { name: string } })[]> {
+  const snap = await adminDb
+    .collection("tasks")
+    .where("deadline", ">=", Timestamp.fromDate(start))
+    .where("deadline", "<", Timestamp.fromDate(end))
+    .get();
+  const tasks = snap.docs.map((d) => withDates<TaskRecord>(d, TASK_DATES)).sort(newest);
+  const clients = await adminDb.collection("clients").get();
+  const names = new Map(clients.docs.map((c) => [c.id, String(c.data().name ?? "")]));
+  return tasks.map((t) => ({ ...t, client: { name: names.get(t.clientId) ?? "" } }));
+}
+
 /** Missed tasks whose deadline falls inside [start, end). */
 export async function missedTasksBetween(start: Date, end: Date): Promise<TaskRecord[]> {
   const snap = await adminDb
@@ -398,6 +428,17 @@ export async function listTaskTypes(): Promise<string[]> {
   const doc = await adminDb.collection("settings").doc("taskTypes").get();
   const custom = Array.isArray(doc.data()?.options) ? (doc.data()!.options as string[]) : [];
   return [...new Set([...DEFAULT_TASK_TYPES, ...custom])];
+}
+
+// ---------------------------------------------------------------------------
+// Jobs / careers
+// ---------------------------------------------------------------------------
+
+/** Public job openings. `onlyActive` filters to currently-listed roles. */
+export async function listJobs(onlyActive = false): Promise<JobRecord[]> {
+  const snap = await adminDb.collection("jobs").get();
+  const jobs = snap.docs.map((d) => withDates<JobRecord>(d, ["createdAt"])).sort(newest);
+  return onlyActive ? jobs.filter((j) => j.active) : jobs;
 }
 
 // ---------------------------------------------------------------------------

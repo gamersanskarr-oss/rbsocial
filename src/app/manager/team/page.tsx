@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listEmployees, listTasksWithRefs } from "@/lib/data";
 import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT } from "@/lib/deadlines";
+import { waiveMiss } from "@/app/actions/admin";
 import { PageHeader, StatusBadge, TeamBadge } from "@/components/ui";
 
 const fmtDate = (d: Date) =>
@@ -140,16 +141,38 @@ export default async function ManagerTeamPage({
                     </td>
                     <td className="px-4 py-2.5">
                       {u.missedDeadlines > 0 ? (
-                        <span
-                          className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 ring-inset ${
-                            u.missedDeadlines >= MISSED_DEADLINE_LIMIT
-                              ? "bg-bad-soft text-bad ring-bad-line"
-                              : "bg-warn-soft text-warn ring-warn-line"
-                          }`}
-                        >
-                          {u.missedDeadlines}/{MISSED_DEADLINE_LIMIT}
-                          {u.missedDeadlines >= MISSED_DEADLINE_LIMIT ? " · cut" : ""}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-bold ring-1 ring-inset ${
+                              u.missedDeadlines >= MISSED_DEADLINE_LIMIT
+                                ? "bg-bad-soft text-bad ring-bad-line"
+                                : "bg-warn-soft text-warn ring-warn-line"
+                            }`}
+                          >
+                            {u.missedDeadlines}/{MISSED_DEADLINE_LIMIT}
+                            {u.missedDeadlines >= MISSED_DEADLINE_LIMIT ? " · cut" : ""}
+                          </span>
+                          <form action={waiveMiss}>
+                            <input type="hidden" name="userId" value={u.id} />
+                            <input type="hidden" name="mode" value="one" />
+                            <button
+                              title="Waive one missed deadline"
+                              className="rounded-lg border border-line bg-elevated px-2 py-1 text-[11px] font-semibold text-ink shadow-sm transition hover:bg-panel"
+                            >
+                              Waive 1
+                            </button>
+                          </form>
+                          <form action={waiveMiss}>
+                            <input type="hidden" name="userId" value={u.id} />
+                            <input type="hidden" name="mode" value="all" />
+                            <button
+                              title="Clear all missed deadlines"
+                              className="rounded-lg px-2 py-1 text-[11px] font-semibold text-muted transition hover:bg-hover hover:text-ink"
+                            >
+                              Reset
+                            </button>
+                          </form>
+                        </div>
                       ) : (
                         <span className="text-xs font-medium text-faint">clean</span>
                       )}

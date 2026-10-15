@@ -184,7 +184,7 @@ export default async function DashboardPage() {
                 {t.type && (
                   <p className="mt-1.5">
                     <span className="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-bold text-brand ring-1 ring-inset ring-brand-line">
-                      {t.type}
+                      {t.type}{t.slideCount ? ` · ${t.slideCount} slides` : ""}
                     </span>
                   </p>
                 )}

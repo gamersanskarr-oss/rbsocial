@@ -101,7 +101,7 @@ export async function setPerPostPay(formData: FormData) {
 }
 
 export async function waiveMiss(formData: FormData) {
-  await requireAdmin();
+  await requireAdminOrManager(); // managers may excuse misses for their team
   const userId = String(formData.get("userId") ?? "");
   const mode = String(formData.get("mode") ?? "one");
   if (!userId) return;
@@ -117,6 +117,7 @@ export async function waiveMiss(formData: FormData) {
 
   revalidatePath("/admin/employees");
   revalidatePath("/admin/payouts");
+  revalidatePath("/manager/team");
   revalidatePath("/admin");
   revalidatePath("/dashboard");
 }
@@ -133,12 +134,17 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
   const payRaw = String(formData.get("payAmount") ?? "").trim();
   const payAmount =
     actor.role === "ADMIN" && payRaw !== "" ? Number(payRaw) : null; // managers can't set pay
+  const slideRaw = String(formData.get("slideCount") ?? "").trim();
+  const slideCount = slideRaw === "" ? null : Math.round(Number(slideRaw));
 
   if (!topic || !description || !clientId || !assignedToId || !deadline || !taskType) {
     return { error: "Topic, type, client, assignee, description and deadline are required." };
   }
   if (payAmount !== null && (isNaN(payAmount) || payAmount < 0)) {
     return { error: "Pay amount must be a valid number (leave blank to use the per-post rate)." };
+  }
+  if (slideCount !== null && (isNaN(slideCount) || slideCount < 1 || slideCount > 99)) {
+    return { error: "Slide count must be between 1 and 99." };
   }
   const deadlineDate = new Date(deadline);
   if (isNaN(deadlineDate.getTime())) return { error: "Invalid deadline date." };
@@ -148,6 +154,7 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
       topic,
       description,
       type: taskType,
+      slideCount: taskType === "Carousel" ? slideCount : null,
       payAmount,
       clientId,
       assignedToId,
@@ -169,6 +176,66 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
   revalidatePath("/admin");
   revalidatePath("/dashboard");
   return { success: `Task "${topic}" assigned.` };
+}
+
+// ---------------------------------------------------------------------------
+// Jobs / careers (admin-only)
+// ---------------------------------------------------------------------------
+
+const JOB_TYPES = ["FULL_TIME", "PART_TIME", "INTERNSHIP", "CONTRACT"];
+const JOB_TEAMS = ["DESIGN", "IT", "MARKETING", "OPS"];
+
+export async function addJob(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await requireAdmin();
+  const title = String(formData.get("title") ?? "").trim();
+  const team = String(formData.get("team") ?? "");
+  const type = String(formData.get("type") ?? "");
+  const location = String(formData.get("location") ?? "").trim();
+  const salary = String(formData.get("salary") ?? "").trim() || null;
+  const description = String(formData.get("description") ?? "").trim();
+  const applyLink = String(formData.get("applyLink") ?? "").trim() || null;
+
+  if (!title || !location || !description || !JOB_TYPES.includes(type) || !JOB_TEAMS.includes(team)) {
+    return { error: "Title, team, type, location and description are required." };
+  }
+
+  try {
+    await adminDb.collection("jobs").add({
+      title,
+      team,
+      type,
+      location,
+      salary,
+      description,
+      applyLink,
+      active: true,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  } catch {
+    return { error: "Could not publish the job." };
+  }
+  revalidatePath("/admin/jobs");
+  revalidatePath("/careers");
+  return { success: `"${title}" is live on the careers page.` };
+}
+
+export async function toggleJob(formData: FormData) {
+  await requireAdmin();
+  const jobId = String(formData.get("jobId") ?? "");
+  if (!jobId) return;
+  const doc = await adminDb.collection("jobs").doc(jobId).get();
+  if (!doc.exists) return;
+  await doc.ref.update({ active: !doc.data()?.active });
+  revalidatePath("/admin/jobs");
+  revalidatePath("/careers");
+}
+
+export async function deleteJob(formData: FormData) {
+  await requireAdmin();
+  const jobId = String(formData.get("jobId") ?? "");
+  if (jobId) await adminDb.collection("jobs").doc(jobId).delete();
+  revalidatePath("/admin/jobs");
+  revalidatePath("/careers");
 }
 
 /** Admin + manager: add a custom task category (shown in the assign-task dropdown). */

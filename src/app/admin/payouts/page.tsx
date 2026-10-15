@@ -184,12 +184,13 @@ export default async function PayoutsPage({
                 <th className="th">Deduction</th>
                 <th className="th">Bonus</th>
                 <th className="th">Net payable</th>
+                <th className="th">Report</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {rows.length === 0 && (
                 <tr>
-                  <td className="td py-10 text-center text-faint" colSpan={9}>
+                  <td className="td py-10 text-center text-faint" colSpan={10}>
                     No employees match these filters.
                   </td>
                 </tr>
@@ -227,6 +228,15 @@ export default async function PayoutsPage({
                     )}
                   </td>
                   <td className="td font-bold text-ok">{inr(r.net)}</td>
+                  <td className="td">
+                    <a
+                      href={`/admin/payouts/report?employee=${r.employee.id}&month=${monthKey(monthStart)}`}
+                      download
+                      className="whitespace-nowrap rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
+                    >
+                      Excel ↓
+                    </a>
+                  </td>
                 </tr>
               ))}
               {rows.length > 0 && (
@@ -243,6 +253,7 @@ export default async function PayoutsPage({
                     {totalBonus > 0 ? `+${inr(totalBonus)}` : "—"}
                   </td>
                   <td className="td font-bold text-ok">{inr(totalNet)}</td>
+                  <td className="td" />
                 </tr>
               )}
             </tbody>

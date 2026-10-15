@@ -60,7 +60,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
                     <td className="td">
                       {t.type ? (
                         <span className="inline-block whitespace-nowrap rounded-full bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand ring-1 ring-inset ring-brand-line">
-                          {t.type}
+                          {t.type}{t.slideCount ? ` · ${t.slideCount} slides` : ""}
                         </span>
                       ) : (
                         <span className="text-xs text-faint">—</span>
