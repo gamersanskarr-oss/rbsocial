@@ -1,6 +1,7 @@
-import { listJobs } from "@/lib/data";
+import { listJobApplications, listJobs } from "@/lib/data";
 import { requireAdmin } from "@/lib/auth";
 import { deleteJob, toggleJob } from "@/app/actions/admin";
+import { deleteJobApplication, markApplicationReviewed } from "@/app/actions/careers";
 import { PageHeader } from "@/components/ui";
 import AddJobForm from "./add-job-form";
 
@@ -20,8 +21,11 @@ const TEAM_LABEL: Record<string, string> = {
 
 export default async function JobsPage() {
   await requireAdmin();
-  const jobs = await listJobs();
+  const [jobs, applications] = await Promise.all([listJobs(), listJobApplications()]);
   const live = jobs.filter((j) => j.active).length;
+  const newApps = applications.filter((a) => a.status === "NEW").length;
+  const appCount = new Map<string, number>();
+  for (const a of applications) appCount.set(a.jobId, (appCount.get(a.jobId) ?? 0) + 1);
 
   return (
     <div className="space-y-8">
@@ -66,7 +70,10 @@ export default async function JobsPage() {
                 <tr key={j.id} className="transition hover:bg-panel/60">
                   <td className="td">
                     <p className="font-semibold text-ink">{j.title}</p>
-                    {j.salary && <p className="text-xs font-medium text-faint">{j.salary}</p>}
+                    <p className="text-xs font-medium text-faint">
+                      {j.salary ? `${j.salary} · ` : ""}
+                      {appCount.get(j.id) ?? 0} application{(appCount.get(j.id) ?? 0) === 1 ? "" : "s"}
+                    </p>
                   </td>
                   <td className="td text-muted">{TEAM_LABEL[j.team ?? ""] ?? j.team}</td>
                   <td className="td text-muted">{TYPE_LABEL[j.type] ?? j.type}</td>
@@ -94,6 +101,102 @@ export default async function JobsPage() {
                         <input type="hidden" name="jobId" value={j.id} />
                         <button className="rounded-lg px-2 py-1.5 text-xs font-semibold text-faint transition hover:bg-hover hover:text-rose-500">
                           Delete
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Applications — submitted from the public careers page */}
+      <div className="card overflow-hidden">
+        <div className="flex items-center justify-between border-b border-line bg-panel/70 px-5 py-3.5">
+          <h2 className="text-sm font-bold text-ink">Applications ({applications.length})</h2>
+          {newApps > 0 && (
+            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-bold text-brand ring-1 ring-inset ring-brand-line">
+              {newApps} new
+            </span>
+          )}
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="border-b border-line">
+              <tr>
+                <th className="th">Applicant</th>
+                <th className="th">Applied for</th>
+                <th className="th">Contact</th>
+                <th className="th">Note</th>
+                <th className="th">Received</th>
+                <th className="th">Status</th>
+                <th className="th w-36"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {applications.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="td py-10 text-center text-faint">
+                    No applications yet — they'll land here when someone applies on /careers.
+                  </td>
+                </tr>
+              )}
+              {applications.map((a) => (
+                <tr key={a.id} className="align-top transition hover:bg-panel/60">
+                  <td className="td">
+                    <p className="font-semibold text-ink">{a.name}</p>
+                    {a.portfolio && (
+                      <a
+                        href={a.portfolio.startsWith("http") ? a.portfolio : `https://${a.portfolio}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="link text-xs"
+                      >
+                        Portfolio ↗
+                      </a>
+                    )}
+                  </td>
+                  <td className="td font-medium text-muted">{a.jobTitle}</td>
+                  <td className="td text-muted">
+                    <p>{a.email}</p>
+                    {a.phone && <p className="text-xs text-faint">{a.phone}</p>}
+                  </td>
+                  <td className="td max-w-56">
+                    <p className="truncate text-xs text-muted" title={a.message ?? ""}>
+                      {a.message ?? "—"}
+                    </p>
+                  </td>
+                  <td className="td whitespace-nowrap text-muted">
+                    {a.createdAt?.toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                    }) ?? "—"}
+                  </td>
+                  <td className="td">
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${
+                        a.status === "NEW"
+                          ? "bg-brand-soft text-brand ring-brand-line"
+                          : "bg-panel text-muted ring-line"
+                      }`}
+                    >
+                      {a.status === "NEW" ? "New" : "Reviewed"}
+                    </span>
+                  </td>
+                  <td className="td">
+                    <div className="flex items-center justify-end gap-2">
+                      <form action={markApplicationReviewed}>
+                        <input type="hidden" name="applicationId" value={a.id} />
+                        <button className="rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel">
+                          {a.status === "NEW" ? "Reviewed" : "Reopen"}
+                        </button>
+                      </form>
+                      <form action={deleteJobApplication}>
+                        <input type="hidden" name="applicationId" value={a.id} />
+                        <button className="rounded-lg px-2 py-1.5 text-xs font-semibold text-faint transition hover:bg-hover hover:text-rose-500">
+                          Del
                         </button>
                       </form>
                     </div>

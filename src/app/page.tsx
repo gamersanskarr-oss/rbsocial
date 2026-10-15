@@ -9,8 +9,8 @@ import ContactArt from "@/components/contact-art";
 
 
 /* Brand colors lifted from the logo: flame red-orange + deep navy */
-const FLAME = "#ff4a36";
-const NAVY = "#2b3a8f";
+const FLAME = "#c51c1a";
+const NAVY = "#060365";
 
 const services = [
   {
@@ -175,7 +175,7 @@ export default function Home() {
           <Link
             href="/login"
             className="relative rounded-full px-5 py-2 text-[13px] font-bold text-white ring-1 ring-white/20 transition duration-200 hover:opacity-90 active:scale-[0.98]"
-            style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 8px 24px -10px ${FLAME}90` }}
+            style={{ background: `linear-gradient(135deg, ${FLAME}, #8f1410)`, boxShadow: `0 8px 24px -10px ${FLAME}90` }}
           >
             Team Login
           </Link>
@@ -206,7 +206,7 @@ export default function Home() {
         <div className="absolute inset-0">
           <LightRays
             raysOrigin="top-center"
-            raysColor="#ff5a3c"
+            raysColor="#e04438"
             raysSpeed={0.55}
             lightSpread={1.35}
             rayLength={1.7}
@@ -232,7 +232,7 @@ export default function Home() {
             Your brand,{" "}
             <span
               className="animate-gradient-pan bg-clip-text text-transparent"
-              style={{ backgroundImage: `linear-gradient(100deg, ${FLAME} 10%, #ff8a5c 40%, #ffd7a8 50%, ${NAVY} 90%)` }}
+              style={{ backgroundImage: `linear-gradient(100deg, ${FLAME} 10%, #f0554c 40%, #c9cfff 50%, ${NAVY} 90%)` }}
             >
               designed daily
             </span>
@@ -249,7 +249,7 @@ export default function Home() {
             <a
               href="#contact"
               className="rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:opacity-90 hover:shadow-xl active:scale-[0.98]"
-              style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 12px 32px -12px ${FLAME}80` }}
+              style={{ background: `linear-gradient(135deg, ${FLAME}, #8f1410)`, boxShadow: `0 12px 32px -12px ${FLAME}80` }}
             >
               Get Started
             </a>
@@ -289,7 +289,7 @@ export default function Home() {
             separator=""
             color="#ffffff"
             ribbon
-            ribbonGradient={["#ff8a5c", FLAME, "#d92c1c"]}
+            ribbonGradient={["#f0554c", FLAME, "#8f1410"]}
             ribbonWidth={40}
             pauseOnHover={false}
           />
@@ -381,7 +381,7 @@ export default function Home() {
                         ? `linear-gradient(135deg, ${NAVY}cc, #0a0c14 70%)`
                         : i % 3 === 1
                           ? `linear-gradient(135deg, ${FLAME}b3, #0a0c14 75%)`
-                          : `linear-gradient(135deg, #101528, ${NAVY}55 60%, ${FLAME}44)`,
+                          : `linear-gradient(135deg, #0b0c33, ${NAVY}55 60%, ${FLAME}44)`,
                   }}
                 />
                 {/* light sheen sweep on hover */}
@@ -576,7 +576,7 @@ export default function Home() {
               {p.featured && (
                 <span
                   className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white"
-                  style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` }}
+                  style={{ background: `linear-gradient(135deg, ${FLAME}, #8f1410)` }}
                 >
                   Most popular
                 </span>
@@ -602,7 +602,7 @@ export default function Home() {
                     ? "text-white hover:opacity-90"
                     : "border border-white/10 bg-white/5 text-ink hover:bg-white/10"
                 }`}
-                style={p.featured ? { background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` } : undefined}
+                style={p.featured ? { background: `linear-gradient(135deg, ${FLAME}, #8f1410)` } : undefined}
               >
                 {p.cta}
               </a>
@@ -644,7 +644,7 @@ export default function Home() {
       <section
         id="contact"
         className="relative"
-        style={{ background: "linear-gradient(180deg, transparent 0%, transparent 45%, #5c1408 78%, #932312 100%)" }}
+        style={{ background: "linear-gradient(180deg, transparent 0%, transparent 45%, #4d0c0a 78%, #7a1210 100%)" }}
       >
         <ScrollExpand
           useWindowScroll
@@ -663,7 +663,7 @@ export default function Home() {
           <div className="pointer-events-none absolute inset-0">
             <LightRays
               raysOrigin="top-center"
-              raysColor="#ff5a3c"
+              raysColor="#e04438"
               raysSpeed={0.45}
               lightSpread={1.0}
               rayLength={1.2}
@@ -684,7 +684,7 @@ export default function Home() {
               Ready to hand off{" "}
               <span
                 className="bg-clip-text text-transparent"
-                style={{ backgroundImage: `linear-gradient(100deg, #ff8a5c, ${FLAME} 60%, #ffd7a8)` }}
+                style={{ backgroundImage: `linear-gradient(100deg, #f0554c, ${FLAME} 60%, #c9cfff)` }}
               >
                 design work?
               </span>
@@ -703,7 +703,7 @@ export default function Home() {
               <button
                 type="button"
                 className="shrink-0 rounded-full px-7 py-3 text-sm font-bold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
-                style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)`, boxShadow: `0 10px 30px -10px ${FLAME}90` }}
+                style={{ background: `linear-gradient(135deg, ${FLAME}, #8f1410)`, boxShadow: `0 10px 30px -10px ${FLAME}90` }}
               >
                 Contact Us
               </button>
@@ -713,7 +713,7 @@ export default function Home() {
       </section>
 
       {/* ══ Footer — deep flame red, merged into the expand section ════ */}
-      <footer className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #932312 0%, #7a1c0f 55%, #571107 100%)" }}>
+      <footer className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #7a1210 0%, #63100d 55%, #400a08 100%)" }}>
         {/* soft top glow so it blends out of the artwork above */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/20 to-transparent" />
 
@@ -759,7 +759,7 @@ export default function Home() {
             <span className="flex items-center gap-1.5">
               Powered by
               <span className="font-bold text-white">ROSHAN</span>
-              <span className="font-bold" style={{ color: "#ffd7a8" }}>BHARAT</span>
+              <span className="font-bold" style={{ color: "#c9cfff" }}>BHARAT</span>
             </span>
           </div>
         </div>

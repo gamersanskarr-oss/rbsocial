@@ -30,9 +30,9 @@
   --t-info: #0369a1;
   --t-info-soft: #f0f9ff;
   --t-info-line: #bae6fd;
-  --t-brand: #c2410c;
-  --t-brand-soft: #fff7ed;
-  --t-brand-line: #fed7aa;
+  --t-brand: #c51c1a;
+  --t-brand-soft: #fbeeed;
+  --t-brand-line: #f2c1be;
 
   --t-shadow-soft: 0 1px 2px rgb(28 27 25 / 0.04), 0 6px 20px -10px rgb(28 27 25 / 0.08);
   --t-shadow-lift: 0 2px 6px rgb(28 27 25 / 0.04), 0 18px 36px -14px rgb(28 27 25 / 0.14);
@@ -67,9 +67,9 @@
   --t-info: #38bdf8;
   --t-info-soft: rgb(56 189 248 / 0.1);
   --t-info-line: rgb(56 189 248 / 0.25);
-  --t-brand: #fb923c;
-  --t-brand-soft: rgb(251 146 60 / 0.1);
-  --t-brand-line: rgb(251 146 60 / 0.25);
+  --t-brand: #f0554c;
+  --t-brand-soft: rgb(240 85 76 / 0.12);
+  --t-brand-line: rgb(240 85 76 / 0.3);
 
   --t-shadow-soft: inset 0 1px 0 rgb(255 255 255 / 0.03), 0 1px 3px rgb(0 0 0 / 0.45);
   --t-shadow-lift: inset 0 1px 0 rgb(255 255 255 / 0.04), 0 4px 10px rgb(0 0 0 / 0.4),
@@ -235,9 +235,9 @@ html {
     --t-info: #0369a1;
     --t-info-soft: #f0f9ff;
     --t-info-line: #bae6fd;
-    --t-brand: #c2410c;
-    --t-brand-soft: #fff7ed;
-    --t-brand-line: #fed7aa;
+    --t-brand: #c51c1a;
+    --t-brand-soft: #fbeeed;
+    --t-brand-line: #f2c1be;
     --t-shadow-soft: 0 1px 2px rgb(28 27 25 / 0.04);
     --t-shadow-lift: 0 2px 6px rgb(28 27 25 / 0.06);
   }

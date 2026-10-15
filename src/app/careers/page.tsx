@@ -2,13 +2,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { listJobs } from "@/lib/data";
 import { Logo } from "@/components/logo";
+import ApplyForm from "./apply-form";
 
 export const metadata: Metadata = {
   title: "Careers — RB Social Branding",
   description: "Open roles at RB Social Branding — design, video, IT and marketing.",
 };
 
-const FLAME = "#ff4a36";
+const FLAME = "#c51c1a";
 
 const TYPE_LABEL: Record<string, string> = {
   FULL_TIME: "Full-time",
@@ -71,11 +72,6 @@ export default async function CareersPage() {
             </div>
           )}
           {jobs.map((j) => {
-            const applyHref = j.applyLink
-              ? j.applyLink.includes("@") && !j.applyLink.startsWith("http")
-                ? `mailto:${j.applyLink}?subject=${encodeURIComponent(`Application: ${j.title}`)}`
-                : j.applyLink
-              : `mailto:careers@rbsocialbranding.com?subject=${encodeURIComponent(`Application: ${j.title}`)}`;
             return (
               <article
                 key={j.id}
@@ -104,15 +100,7 @@ export default async function CareersPage() {
                         ))}
                     </div>
                   </div>
-                  <a
-                    href={applyHref}
-                    target={applyHref.startsWith("mailto") ? undefined : "_blank"}
-                    rel="noreferrer"
-                    className="shrink-0 rounded-full px-6 py-2.5 text-sm font-bold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
-                    style={{ background: `linear-gradient(135deg, ${FLAME}, #d92c1c)` }}
-                  >
-                    Apply →
-                  </a>
+                  <ApplyForm jobId={j.id} jobTitle={j.title} />
                 </div>
                 <ul className="mt-5 space-y-1.5">
                   {j.description

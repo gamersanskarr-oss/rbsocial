@@ -73,21 +73,21 @@ export default function ContactArt() {
     >
       <defs>
         <linearGradient id="ca-flame" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#ff8a5c" />
-          <stop offset="0.55" stopColor="#ff4a36" />
-          <stop offset="1" stopColor="#d92c1c" />
+          <stop offset="0" stopColor="#f0554c" />
+          <stop offset="0.55" stopColor="#c51c1a" />
+          <stop offset="1" stopColor="#8f1410" />
         </linearGradient>
         <linearGradient id="ca-navy" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#1d2760" />
-          <stop offset="1" stopColor="#3a4bb0" />
+          <stop offset="0" stopColor="#070545" />
+          <stop offset="1" stopColor="#1410c8" />
         </linearGradient>
         <radialGradient id="ca-glowFlame" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#ff4a36" stopOpacity="0.4" />
-          <stop offset="1" stopColor="#ff4a36" stopOpacity="0" />
+          <stop offset="0" stopColor="#c51c1a" stopOpacity="0.4" />
+          <stop offset="1" stopColor="#c51c1a" stopOpacity="0" />
         </radialGradient>
         <radialGradient id="ca-glowNavy" cx="0.5" cy="0.5" r="0.5">
-          <stop offset="0" stopColor="#2b3a8f" stopOpacity="0.65" />
-          <stop offset="1" stopColor="#2b3a8f" stopOpacity="0" />
+          <stop offset="0" stopColor="#060365" stopOpacity="0.65" />
+          <stop offset="1" stopColor="#060365" stopOpacity="0" />
         </radialGradient>
         <pattern id="ca-dots" width="34" height="34" patternUnits="userSpaceOnUse">
           <circle cx="2" cy="2" r="1.4" fill="#ffffff" opacity="0.12" />
@@ -104,31 +104,31 @@ export default function ContactArt() {
       <g className="ca-waves">
         <path className="ca-wave-1" d="M 0 690 C 300 630, 520 740, 820 690 S 1300 610, 1600 680 L 1600 900 L 0 900 Z" fill="url(#ca-navy)" opacity="0.85" />
         <path className="ca-wave-2" d="M 0 730 C 320 680, 560 790, 860 735 S 1340 660, 1600 720 L 1600 900 L 0 900 Z" fill="url(#ca-flame)" opacity="0.9" />
-        <path className="ca-wave-3" d="M 0 700 C 300 640, 520 750, 820 700 S 1300 620, 1600 690" fill="none" stroke="#ff8a5c" strokeWidth="2.5" strokeOpacity="0.9" />
+        <path className="ca-wave-3" d="M 0 700 C 300 640, 520 750, 820 700 S 1300 620, 1600 690" fill="none" stroke="#f0554c" strokeWidth="2.5" strokeOpacity="0.9" />
       </g>
 
       <g className="ca-trend-group" transform="translate(150 420)">
         <polyline className="ca-trend" points="0,140 90,95 165,118 265,40 350,60" fill="none" stroke="url(#ca-flame)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M 344 64 l -34 4 m 34 -4 l -8 32" stroke="#ff8a5c" strokeWidth="4" strokeLinecap="round" fill="none" transform="scale(0.9)" />
-        <circle className="ca-node" cx="0" cy="140" r="6" fill="#0a0c14" stroke="#ff8a5c" strokeWidth="2.5" />
-        <circle className="ca-node" cx="90" cy="95" r="6" fill="#0a0c14" stroke="#ff8a5c" strokeWidth="2.5" />
-        <circle className="ca-node" cx="165" cy="118" r="6" fill="#0a0c14" stroke="#ff8a5c" strokeWidth="2.5" />
-        <circle className="ca-node" cx="265" cy="40" r="6" fill="#0a0c14" stroke="#ff8a5c" strokeWidth="2.5" />
-        <circle className="ca-node" cx="350" cy="60" r="8" fill="#ff4a36" />
+        <path d="M 344 64 l -34 4 m 34 -4 l -8 32" stroke="#f0554c" strokeWidth="4" strokeLinecap="round" fill="none" transform="scale(0.9)" />
+        <circle className="ca-node" cx="0" cy="140" r="6" fill="#0a0c14" stroke="#f0554c" strokeWidth="2.5" />
+        <circle className="ca-node" cx="90" cy="95" r="6" fill="#0a0c14" stroke="#f0554c" strokeWidth="2.5" />
+        <circle className="ca-node" cx="165" cy="118" r="6" fill="#0a0c14" stroke="#f0554c" strokeWidth="2.5" />
+        <circle className="ca-node" cx="265" cy="40" r="6" fill="#0a0c14" stroke="#f0554c" strokeWidth="2.5" />
+        <circle className="ca-node" cx="350" cy="60" r="8" fill="#c51c1a" />
       </g>
 
       <g className="ca-rings" transform="translate(1310 300)">
         <circle className="ca-ring-outer" r="170" fill="none" stroke="#ffffff" strokeOpacity="0.14" strokeWidth="1.5" strokeDasharray="2 9" />
-        <circle className="ca-ring-mid" r="115" fill="none" stroke="#4a5cc9" strokeOpacity="0.55" strokeWidth="2" />
-        <circle className="ca-ring-mid" r="60" fill="none" stroke="#ff8a5c" strokeOpacity="0.75" strokeWidth="2" />
-        <circle className="ca-ring-core" r="9" fill="#ff4a36" />
+        <circle className="ca-ring-mid" r="115" fill="none" stroke="#2a2fd6" strokeOpacity="0.55" strokeWidth="2" />
+        <circle className="ca-ring-mid" r="60" fill="none" stroke="#f0554c" strokeOpacity="0.75" strokeWidth="2" />
+        <circle className="ca-ring-core" r="9" fill="#c51c1a" />
         <circle cx="115" cy="0" r="5" fill="#ffffff" opacity="0.7" />
-        <circle cx="-42" cy="-42" r="4" fill="#ff8a5c" opacity="0.8" />
+        <circle cx="-42" cy="-42" r="4" fill="#f0554c" opacity="0.8" />
       </g>
 
       <g fill="#ffffff">
         <path className="ca-spark" d="M 240 150 l6 17 17 6 -17 6 -6 17 -6 -17 -17 -6 17 -6 z" opacity="0.8" />
-        <path className="ca-spark" d="M 1480 520 l5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5 z" fill="#ffd7a8" opacity="0.8" />
+        <path className="ca-spark" d="M 1480 520 l5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5 z" fill="#c9cfff" opacity="0.8" />
         <path className="ca-spark" d="M 1050 120 l4 11 11 4 -11 4 -4 11 -4 -11 -11 -4 11 -4 z" opacity="0.5" />
       </g>
     </svg>

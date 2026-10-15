@@ -132,6 +132,19 @@ export type JobRecord = {
   createdAt: Date | null;
 };
 
+export type JobApplicationRecord = {
+  id: string;
+  jobId: string;
+  jobTitle: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  portfolio: string | null;
+  message: string | null;
+  status: "NEW" | "REVIEWED";
+  createdAt: Date | null;
+};
+
 export type FinanceSettings = {
   monthlyRevenueTarget: number;
   dharamPercent: number;
@@ -439,6 +452,14 @@ export async function listJobs(onlyActive = false): Promise<JobRecord[]> {
   const snap = await adminDb.collection("jobs").get();
   const jobs = snap.docs.map((d) => withDates<JobRecord>(d, ["createdAt"])).sort(newest);
   return onlyActive ? jobs.filter((j) => j.active) : jobs;
+}
+
+/** Job applications submitted from the public careers page. */
+export async function listJobApplications(): Promise<JobApplicationRecord[]> {
+  const snap = await adminDb.collection("jobApplications").get();
+  return snap.docs
+    .map((d) => withDates<JobApplicationRecord>(d, ["createdAt"]))
+    .sort(newest);
 }
 
 // ---------------------------------------------------------------------------
