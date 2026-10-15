@@ -98,10 +98,11 @@ Single-page marketing site at `/`, plus three role-based dashboards
     Status is derived: PENDING → DUE_TODAY → OVERDUE → RECEIVED. Inline
     "Received" (sets receivedAt+method), "+ Follow-up" (counter +
     lastContactedAt), printable receipt at `/admin/payments/[id]`.
-  - `/admin/expenses` — categorized spend (EXPENSE_CATEGORIES in
-    `src/lib/constants.ts`), optional `staffId` link for staff payouts.
-  - `/admin/subscriptions` — recurring SaaS tracker; `processSubscriptions()`
-    lazily logs an expense and rolls `nextPaymentDate` forward.
+  - `/admin/expenses` — all spending in one place: categorized spend
+    (EXPENSE_CATEGORIES in `src/lib/constants.ts`, optional `staffId` link
+    for staff payouts) with a category filter, plus a subscriptions section
+    (recurring SaaS tracker; `processSubscriptions()` lazily logs an expense
+    and rolls `nextPaymentDate` forward). `/admin/subscriptions` redirects here.
   - `/admin/dharam` — tithe fund: accrues `dharamPercent`% of positive
     monthly net profit (computed from `bucketByMonth`), minus recorded
     disbursements (recipient/cause ledger).

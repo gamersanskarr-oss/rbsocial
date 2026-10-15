@@ -5,7 +5,6 @@ import { DashboardShell } from "@/components/dashboard-shell";
 const FINANCE_NAV = [
   { href: "/admin/payments", label: "Payments", icon: "payments" as const },
   { href: "/admin/expenses", label: "Expenses", icon: "expenses" as const },
-  { href: "/admin/subscriptions", label: "Subscriptions", icon: "subscriptions" as const },
   { href: "/admin/dharam", label: "Dharam", icon: "dharam" as const },
 ];
 

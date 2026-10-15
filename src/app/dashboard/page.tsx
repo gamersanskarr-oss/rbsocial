@@ -2,7 +2,8 @@ import Link from "next/link";
 import { requireEmployee } from "@/lib/auth";
 import { listTasksForUser } from "@/lib/data";
 import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT, payoutStatus } from "@/lib/deadlines";
-import { PageHeader, StatusBadge } from "@/components/ui";
+import { StatusBadge } from "@/components/ui";
+import { TimeGreeting } from "@/components/time-greeting";
 
 const firstName = (name: string) => name.split(" ")[0];
 
@@ -13,18 +14,6 @@ function groupByClient<T extends { client: { name: string } }>(tasks: T[]) {
     map.set(key, [...(map.get(key) ?? []), t]);
   }
   return new Map([...map.entries()].sort(([a], [b]) => a.localeCompare(b)));
-}
-
-function greeting(pending: number) {
-  const h = new Date().getHours();
-  const tod = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
-  const vibe =
-    pending === 0
-      ? "Zero tasks on your plate — either you're a machine or admin's on a break. 🌴"
-      : pending <= 3
-        ? `${pending} quest${pending === 1 ? "" : "s"} waiting. Small mountain, big you. ⛰️`
-        : `${pending} tasks?! Okay, admin really believes in you. No pressure. 😅`;
-  return { tod, vibe };
 }
 
 function timeLeft(d: Date) {
@@ -38,10 +27,10 @@ function timeLeft(d: Date) {
 
 function payoutLine(missed: number, reduced: boolean, percent: number) {
   if (reduced)
-    return `🚨 Full gremlin mode: ${missed} missed deadlines, ${percent}% payout cut active. Time to become a deadline ninja. 🥷`;
+    return `🚨 ${missed} missed deadlines — ${percent}% payout cut is active. Submit on time to stay safe.`;
   if (missed > 0)
-    return `👀 You've used ${missed} of ${MISSED_DEADLINE_LIMIT} strikes. The payout gremlin is stirring… keep it sleeping.`;
-  return "✨ Flawless record — zero missed deadlines. Keep the month clean for a +10% bonus. 🎁";
+    return `👀 You've missed ${missed} of ${MISSED_DEADLINE_LIMIT} allowed deadlines. Be careful — one more affects your pay.`;
+  return "✨ No missed deadlines. Keep it up this month for a +10% bonus. 🎁";
 }
 
 export default async function DashboardPage() {
@@ -55,32 +44,31 @@ export default async function DashboardPage() {
   const urgent = pending.filter((t) => t.deadline.getTime() - Date.now() < 48 * 36e5);
   const rest = pending.filter((t) => t.deadline.getTime() - Date.now() >= 48 * 36e5);
   const done = tasks.filter((t) => t.status !== "PENDING");
-  const shipped = done.filter((t) => t.status === "COMPLETED").length;
-  const { tod, vibe } = greeting(pending.length);
+  const completed = done.filter((t) => t.status === "COMPLETED").length;
 
   return (
     <div className="space-y-8">
-      <PageHeader title={`${tod}, ${firstName(user.name)} 👋`} subtitle={vibe} />
+      <TimeGreeting name={firstName(user.name)} pending={pending.length} />
 
       {/* vibe stats */}
       <div className="grid grid-cols-3 gap-3">
         <div className="card p-4 text-center">
           <p className="text-2xl">🎯</p>
           <p className="mt-1 text-xl font-extrabold text-ink">{pending.length}</p>
-          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Open quests</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Tasks to do</p>
         </div>
         <div className="card p-4 text-center">
           <p className="text-2xl">🏆</p>
-          <p className="mt-1 text-xl font-extrabold text-ink">{shipped}</p>
-          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Shipped</p>
+          <p className="mt-1 text-xl font-extrabold text-ink">{completed}</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Done</p>
         </div>
         <div className="card p-4 text-center">
           <p className="text-2xl">{user.missedDeadlines === 0 ? "😌" : "😬"}</p>
           <p className="mt-1 text-xl font-extrabold text-ink">
             {user.missedDeadlines}/{MISSED_DEADLINE_LIMIT}
           </p>
-          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Strikes used</p>
-          <p className="mt-0.5 text-[10px] font-medium text-faint">≤1/mo keeps your +10% bonus</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Missed</p>
+          <p className="mt-0.5 text-[10px] font-medium text-faint">≤1 per month keeps your bonus</p>
         </div>
       </div>
 
@@ -103,14 +91,14 @@ export default async function DashboardPage() {
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl" />
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-extrabold tracking-tight">
-              🚨 Drop everything — {urgent.length} urgent task{urgent.length === 1 ? "" : "s"}
+              🚨 Urgent — {urgent.length} task{urgent.length === 1 ? "" : "s"} need attention
             </h2>
             <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold backdrop-blur">
               next 48 hours
             </span>
           </div>
           <p className="mt-1 text-sm font-medium text-white/80">
-              These are burning. Finish them before the gremlin wakes up.
+            Overdue or due very soon — finish these first.
           </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {urgent.map((t) => {
@@ -146,15 +134,15 @@ export default async function DashboardPage() {
 
       {/* Open tasks — grouped per client */}
       <section>
-        <h2 className="section-label mb-3">🔥 Open quests</h2>
+        <h2 className="section-label mb-3">🔥 Open tasks</h2>
         {pending.length === 0 && (
           <p className="text-sm font-medium text-faint">
-            Nothing here. Go touch grass, you've earned it. 🌱
+            Nothing pending — you're all done. 🌱
           </p>
         )}
         {rest.length === 0 && pending.length > 0 && (
           <p className="text-sm font-medium text-faint">
-            Everything left is up in the urgent zone ☝️ — nothing calm on the board.
+            All your tasks are in the urgent section above ☝️
           </p>
         )}
         <div className="space-y-6">
@@ -210,7 +198,7 @@ export default async function DashboardPage() {
 
       {/* Past tasks */}
       <section>
-        <h2 className="section-label mb-3">🏆 Trophy shelf</h2>
+        <h2 className="section-label mb-3">🏆 Finished tasks</h2>
         <div className="card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -226,7 +214,7 @@ export default async function DashboardPage() {
                 {done.length === 0 && (
                   <tr>
                     <td className="td py-10 text-center text-faint" colSpan={4}>
-                      Empty shelf. First win incoming. 🥇
+                      Nothing here yet — your finished tasks will show up here. 🥇
                     </td>
                   </tr>
                 )}
