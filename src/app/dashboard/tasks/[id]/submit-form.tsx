@@ -32,7 +32,7 @@ export default function SubmitTaskForm({
         />
       </div>
       <div>
-        <label className="mb-1 block text-sm text-muted">Amount for this task (₹)</label>
+        <label className="mb-1 block text-sm text-muted">Quote your price for this task (₹)</label>
         <input
           name="payAmount"
           type="number"
@@ -44,8 +44,8 @@ export default function SubmitTaskForm({
         />
         <p className="mt-1 text-xs font-medium text-faint">
           {defaultAmount != null
-            ? `Prefilled with ₹${defaultAmount.toLocaleString("en-IN")} — bump it up if this one took extra work 💪`
-            : "No rate set — enter what this task should pay."}
+            ? `Prefilled with ₹${defaultAmount.toLocaleString("en-IN")} — quote higher if this took extra work. Custom quotes are final only after manager approval.`
+            : "No rate set — quote what this task should pay. It counts after approval."}
         </p>
       </div>
       <button type="submit" disabled={pending} className="btn-primary">

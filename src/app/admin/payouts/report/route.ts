@@ -1,5 +1,5 @@
 import { requireAdmin } from "@/lib/auth";
-import { getUser, tasksDueBetween } from "@/lib/data";
+import { getUser, taskPay, tasksDueBetween } from "@/lib/data";
 import {
   BONUS_GRACE_MISSES,
   MISSED_DEADLINE_LIMIT,
@@ -42,7 +42,7 @@ export async function GET(req: Request) {
   const rate = emp.perPostPay ?? 0;
   const done = tasks.filter((t) => t.status === "COMPLETED");
   const missed = tasks.filter((t) => t.status === "MISSED");
-  const gross = done.reduce((s, t) => s + (t.payAmount ?? rate), 0);
+  const gross = done.reduce((s, t) => s + taskPay(t, rate), 0);
   const reduced = payoutStatus(emp.missedDeadlines).reduced;
   const deduction = reduced ? gross * PAYOUT_REDUCTION : 0;
   const bonus = !reduced && missed.length <= BONUS_GRACE_MISSES ? gross * PAYOUT_BONUS : 0;
@@ -69,7 +69,7 @@ export async function GET(req: Request) {
         csv(dt(t.deadline)),
         csv(t.status),
         csv(dt(t.completedAt)),
-        csv(t.status === "COMPLETED" ? t.payAmount ?? rate : ""),
+        csv(t.status === "COMPLETED" ? taskPay(t, rate) : ""),
       ].join(",")
     ),
     "",

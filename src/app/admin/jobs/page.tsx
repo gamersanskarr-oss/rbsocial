@@ -73,6 +73,14 @@ export default async function JobsPage() {
                     <p className="text-xs font-medium text-faint">
                       {j.salary ? `${j.salary} · ` : ""}
                       {appCount.get(j.id) ?? 0} application{(appCount.get(j.id) ?? 0) === 1 ? "" : "s"}
+                      {(appCount.get(j.id) ?? 0) > 0 && (
+                        <>
+                          {" · "}
+                          <a href={`/admin/jobs/report?job=${j.id}`} download className="link">
+                            Excel ↓
+                          </a>
+                        </>
+                      )}
                     </p>
                   </td>
                   <td className="td text-muted">{TEAM_LABEL[j.team ?? ""] ?? j.team}</td>
@@ -116,11 +124,20 @@ export default async function JobsPage() {
       <div className="card overflow-hidden">
         <div className="flex items-center justify-between border-b border-line bg-panel/70 px-5 py-3.5">
           <h2 className="text-sm font-bold text-ink">Applications ({applications.length})</h2>
-          {newApps > 0 && (
-            <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-bold text-brand ring-1 ring-inset ring-brand-line">
-              {newApps} new
-            </span>
-          )}
+          <div className="flex items-center gap-3">
+            {newApps > 0 && (
+              <span className="rounded-full bg-brand-soft px-2.5 py-1 text-xs font-bold text-brand ring-1 ring-inset ring-brand-line">
+                {newApps} new
+              </span>
+            )}
+            <a
+              href="/admin/jobs/report"
+              download
+              className="rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
+            >
+              Excel ↓
+            </a>
+          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">

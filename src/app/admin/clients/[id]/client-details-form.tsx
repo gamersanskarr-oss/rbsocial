@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateClientDetails, type ClientState } from "@/app/actions/clients";
+import RequirementsEditor, { type ClientRequirement } from "@/components/requirements-editor";
 
 const initial: ClientState = {};
 
@@ -13,14 +14,17 @@ export type ClientDetails = {
   facebook: string | null;
   website: string | null;
   notes: string | null;
+  requirements: ClientRequirement[] | null;
 };
 
 export default function ClientDetailsForm({
   clientId,
   client,
+  taskTypes,
 }: {
   clientId: string;
   client: ClientDetails;
+  taskTypes: string[];
 }) {
   const [state, formAction, pending] = useActionState(updateClientDetails, initial);
 
@@ -56,6 +60,8 @@ export default function ClientDetailsForm({
           <input name="facebook" type="url" defaultValue={client.facebook ?? ""} className="input" placeholder="https://facebook.com/…" />
         </div>
       </div>
+
+      <RequirementsEditor types={taskTypes} initial={client.requirements} />
 
       <div>
         <label className="mb-1 block text-sm font-medium text-muted">

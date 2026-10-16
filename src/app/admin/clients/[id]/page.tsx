@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getClient, listAssets, tasksByClient, userNameMap } from "@/lib/data";
+import { clientAssignees, getClient, listAssets, listTaskTypes, tasksByClient, userNameMap } from "@/lib/data";
 import { requireAdmin } from "@/lib/auth";
 import { StatusBadge } from "@/components/ui";
 import { ClientLogo } from "@/components/client-logo";
@@ -17,14 +17,17 @@ export default async function AdminClientDetailPage({
 }) {
   const { id } = await params;
   await requireAdmin();
-  const [client, assets, tasks, userNames] = await Promise.all([
+  const [client, assets, tasks, userNames, taskTypes] = await Promise.all([
     getClient(id),
     listAssets(id),
     tasksByClient(id),
     userNameMap(),
+    listTaskTypes(),
   ]);
   if (!client) notFound();
-  const assignedName = client.assignedToId ? userNames.get(client.assignedToId) : null;
+  const assignedNames = clientAssignees(client).map(
+    (uid) => userNames.get(uid) ?? "?"
+  );
 
   const socials = [
     { label: "Instagram", url: client.instagram },
@@ -43,9 +46,21 @@ export default async function AdminClientDetailPage({
         <div className="min-w-0">
           <h1 className="text-2xl font-bold tracking-tight text-ink">{client.name}</h1>
           <p className="mt-1 text-sm font-medium text-muted">
-            {client.contact ?? "No contact yet"} · Designer:{" "}
-            {assignedName ?? "Unassigned"}
+            {client.contact ?? "No contact yet"} · Designer(s):{" "}
+            {assignedNames.length ? assignedNames.join(", ") : "Unassigned"}
           </p>
+          {client.requirements && client.requirements.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {client.requirements.map((r, i) => (
+                <span
+                  key={i}
+                  className="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand ring-1 ring-inset ring-brand-line"
+                >
+                  {r.qty}× {r.type}/{r.per === "WEEK" ? "wk" : "mo"}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         {socials.length > 0 && (
           <div className="ml-auto flex flex-wrap gap-2">
@@ -78,7 +93,9 @@ export default async function AdminClientDetailPage({
               facebook: client.facebook,
               website: client.website,
               notes: client.notes,
+              requirements: client.requirements,
             }}
+            taskTypes={taskTypes}
           />
         </div>
 

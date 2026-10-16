@@ -3,7 +3,7 @@
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { revalidatePath } from "next/cache";
-import { adminDb, FieldValue } from "@/lib/data";
+import { adminDb, FieldValue, parseClientRequirements } from "@/lib/data";
 import { requireAdmin } from "@/lib/auth";
 
 export type ClientState = { error?: string; success?: string };
@@ -28,6 +28,7 @@ export async function updateClientDetails(
   const facebook = String(formData.get("facebook") ?? "").trim() || null;
   const website = String(formData.get("website") ?? "").trim() || null;
   const notes = String(formData.get("notes") ?? "").trim() || null;
+  const requirements = parseClientRequirements(formData);
 
   if (!name) return { error: "Client name is required." };
 
@@ -55,6 +56,7 @@ export async function updateClientDetails(
         facebook,
         website,
         notes,
+        requirements,
         ...(logoUrl ? { logoUrl } : {}),
       });
   } catch {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireEmployee } from "@/lib/auth";
-import { getClient, listAssets, tasksByClient } from "@/lib/data";
+import { clientAssignees, getClient, listAssets, tasksByClient } from "@/lib/data";
 import { StatusBadge } from "@/components/ui";
 import { ClientLogo } from "@/components/client-logo";
 
@@ -21,7 +21,7 @@ export default async function MyClientDetailPage({
     listAssets(id),
     tasksByClient(id),
   ]);
-  if (!client || client.assignedToId !== user.id) notFound();
+  if (!client || !clientAssignees(client).includes(user.id)) notFound();
   const tasks = clientTasks.filter((t) => t.assignedToId === user.id);
 
   const statusFilter = ["PENDING", "COMPLETED", "MISSED"].includes(status ?? "")
@@ -49,6 +49,18 @@ export default async function MyClientDetailPage({
             {client.contact ?? "No contact yet"}
             {client.phone ? ` · ${client.phone}` : ""}
           </p>
+          {client.requirements && client.requirements.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-1.5">
+              {client.requirements.map((r, i) => (
+                <span
+                  key={i}
+                  className="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand ring-1 ring-inset ring-brand-line"
+                >
+                  {r.qty}× {r.type}/{r.per === "WEEK" ? "wk" : "mo"}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         {socials.length > 0 && (
           <div className="ml-auto flex flex-wrap gap-2">

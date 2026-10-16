@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { listJobs } from "@/lib/data";
 import { Logo } from "@/components/logo";
-import ApplyForm from "./apply-form";
+import ApplySection from "./apply-form";
 
 export const metadata: Metadata = {
   title: "Careers — RB Social Branding",
@@ -100,7 +100,12 @@ export default async function CareersPage() {
                         ))}
                     </div>
                   </div>
-                  <ApplyForm jobId={j.id} jobTitle={j.title} />
+                  <a
+                    href="#apply"
+                    className="shrink-0 rounded-full border border-line bg-elevated px-5 py-2 text-xs font-bold text-muted transition hover:text-ink"
+                  >
+                    Apply ↓
+                  </a>
                 </div>
                 <ul className="mt-5 space-y-1.5">
                   {j.description
@@ -118,6 +123,8 @@ export default async function CareersPage() {
             );
           })}
         </div>
+
+        <ApplySection jobs={jobs.map((j) => ({ id: j.id, title: j.title }))} />
       </main>
     </div>
   );

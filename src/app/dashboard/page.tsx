@@ -4,6 +4,7 @@ import { listTasksForUser } from "@/lib/data";
 import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT, payoutStatus } from "@/lib/deadlines";
 import { StatusBadge } from "@/components/ui";
 import { TimeGreeting } from "@/components/time-greeting";
+import { DueTime } from "@/components/due-time";
 
 const firstName = (name: string) => name.split(" ")[0];
 
@@ -33,18 +34,37 @@ function payoutLine(missed: number, reduced: boolean, percent: number) {
   return "✨ No missed deadlines. Keep it up this month for a +10% bonus. 🎁";
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
   const user = await requireEmployee();
   await checkMissedDeadlines();
 
-  const tasks = await listTasksForUser(user.id);
+  const allTasks = await listTasksForUser(user.id);
+
+  // Filters — client-wise and status-wise
+  const sp = await searchParams;
+  const fClient = typeof sp.client === "string" ? sp.client : "";
+  const fStatus = typeof sp.status === "string" ? sp.status : "";
+  const clientNames = [...new Set(allTasks.map((t) => t.client.name))].sort();
+  const filtering = Boolean(fClient || fStatus);
+  const tasks = allTasks.filter(
+    (t) => (!fClient || t.client.name === fClient) && (!fStatus || t.status === fStatus)
+  );
 
   const payout = payoutStatus(user.missedDeadlines);
-  const pending = tasks.filter((t) => t.status === "PENDING");
-  const urgent = pending.filter((t) => t.deadline.getTime() - Date.now() < 48 * 36e5);
-  const rest = pending.filter((t) => t.deadline.getTime() - Date.now() >= 48 * 36e5);
-  const done = tasks.filter((t) => t.status !== "PENDING");
-  const completed = done.filter((t) => t.status === "COMPLETED").length;
+  // Missed tasks stay actionable — the employee can still submit them late
+  const pending = tasks.filter((t) => t.status !== "COMPLETED");
+  const urgent = pending.filter(
+    (t) => t.status === "MISSED" || t.deadline.getTime() - Date.now() < 48 * 36e5
+  );
+  const rest = pending.filter(
+    (t) => t.status !== "MISSED" && t.deadline.getTime() - Date.now() >= 48 * 36e5
+  );
+  const done = tasks.filter((t) => t.status === "COMPLETED");
+  const completed = done.length;
 
   return (
     <div className="space-y-8">
@@ -116,6 +136,9 @@ export default async function DashboardPage() {
                         {t.client.name}
                         {t.type ? ` · ${t.type}` : ""}
                       </p>
+                      <p className="mt-1 text-xs font-bold text-white/90">
+                        Due <DueTime iso={t.deadline.toISOString()} />
+                      </p>
                     </div>
                     <span
                       className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide ${
@@ -132,12 +155,48 @@ export default async function DashboardPage() {
         </section>
       )}
 
+      {/* Filters */}
+      <form className="card flex flex-wrap items-end gap-3 p-4">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-faint">Client</label>
+          <select name="client" defaultValue={fClient} className="input w-auto min-w-40 px-3 py-2 text-sm">
+            <option value="">All clients</option>
+            {clientNames.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-faint">Status</label>
+          <select name="status" defaultValue={fStatus} className="input w-auto px-3 py-2 text-sm">
+            <option value="">All statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="MISSED">Missed</option>
+          </select>
+        </div>
+        <button className="btn-primary px-4 py-2 text-sm">Apply</button>
+        {filtering && (
+          <Link
+            href="/dashboard"
+            className="rounded-xl px-3 py-2.5 text-sm font-semibold text-muted transition hover:bg-hover hover:text-ink"
+          >
+            Clear
+          </Link>
+        )}
+        {filtering && (
+          <span className="pb-2 text-xs font-semibold text-faint">
+            {tasks.length} task{tasks.length === 1 ? "" : "s"} match
+          </span>
+        )}
+      </form>
+
       {/* Open tasks — grouped per client */}
       <section>
         <h2 className="section-label mb-3">🔥 Open tasks</h2>
         {pending.length === 0 && (
           <p className="text-sm font-medium text-faint">
-            Nothing pending — you're all done. 🌱
+            {filtering ? "No open tasks match these filters." : "Nothing pending — you're all done. 🌱"}
           </p>
         )}
         {rest.length === 0 && pending.length > 0 && (
@@ -183,8 +242,7 @@ export default async function DashboardPage() {
                   </p>
                 )}
                 <p className={`mt-4 text-xs font-semibold ${overdue ? "text-bad" : "text-faint"}`}>
-                  Due {t.deadline.toLocaleDateString()}{" "}
-                  {t.deadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  Due <DueTime iso={t.deadline.toISOString()} />
                   {overdue ? " · overdue 👀" : ""}
                 </p>
               </Link>
@@ -214,7 +272,9 @@ export default async function DashboardPage() {
                 {done.length === 0 && (
                   <tr>
                     <td className="td py-10 text-center text-faint" colSpan={4}>
-                      Nothing here yet — your finished tasks will show up here. 🥇
+                      {filtering
+                        ? "No finished tasks match these filters."
+                        : "Nothing here yet — your finished tasks will show up here. 🥇"}
                     </td>
                   </tr>
                 )}
@@ -231,7 +291,9 @@ export default async function DashboardPage() {
                       )}
                     </td>
                     <td className="td font-medium text-ink">{t.client.name}</td>
-                    <td className="td text-muted">{t.deadline.toLocaleDateString()}</td>
+                    <td className="td text-muted">
+                      <DueTime iso={t.deadline.toISOString()} dateOnly />
+                    </td>
                     <td className="td"><StatusBadge status={t.status} /></td>
                   </tr>
                 ))}

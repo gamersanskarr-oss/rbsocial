@@ -2,10 +2,17 @@
 
 import { useActionState } from "react";
 import { addClient, type ActionState } from "@/app/actions/admin";
+import RequirementsEditor from "@/components/requirements-editor";
 
 const initial: ActionState = {};
 
-export default function AddClientForm({ designers }: { designers: { id: string; name: string }[] }) {
+export default function AddClientForm({
+  designers,
+  taskTypes,
+}: {
+  designers: { id: string; name: string }[];
+  taskTypes: string[];
+}) {
   const [state, formAction, pending] = useActionState(addClient, initial);
 
   return (
@@ -22,15 +29,28 @@ export default function AddClientForm({ designers }: { designers: { id: string; 
           <input name="contact" className="input" placeholder="email or phone" />
         </div>
         <div>
-          <label className="mb-1 block text-sm text-muted">Assign to designer</label>
-          <select name="assignedToId" className="input" defaultValue="">
-            <option value="">Unassigned</option>
+          <label className="mb-1 block text-sm text-muted">Assign to designer(s)</label>
+          <div className="input flex min-h-[2.75rem] flex-wrap items-center gap-1.5 py-2">
+            {designers.length === 0 && (
+              <span className="text-sm text-faint">No designers yet</span>
+            )}
             {designers.map((d) => (
-              <option key={d.id} value={d.id}>{d.name}</option>
+              <label key={d.id} className="cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="assignedToIds"
+                  value={d.id}
+                  className="peer sr-only"
+                />
+                <span className="inline-block rounded-full border border-line bg-panel px-2.5 py-1 text-xs font-semibold text-muted transition peer-checked:border-transparent peer-checked:bg-ink peer-checked:text-canvas">
+                  {d.name}
+                </span>
+              </label>
             ))}
-          </select>
+          </div>
         </div>
       </div>
+      <RequirementsEditor types={taskTypes} />
       <button type="submit" disabled={pending} className="btn-primary">
         {pending ? "Adding…" : "Add Client"}
       </button>

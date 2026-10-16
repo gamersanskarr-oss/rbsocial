@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
-import { addTaskType, createTask, type ActionState } from "@/app/actions/admin";
+import { createTask, type ActionState } from "@/app/actions/admin";
 
 const initial: ActionState = {};
 
@@ -23,24 +23,10 @@ export default function CreateTaskForm({
 
   const [payAmt, setPayAmt] = useState("");
   const [selType, setSelType] = useState("");
-  const [newType, setNewType] = useState("");
-  const [typeMsg, setTypeMsg] = useState<ActionState>({});
-  const [addingType, startAddingType] = useTransition();
 
   useEffect(() => {
     if (state.success) router.push(`${basePath}/tasks`);
   }, [state, router, basePath]);
-
-  const saveType = () => {
-    const v = newType.trim();
-    if (!v || addingType) return;
-    startAddingType(async () => {
-      const res = await addTaskType(v);
-      setTypeMsg(res);
-      if (res.success) setNewType("");
-      router.refresh();
-    });
-  };
 
   return (
     <form action={formAction} className="space-y-4">
@@ -82,30 +68,9 @@ export default function CreateTaskForm({
               />
             </div>
           )}
-          <div className="mt-2 flex items-center gap-2">
-            <input
-              value={newType}
-              onChange={(e) => setNewType(e.target.value)}
-              className="input flex-1 px-2.5 py-1.5 text-xs"
-              placeholder="New category, e.g. Reels cover"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  saveType();
-                }
-              }}
-            />
-            <button
-              type="button"
-              onClick={saveType}
-              disabled={addingType || !newType.trim()}
-              className="rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel disabled:opacity-50"
-            >
-              {addingType ? "Adding…" : "+ Add"}
-            </button>
-          </div>
-          {typeMsg.error && <p className="mt-1 text-xs font-medium text-bad">{typeMsg.error}</p>}
-          {typeMsg.success && <p className="mt-1 text-xs font-medium text-ok">{typeMsg.success}</p>}
+          <p className="mt-1.5 text-[11px] font-medium text-faint">
+            Missing a type? Add it in the Task categories box →
+          </p>
         </div>
         <div>
           <label className="mb-1 block text-sm text-muted">Client</label>

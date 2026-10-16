@@ -24,6 +24,8 @@ export default async function EmployeeCalendarPage() {
           status: t.status,
           deadline: t.deadline.toISOString(),
           clientName: t.client.name,
+          type: t.type,
+          slideCount: t.slideCount,
         }))}
       />
     </div>

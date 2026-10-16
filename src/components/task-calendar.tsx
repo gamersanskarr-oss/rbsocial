@@ -14,6 +14,8 @@ export type CalendarTask = {
   deadline: string; // ISO
   clientName: string;
   assignee?: string | null;
+  type?: string | null;
+  slideCount?: number | null;
 };
 
 export type CalendarOption = { id: string; name: string; team?: string | null; perPostPay?: number | null };
@@ -32,8 +34,8 @@ const chipStyles: Record<string, string> = {
 
 const dotStyles: Record<string, string> = {
   PENDING: "bg-amber-400",
-  COMPLETED: "bg-ok-soft0",
-  MISSED: "bg-bad-soft0",
+  COMPLETED: "bg-emerald-500",
+  MISSED: "bg-rose-500",
 };
 
 function AssignModal({
@@ -79,7 +81,7 @@ function AssignModal({
           <button
             onClick={onClose}
             aria-label="Close"
-            className="rounded-xl p-2 text-faint transition hover:bg-hover hover:text-ink"
+            className="rounded-xl p-2 text-white transition hover:bg-hover"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" className="h-4 w-4" aria-hidden>
               <path d="M18 6L6 18" />
@@ -300,7 +302,7 @@ export function TaskCalendar({
           <button
             onClick={() => move(-1)}
             aria-label="Previous month"
-            className="rounded-xl border border-line bg-elevated p-2 text-muted shadow-sm transition hover:bg-hover hover:text-ink"
+            className="rounded-xl border border-line bg-elevated p-2 text-white shadow-sm transition hover:bg-hover"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
               <path d="M15 18l-6-6 6-6" />
@@ -316,7 +318,7 @@ export function TaskCalendar({
           <button
             onClick={() => move(1)}
             aria-label="Next month"
-            className="rounded-xl border border-line bg-elevated p-2 text-muted shadow-sm transition hover:bg-hover hover:text-ink"
+            className="rounded-xl border border-line bg-elevated p-2 text-white shadow-sm transition hover:bg-hover"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
               <path d="M9 18l6-6-6-6" />
@@ -419,7 +421,7 @@ export function TaskCalendar({
                       {day}
                     </span>
                     {canCreate && (
-                      <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-lg text-faint opacity-0 transition group-hover:opacity-100">
+                      <span className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-lg text-white opacity-0 transition group-hover:opacity-100">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="h-3.5 w-3.5" aria-hidden>
                           <path d="M12 5v14" />
                           <path d="M5 12h14" />
@@ -428,14 +430,27 @@ export function TaskCalendar({
                     )}
                     <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
                       {dayTasks.slice(0, 2).map((t) => {
+                        // Optimistic status after a drag: past deadline = missed, future = pending
+                        const movedDate = moved[t.id];
+                        const st = movedDate
+                          ? movedDate.getTime() < Date.now()
+                            ? "MISSED"
+                            : t.status === "MISSED"
+                              ? "PENDING"
+                              : t.status
+                          : t.status;
+                        const label = t.type
+                          ? `${t.type}${t.slideCount ? ` · ${t.slideCount}` : ""}`
+                          : t.topic;
+                        const dl = new Date(movedDate ?? t.deadline);
                         const chip = (
                           <>
-                            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotStyles[t.status] ?? "bg-faint"}`} />
-                            <span className="truncate">{t.topic}</span>
+                            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotStyles[st] ?? "bg-faint"}`} />
+                            <span className="truncate">{label}</span>
                           </>
                         );
-                        const cls = `flex items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-semibold ring-1 ring-inset transition ${
-                          chipStyles[t.status] ?? "bg-panel text-muted ring-line"
+                        const cls = `flex w-full items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-semibold ring-1 ring-inset transition ${
+                          chipStyles[st] ?? "bg-panel text-muted ring-line"
                         } ${canCreate ? "cursor-grab active:cursor-grabbing" : ""} ${dragId === t.id ? "opacity-40" : ""}`;
                         const dragProps = canCreate
                           ? {
@@ -448,13 +463,42 @@ export function TaskCalendar({
                               onDragEnd: () => { setDragId(null); setDropKey(null); },
                             }
                           : {};
-                        return basePath ? (
-                          <Link key={t.id} href={`${basePath}/${t.id}`} title={`${t.topic} · ${t.clientName}`} className={cls} {...dragProps}>
+                        // Tooltip flips up on lower rows, and aligns to the nearer edge
+                        const row = Math.floor(i / 7);
+                        const vert = row < 3 ? "top-full mt-1.5" : "bottom-full mb-1.5";
+                        const horiz =
+                          i % 7 >= 5 ? "right-0" : i % 7 <= 1 ? "left-0" : "left-1/2 -translate-x-1/2";
+                        const tooltip = (
+                          <span
+                            className={`pointer-events-none absolute z-50 hidden w-44 rounded-xl border border-line bg-elevated p-3 text-left shadow-lift group-hover/task:block ${vert} ${horiz}`}
+                          >
+                            <span className="block text-[11px] font-bold leading-snug text-ink">
+                              {t.topic}
+                            </span>
+                            <span className="mt-1 block text-[10px] font-semibold text-muted">
+                              {t.clientName}
+                              {t.assignee ? ` · ${t.assignee}` : ""}
+                            </span>
+                            <span className="mt-1 block text-[10px] font-medium text-faint">
+                              {dl.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                              {t.type ? ` · ${t.type}${t.slideCount ? ` · ${t.slideCount} slides` : ""}` : ""}
+                              {` · ${st.charAt(0)}${st.slice(1).toLowerCase()}`}
+                            </span>
+                          </span>
+                        );
+                        const inner = basePath ? (
+                          <Link href={`${basePath}/${t.id}`} className={cls} {...dragProps}>
                             {chip}
                           </Link>
                         ) : (
-                          <div key={t.id} title={`${t.topic} · ${t.clientName}`} className={cls} {...dragProps}>
+                          <div className={cls} {...dragProps}>
                             {chip}
+                          </div>
+                        );
+                        return (
+                          <div key={t.id} className="group/task relative">
+                            {inner}
+                            {tooltip}
                           </div>
                         );
                       })}

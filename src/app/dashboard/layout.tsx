@@ -1,5 +1,5 @@
 import { requireEmployee } from "@/lib/auth";
-import { getUser, listTasksForUser } from "@/lib/data";
+import { getUser, listTasksForUser, taskPay } from "@/lib/data";
 import { BONUS_GRACE_MISSES, PAYOUT_BONUS, payoutStatus } from "@/lib/deadlines";
 import { DashboardShell } from "@/components/dashboard-shell";
 
@@ -26,7 +26,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const rate = fresh?.perPostPay ?? null;
   const done = myTasks.filter((t) => t.status === "COMPLETED");
-  const earned = (t: (typeof done)[number]) => t.payAmount ?? rate ?? 0;
+  const earned = (t: (typeof done)[number]) => taskPay(t, rate ?? 0);
 
   const totalEarned = done.reduce((s, t) => s + earned(t), 0);
   const monthEarned = done

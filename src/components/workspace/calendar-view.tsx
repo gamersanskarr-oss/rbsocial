@@ -33,6 +33,8 @@ export default async function CalendarView({ basePath }: { basePath: string }) {
           deadline: t.deadline.toISOString(),
           clientName: t.client.name,
           assignee: t.assignedTo.name,
+          type: t.type,
+          slideCount: t.slideCount,
         }))}
       />
     </div>

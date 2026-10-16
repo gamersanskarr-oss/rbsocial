@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { adminDb, Timestamp, FieldValue } from "@/lib/data";
+import { adminDb, Timestamp, FieldValue, parseClientRequirements } from "@/lib/data";
 import { adminAuth } from "@/lib/firebase-admin";
 import { requireAdmin, requireAdminOrManager } from "@/lib/auth";
 
@@ -53,7 +53,8 @@ export async function addClient(_prev: ActionState, formData: FormData): Promise
   await requireAdmin();
   const name = String(formData.get("name") ?? "").trim();
   const contact = String(formData.get("contact") ?? "").trim() || null;
-  const assignedToId = String(formData.get("assignedToId") ?? "") || null;
+  const assignedToIds = formData.getAll("assignedToIds").map(String).filter(Boolean);
+  const assignedToId = assignedToIds[0] ?? null; // legacy mirror of the first assignee
   if (!name) return { error: "Client name is required." };
   try {
     await adminDb.collection("clients").add({
@@ -65,7 +66,9 @@ export async function addClient(_prev: ActionState, formData: FormData): Promise
       website: null,
       logoUrl: null,
       notes: null,
+      requirements: parseClientRequirements(formData),
       assignedToId,
+      assignedToIds,
       createdAt: FieldValue.serverTimestamp(),
     });
   } catch {
@@ -78,11 +81,17 @@ export async function addClient(_prev: ActionState, formData: FormData): Promise
 export async function assignClient(formData: FormData) {
   await requireAdmin();
   const clientId = String(formData.get("clientId") ?? "");
-  const assignedToId = String(formData.get("assignedToId") ?? "") || null;
+  const assignedToIds = formData.getAll("assignedToIds").map(String).filter(Boolean);
   if (clientId) {
-    await adminDb.collection("clients").doc(clientId).update({ assignedToId });
+    await adminDb.collection("clients").doc(clientId).update({
+      assignedToIds,
+      assignedToId: assignedToIds[0] ?? null,
+    });
   }
   revalidatePath("/admin/clients");
+  revalidatePath(`/admin/clients/${clientId}`);
+  revalidatePath("/manager/clients");
+  revalidatePath("/dashboard/clients");
 }
 
 export async function setPerPostPay(formData: FormData) {
@@ -156,10 +165,13 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
       type: taskType,
       slideCount: taskType === "Carousel" ? slideCount : null,
       payAmount,
+      payStatus: payAmount !== null ? "APPROVED" : "NONE", // admin-set pay is pre-approved
       clientId,
       assignedToId,
       deadline: Timestamp.fromDate(deadlineDate),
       status: "PENDING",
+      approval: "NONE",
+      reviewNote: null,
       referenceLink,
       submissionLink: null,
       completedAt: null,
@@ -236,6 +248,37 @@ export async function deleteJob(formData: FormData) {
   if (jobId) await adminDb.collection("jobs").doc(jobId).delete();
   revalidatePath("/admin/jobs");
   revalidatePath("/careers");
+}
+
+/** Admin + manager: approve (optionally adjust) or decline an employee's pay quote. */
+export async function reviewTaskPay(formData: FormData) {
+  await requireAdminOrManager();
+  const taskId = String(formData.get("taskId") ?? "");
+  const mode = String(formData.get("mode") ?? "");
+  if (!taskId) return;
+
+  const doc = await adminDb.collection("tasks").doc(taskId).get();
+  if (!doc.exists) return;
+  const current = doc.data()!;
+
+  if (mode === "approve") {
+    const raw = String(formData.get("amount") ?? "").trim();
+    const amount = raw === "" ? Number(current.payAmount ?? 0) : Number(raw);
+    if (isNaN(amount) || amount < 0) return;
+    await doc.ref.update({ payStatus: "APPROVED", payAmount: amount });
+  } else if (mode === "decline") {
+    await doc.ref.update({ payStatus: "NONE", payAmount: null });
+  } else {
+    return;
+  }
+
+  revalidatePath(`/admin/tasks/${taskId}`);
+  revalidatePath(`/manager/tasks/${taskId}`);
+  revalidatePath(`/dashboard/tasks/${taskId}`);
+  revalidatePath("/admin/tasks");
+  revalidatePath("/manager/tasks");
+  revalidatePath("/admin/payouts");
+  revalidatePath("/dashboard");
 }
 
 /** Admin + manager: add a custom task category (shown in the assign-task dropdown). */

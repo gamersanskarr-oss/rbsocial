@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { listClients, listDesigners, taskCountsByClient } from "@/lib/data";
+import {
+  clientAssignees,
+  listClients,
+  listDesigners,
+  listTaskTypes,
+  taskCountsByClient,
+} from "@/lib/data";
 import { requireAdmin } from "@/lib/auth";
 import { PageHeader } from "@/components/ui";
 import AddClientForm from "./add-client-form";
@@ -7,10 +13,11 @@ import AssignSelect from "./assign-select";
 
 export default async function ClientsPage() {
   await requireAdmin();
-  const [designers, clients, taskCounts] = await Promise.all([
+  const [designers, clients, taskCounts, taskTypes] = await Promise.all([
     listDesigners(),
     listClients(),
     taskCountsByClient(),
+    listTaskTypes(),
   ]);
 
   return (
@@ -19,7 +26,7 @@ export default async function ClientsPage() {
 
       <div className="card p-6">
         <h2 className="mb-4 text-sm font-bold text-ink">Add client</h2>
-        <AddClientForm designers={designers} />
+        <AddClientForm designers={designers} taskTypes={taskTypes} />
       </div>
 
       <div className="card overflow-hidden">
@@ -61,7 +68,7 @@ export default async function ClientsPage() {
                   <td className="td text-muted">{c.contact ?? "—"}</td>
                   <td className="td font-medium text-ink">{taskCounts.get(c.id) ?? 0}</td>
                   <td className="td">
-                    <AssignSelect clientId={c.id} currentId={c.assignedToId} designers={designers} />
+                    <AssignSelect clientId={c.id} currentIds={clientAssignees(c)} designers={designers} />
                   </td>
                   <td className="td text-right">
                     <Link href={`/admin/clients/${c.id}`} className="text-sm font-semibold text-muted transition hover:text-ink">

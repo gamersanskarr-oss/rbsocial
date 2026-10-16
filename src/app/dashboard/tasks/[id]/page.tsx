@@ -6,6 +6,8 @@ import { StatusBadge } from "@/components/ui";
 import { deleteRequest } from "@/app/actions/requests";
 import SubmitTaskForm from "./submit-form";
 import RequestForm from "./request-form";
+import ReasonForm from "./reason-form";
+import { DueTime } from "@/components/due-time";
 
 function relativeDeadline(deadline: Date) {
   const diffMs = deadline.getTime() - Date.now();
@@ -34,6 +36,7 @@ export default async function TaskDetailPage({
 
   const isPending = task.status === "PENDING";
   const isCompleted = task.status === "COMPLETED";
+  const isMissed = task.status === "MISSED";
   const overdue = isPending && task.deadline < new Date();
   const rel = relativeDeadline(task.deadline);
   const now = new Date();
@@ -87,11 +90,47 @@ export default async function TaskDetailPage({
             </p>
           </div>
 
-          {isPending && (
+          {/* Review verdict from admin/manager */}
+          {(task.approval === "CHANGES" || task.approval === "REJECTED") && (
+            <div
+              className={`rounded-2xl border p-5 ${
+                task.approval === "REJECTED"
+                  ? "border-rose-200/70 bg-bad-soft"
+                  : "border-amber-200/70 bg-warn-soft"
+              }`}
+            >
+              <h2
+                className={`text-sm font-bold ${
+                  task.approval === "REJECTED" ? "text-bad" : "text-warn"
+                }`}
+              >
+                {task.approval === "REJECTED"
+                  ? "✗ Submission rejected"
+                  : "✏️ Changes requested"}
+              </h2>
+              {task.reviewNote && (
+                <p
+                  className={`mt-2 rounded-xl bg-elevated/70 px-4 py-3 text-sm font-medium text-ink`}
+                >
+                  “{task.reviewNote}”
+                </p>
+              )}
+              <p className="mt-2 text-xs font-semibold text-muted">
+                Update your work and submit again below — the deadline was extended by 24h if it
+                had already passed.
+              </p>
+            </div>
+          )}
+
+          {(isPending || isMissed) && (
             <div className="card p-6">
-              <h2 className="text-sm font-bold text-ink">Complete this task</h2>
+              <h2 className="text-sm font-bold text-ink">
+                {isMissed ? "Submit it late — better than never" : "Complete this task"}
+              </h2>
               <p className="mt-1.5 mb-5 text-sm font-medium text-muted">
-                Paste the final design link (e.g. your Canva link) and mark the task as completed.
+                {isMissed
+                  ? "The deadline slipped, but your work still counts. Paste the final link and submit — it'll be marked as a late submission."
+                  : "Paste the final design link (e.g. your Canva link) and mark the task as completed."}
               </p>
               <SubmitTaskForm taskId={task.id} defaultAmount={defaultAmount} />
             </div>
@@ -105,16 +144,34 @@ export default async function TaskDetailPage({
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 </span>
-                <h2 className="text-sm font-bold text-ok">Task completed</h2>
+                <h2 className="text-sm font-bold text-ok">
+                  Task completed{task.lateSubmission ? " — late submission" : ""}
+                </h2>
               </div>
               <p className="mt-3 text-sm font-medium text-ok">
                 Submitted on {task.completedAt?.toLocaleDateString()}
               </p>
-              {(task.payAmount ?? defaultAmount) != null && (
-                <p className="mt-1 text-sm font-semibold text-ok">
-                  💰 Earned ₹{(task.payAmount ?? defaultAmount)!.toLocaleString("en-IN")} on this
-                  task
+              {task.approval === "APPROVED" ? (
+                <p className="mt-1 text-sm font-bold text-ok">
+                  ✓ Approved by your manager{task.reviewNote ? ` — “${task.reviewNote}”` : ""}
                 </p>
+              ) : (
+                <p className="mt-1 text-xs font-semibold text-muted">
+                  ⏳ Waiting for your manager to review this submission.
+                </p>
+              )}
+              {task.payStatus === "PENDING" ? (
+                <p className="mt-1 text-sm font-semibold text-warn">
+                  ⏳ ₹{(task.payAmount ?? 0).toLocaleString("en-IN")} quoted — waiting for
+                  approval. Counts as base rate until then.
+                </p>
+              ) : (
+                (task.payAmount ?? defaultAmount) != null && (
+                  <p className="mt-1 text-sm font-semibold text-ok">
+                    💰 Earned ₹{(task.payAmount ?? defaultAmount)!.toLocaleString("en-IN")} on
+                    this task
+                  </p>
+                )
               )}
               {task.submissionLink && (
                 <a
@@ -126,6 +183,30 @@ export default async function TaskDetailPage({
                   {task.submissionLink} ↗
                 </a>
               )}
+            </div>
+          )}
+
+          {/* Missed/late — explain why (manager can see this) */}
+          {(task.status === "MISSED" || overdue) && (
+            <div
+              className={`card border p-6 ${
+                task.status === "MISSED" ? "border-rose-200/70 bg-bad-soft/40" : "border-amber-200/70 bg-warn-soft/40"
+              }`}
+            >
+              <h2 className="text-sm font-bold text-ink">
+                {task.status === "MISSED" ? "⚠️ This task was missed — what happened?" : "⏰ Running late — tell your manager why"}
+              </h2>
+              <p className="mt-1.5 text-sm font-medium text-muted">
+                {task.missReason
+                  ? "Your reason is saved — you can update it below."
+                  : "One honest line is enough — it shows up on the manager's task view."}
+              </p>
+              {task.missReason && (
+                <p className="mt-3 rounded-xl border border-line bg-panel/70 px-4 py-3 text-sm font-medium text-ink">
+                  “{task.missReason}”
+                </p>
+              )}
+              <ReasonForm taskId={task.id} existing={task.missReason} />
             </div>
           )}
 
@@ -231,8 +312,7 @@ export default async function TaskDetailPage({
               <p className="mt-2 text-sm font-semibold text-ok">Submitted in time ✓</p>
             )}
             <p className="mt-1 text-xs font-medium text-muted">
-              {task.deadline.toLocaleDateString()}{" "}
-              {task.deadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              <DueTime iso={task.deadline.toISOString()} />
             </p>
           </div>
 

@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { completedTasksBetween, listEmployees, missedTasksBetween } from "@/lib/data";
+import {
+  completedTasksBetween,
+  listClientOptions,
+  listEmployees,
+  missedTasksBetween,
+  taskPay,
+} from "@/lib/data";
 import { requireAdmin } from "@/lib/auth";
 import {
   BONUS_GRACE_MISSES,
@@ -37,11 +43,14 @@ export default async function PayoutsPage({
     year: "numeric",
   });
 
-  const [employees, monthTasksAll, monthMissedAll] = await Promise.all([
+  const [employees, monthTasksAll, monthMissedAll, clients] = await Promise.all([
     listEmployees(),
     completedTasksBetween(monthStart, monthEnd),
     missedTasksBetween(monthStart, monthEnd),
+    listClientOptions(),
   ]);
+  const clientName = new Map(clients.map((c) => [c.id, c.name]));
+  const empName = new Map(employees.map((e) => [e.id, e.name]));
 
   // Apply filters: specific employee wins over team filter
   const selectedEmployee = employees.find((e) => e.id === employeeId) ?? null;
@@ -57,7 +66,7 @@ export default async function PayoutsPage({
   const rateByUser = new Map(employees.map((e) => [e.id, e.perPostPay]));
   for (const t of monthTasks) {
     postsByUser.set(t.assignedToId, (postsByUser.get(t.assignedToId) ?? 0) + 1);
-    const earned = t.payAmount ?? rateByUser.get(t.assignedToId) ?? 0;
+    const earned = taskPay(t, rateByUser.get(t.assignedToId) ?? 0);
     grossByUser.set(t.assignedToId, (grossByUser.get(t.assignedToId) ?? 0) + earned);
   }
   const missesByUser = new Map<string, number>();
@@ -256,6 +265,71 @@ export default async function PayoutsPage({
                   <td className="td" />
                 </tr>
               )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Per-task prices — what each submitted task actually earned */}
+      <div className="card overflow-hidden">
+        <div className="flex items-center justify-between border-b border-line bg-panel/70 px-5 py-4">
+          <h2 className="text-sm font-bold text-ink">Task prices — {monthLabel}</h2>
+          <span className="text-xs font-semibold text-muted">
+            {monthTasks.length} completed task{monthTasks.length === 1 ? "" : "s"}
+          </span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="border-b border-line">
+              <tr>
+                <th className="th">Employee</th>
+                <th className="th">Task</th>
+                <th className="th">Client</th>
+                <th className="th">Completed</th>
+                <th className="th">Price</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {monthTasks.length === 0 && (
+                <tr>
+                  <td className="td py-10 text-center text-faint" colSpan={5}>
+                    No completed tasks in {monthLabel}.
+                  </td>
+                </tr>
+              )}
+              {monthTasks.map((t) => {
+                const rate = rateByUser.get(t.assignedToId) ?? 0;
+                return (
+                  <tr key={t.id} className="transition hover:bg-panel/60">
+                    <td className="td font-semibold text-ink">
+                      {empName.get(t.assignedToId) ?? "—"}
+                    </td>
+                    <td className="td max-w-56">
+                      <p className="truncate font-medium text-ink">{t.topic}</p>
+                      {t.type && (
+                        <p className="text-xs text-faint">
+                          {t.type}{t.slideCount ? ` · ${t.slideCount} slides` : ""}
+                        </p>
+                      )}
+                    </td>
+                    <td className="td text-muted">{clientName.get(t.clientId) ?? "—"}</td>
+                    <td className="td whitespace-nowrap text-muted">
+                      {t.completedAt?.toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                      }) ?? "—"}
+                    </td>
+                    <td className="td whitespace-nowrap">
+                      <span className="font-bold text-ink">{inr(taskPay(t, rate))}</span>
+                      {t.payStatus === "PENDING" && (
+                        <span className="ml-1.5 rounded-full bg-warn-soft px-2 py-0.5 text-[10px] font-bold text-warn ring-1 ring-inset ring-warn-line">
+                          quoted {inr(t.payAmount ?? 0)} ⏳
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

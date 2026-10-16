@@ -9,6 +9,7 @@ import {
   listSubscriptions,
   listTasksWithRefs,
   missedTasksBetween,
+  taskPay,
 } from "@/lib/data";
 import {
   BONUS_GRACE_MISSES,
@@ -83,7 +84,7 @@ export default async function AdminOverview() {
     postsByUser.set(t.assignedToId, (postsByUser.get(t.assignedToId) ?? 0) + 1);
     grossByUser.set(
       t.assignedToId,
-      (grossByUser.get(t.assignedToId) ?? 0) + (t.payAmount ?? rateByUser.get(t.assignedToId) ?? 0)
+      (grossByUser.get(t.assignedToId) ?? 0) + taskPay(t, rateByUser.get(t.assignedToId) ?? 0)
     );
   }
   const missesByUser = new Map<string, number>();

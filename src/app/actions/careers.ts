@@ -9,56 +9,74 @@ export type ApplyState = { error?: string; success?: string };
 const str = (fd: FormData, key: string, max: number) =>
   String(fd.get(key) ?? "").trim().slice(0, max);
 
-/** PUBLIC — anyone can apply from /careers. No auth required. */
+/** PUBLIC — anyone can apply from /careers. No auth required.
+ *  `jobIds` is a repeated field — one application doc is written per role. */
 export async function applyForJob(_prev: ApplyState, formData: FormData): Promise<ApplyState> {
-  const jobId = str(formData, "jobId", 100);
-  const jobTitle = str(formData, "jobTitle", 150);
+  const jobIds = formData.getAll("jobIds").map((v) => String(v).slice(0, 100)).filter(Boolean);
   const name = str(formData, "name", 100);
   const email = str(formData, "email", 150);
   const phone = str(formData, "phone", 25) || null;
   const portfolio = str(formData, "portfolio", 300) || null;
   const message = str(formData, "message", 2000) || null;
 
-  if (!jobId || !name || !email) {
+  if (jobIds.length === 0) {
+    return { error: "Pick at least one role to apply for." };
+  }
+  if (!name || !email) {
     return { error: "Name and email are required." };
   }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
     return { error: "Please enter a valid email address." };
   }
 
-  // Verify the job exists and is still live
-  const job = await adminDb.collection("jobs").doc(jobId).get();
-  if (!job.exists || job.data()?.active !== true) {
-    return { error: "This role is no longer accepting applications." };
+  // Resolve roles — only live jobs count
+  const jobsSnap = await adminDb.collection("jobs").get();
+  const picked = jobsSnap.docs
+    .filter((d) => jobIds.includes(d.id) && d.data().active === true)
+    .map((d) => ({ id: d.id, title: String(d.data().title ?? "Role") }));
+  if (picked.length === 0) {
+    return { error: "Those roles are no longer accepting applications." };
   }
 
-  // Block exact duplicates — same email already applied to this role
-  const dup = await adminDb
+  // Skip roles this email already applied to
+  const existing = await adminDb
     .collection("jobApplications")
-    .where("jobId", "==", jobId)
     .where("email", "==", email.toLowerCase())
     .get();
-  if (!dup.empty) {
-    return { error: "You've already applied for this role — we'll be in touch!" };
+  const already = new Set(existing.docs.map((d) => String(d.data().jobId)));
+  const fresh = picked.filter((j) => !already.has(j.id));
+
+  if (fresh.length === 0) {
+    return { error: `You've already applied for ${picked.length === 1 ? "that role" : "all of those roles"} — we'll be in touch!` };
   }
 
   try {
-    await adminDb.collection("jobApplications").add({
-      jobId,
-      jobTitle,
-      name,
-      email: email.toLowerCase(),
-      phone,
-      portfolio,
-      message,
-      status: "NEW",
-      createdAt: FieldValue.serverTimestamp(),
-    });
+    const batch = adminDb.batch();
+    for (const job of fresh) {
+      batch.set(adminDb.collection("jobApplications").doc(), {
+        jobId: job.id,
+        jobTitle: job.title,
+        name,
+        email: email.toLowerCase(),
+        phone,
+        portfolio,
+        message,
+        status: "NEW",
+        createdAt: FieldValue.serverTimestamp(),
+      });
+    }
+    await batch.commit();
   } catch {
     return { error: "Something went wrong — please try again." };
   }
   revalidatePath("/admin/jobs");
-  return { success: "Application sent! 🎉 We'll review it and get back to you." };
+  const skipped = picked.length - fresh.length;
+  const roleList = fresh.map((j) => j.title).join(", ");
+  return {
+    success:
+      `Application sent for ${fresh.length === 1 ? roleList : `${fresh.length} roles`}! 🎉 We'll be in touch.` +
+      (skipped > 0 ? ` (You'd already applied for ${skipped === 1 ? "one" : skipped}.)` : ""),
+  };
 }
 
 export async function markApplicationReviewed(formData: FormData) {

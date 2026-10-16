@@ -18,6 +18,8 @@ export type UserRecord = {
   createdAt: Date | null;
 };
 
+export type ClientRequirement = { type: string; qty: number; per: "WEEK" | "MONTH" };
+
 export type ClientRecord = {
   id: string;
   name: string;
@@ -28,7 +30,9 @@ export type ClientRecord = {
   website: string | null;
   logoUrl: string | null;
   notes: string | null;
-  assignedToId: string | null;
+  requirements: ClientRequirement[] | null; // e.g. [{type:"Static Post", qty:5, per:"WEEK"}]
+  assignedToId: string | null; // legacy single designer — first of assignedToIds
+  assignedToIds: string[] | null; // multiple designers can share a client
   // finance / retainer billing
   status: string | null; // ACTIVE | ARCHIVED
   billingDay: number | null; // 1-31
@@ -58,6 +62,11 @@ export type TaskRecord = {
   type: string | null; // e.g. "Static Post" | "Carousel" | custom category
   slideCount: number | null; // e.g. 8 for a Carousel task
   payAmount: number | null; // per-task amount (falls back to assignee's perPostPay)
+  payStatus: "NONE" | "PENDING" | "APPROVED" | null; // employee quotes start PENDING
+  missReason: string | null; // why the task was late/missed — set by the assignee
+  lateSubmission: boolean | null; // true when a MISSED task was submitted late
+  approval: "NONE" | "PENDING" | "APPROVED" | "CHANGES" | "REJECTED" | null; // submission review
+  reviewNote: string | null; // admin/manager feedback on the submission
   referenceLink: string | null;
   submissionLink: string | null;
   completedAt: Date | null;
@@ -159,6 +168,37 @@ export type ActivityRecord = {
 
 export { adminDb, Timestamp, FieldValue };
 
+/** Parse the requirement rows serialized by the client forms (requirementsJson). */
+/** A client's designers — prefers the multi list, falls back to the legacy single id. */
+export const clientAssignees = (c: {
+  assignedToId?: string | null;
+  assignedToIds?: string[] | null;
+}): string[] =>
+  c.assignedToIds?.length ? c.assignedToIds : c.assignedToId ? [c.assignedToId] : [];
+
+export function parseClientRequirements(fd: FormData): ClientRequirement[] {
+  try {
+    const raw = JSON.parse(String(fd.get("requirementsJson") ?? "[]"));
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .map((r) => ({
+        type: String(r?.type ?? "").trim().slice(0, 40),
+        qty: Math.max(0, Math.min(99, Math.round(Number(r?.qty) || 0))),
+        per: (r?.per === "MONTH" ? "MONTH" : "WEEK") as "WEEK" | "MONTH",
+      }))
+      .filter((r) => r.type && r.qty > 0)
+      .slice(0, 20);
+  } catch {
+    return [];
+  }
+}
+
+/** Effective per-task pay — a PENDING employee quote falls back to the base rate until approved. */
+export const taskPay = (
+  t: { payAmount: number | null; payStatus?: string | null },
+  rate: number
+) => (t.payStatus === "PENDING" ? rate : (t.payAmount ?? rate));
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -246,8 +286,8 @@ export async function getClient(id: string): Promise<ClientRecord | null> {
 }
 
 export async function listClientsByAssignee(userId: string): Promise<ClientRecord[]> {
-  const snap = await adminDb.collection("clients").where("assignedToId", "==", userId).get();
-  return snap.docs.map((d) => withDates<ClientRecord>(d, CLIENT_DATES)).sort(byName);
+  const clients = await listClients();
+  return clients.filter((c) => clientAssignees(c).includes(userId));
 }
 
 export async function listAssets(clientId: string): Promise<AssetRecord[]> {

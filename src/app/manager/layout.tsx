@@ -11,6 +11,7 @@ export default async function ManagerLayout({ children }: { children: React.Reac
       label: "Workspace",
       items: [
         { href: "/manager/tasks", label: "Tasks", icon: "tasks" as const },
+        { href: "/manager/clients", label: "Clients", icon: "clients" as const },
         { href: "/manager/calendar", label: "Calendar", icon: "calendar" as const },
         { href: "/manager/requests", label: "Requests", icon: "requests" as const, badge: openRequests },
       ],
