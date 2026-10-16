@@ -148,6 +148,11 @@ export default async function DashboardPage({
                       {timeLeft(t.deadline)}
                     </span>
                   </div>
+                  {(t.approval === "CHANGES" || t.approval === "REJECTED") && t.reviewNote && (
+                    <p className="mt-2 truncate rounded-lg bg-black/25 px-2.5 py-1.5 text-[11px] font-semibold text-white/95">
+                      {t.approval === "REJECTED" ? "✗ Rejected" : "✏️ Fix"}: {t.reviewNote}
+                    </p>
+                  )}
                 </Link>
               );
             })}
@@ -239,6 +244,17 @@ export default async function DashboardPage({
                   <p className="mt-1 text-xs font-semibold text-warn">
                     📬 {t.requests.length} request{t.requests.length === 1 ? "" : "s"} waiting on
                     admin
+                  </p>
+                )}
+                {(t.approval === "CHANGES" || t.approval === "REJECTED") && t.reviewNote && (
+                  <p
+                    className={`mt-2 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold ${
+                      t.approval === "REJECTED"
+                        ? "bg-bad-soft text-bad"
+                        : "bg-warn-soft text-warn"
+                    }`}
+                  >
+                    {t.approval === "REJECTED" ? "✗ Rejected" : "✏️ Fix"}: {t.reviewNote}
                   </p>
                 )}
                 <p className={`mt-4 text-xs font-semibold ${overdue ? "text-bad" : "text-faint"}`}>

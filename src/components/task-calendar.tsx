@@ -441,7 +441,7 @@ export function TaskCalendar({
                           : t.status;
                         const label = t.type
                           ? `${t.type}${t.slideCount ? ` · ${t.slideCount}` : ""}`
-                          : t.topic;
+                          : "Task";
                         const dl = new Date(movedDate ?? t.deadline);
                         const chip = (
                           <>

@@ -111,6 +111,43 @@ export default async function TaskDetailView({
                 >
                   {task.submissionLink} ↗
                 </a>
+                {/* Pending price quote — approve or decline right here */}
+                {task.payStatus === "PENDING" && (
+                  <div className="mt-3 rounded-2xl border border-warn-line bg-warn-soft/60 p-4">
+                    <p className="text-sm font-bold text-warn">
+                      💰 ₹{(task.payAmount ?? 0).toLocaleString("en-IN")} quoted by{" "}
+                      {assignee?.name ?? "the employee"} — approve or decline the amount
+                    </p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <form action={reviewTaskPay} className="flex items-center gap-2">
+                        <input type="hidden" name="taskId" value={task.id} />
+                        <input type="hidden" name="mode" value="approve" />
+                        <input
+                          name="amount"
+                          type="number"
+                          min="0"
+                          step="1"
+                          required
+                          defaultValue={task.payAmount ?? 0}
+                          className="input w-28 px-2.5 py-1.5 text-xs"
+                          aria-label="Approved amount"
+                        />
+                        <button className="btn-primary py-1.5 text-xs">Approve ₹ ✓</button>
+                      </form>
+                      <form action={reviewTaskPay}>
+                        <input type="hidden" name="taskId" value={task.id} />
+                        <input type="hidden" name="mode" value="decline" />
+                        <button className="rounded-lg border border-line bg-elevated px-3 py-1.5 text-xs font-semibold text-muted transition hover:bg-panel hover:text-ink">
+                          Decline — pay at base rate
+                        </button>
+                      </form>
+                    </div>
+                    <p className="mt-2 text-[11px] font-medium text-muted">
+                      Until approved, this task counts at the employee&apos;s base per-post rate.
+                    </p>
+                  </div>
+                )}
+
                 {task.approval === "APPROVED" ? (
                   <p className="mt-3 rounded-xl bg-ok-soft px-3.5 py-2.5 text-sm font-bold text-ok">
                     ✓ Approved{task.reviewNote ? ` — “${task.reviewNote}”` : ""}
@@ -219,50 +256,13 @@ export default async function TaskDetailView({
             )}
           </div>
 
-          {(task.payAmount != null || task.payStatus === "PENDING") && (
+          {task.payAmount != null && task.payStatus !== "PENDING" && (
             <div className="card p-5">
               <p className="text-[11px] font-bold uppercase tracking-wider text-faint">
                 Task pay
               </p>
-              {task.payStatus === "PENDING" ? (
-                <div className="mt-2 space-y-3">
-                  <div>
-                    <p className="text-lg font-extrabold text-ink">{inr(task.payAmount ?? 0)}</p>
-                    <p className="mt-0.5 rounded-lg bg-warn-soft px-2 py-1 text-[11px] font-bold text-warn">
-                      Quoted by {assignee?.name ?? "employee"} — needs approval
-                    </p>
-                  </div>
-                  <form action={reviewTaskPay} className="space-y-2">
-                    <input type="hidden" name="taskId" value={task.id} />
-                    <input type="hidden" name="mode" value="approve" />
-                    <input
-                      name="amount"
-                      type="number"
-                      min="0"
-                      step="1"
-                      required
-                      defaultValue={task.payAmount ?? 0}
-                      className="input px-2.5 py-1.5 text-xs"
-                      aria-label="Approved amount"
-                    />
-                    <button className="btn-primary w-full py-2 text-xs">
-                      Approve quote ✓
-                    </button>
-                  </form>
-                  <form action={reviewTaskPay}>
-                    <input type="hidden" name="taskId" value={task.id} />
-                    <input type="hidden" name="mode" value="decline" />
-                    <button className="w-full rounded-lg border border-line bg-elevated py-2 text-xs font-semibold text-muted transition hover:bg-panel hover:text-ink">
-                      Decline — pay at base rate
-                    </button>
-                  </form>
-                </div>
-              ) : (
-                <>
-                  <p className="mt-2 text-lg font-extrabold text-ink">{inr(task.payAmount ?? 0)}</p>
-                  <p className="mt-0.5 text-[11px] font-semibold text-ok">Approved</p>
-                </>
-              )}
+              <p className="mt-2 text-lg font-extrabold text-ink">{inr(task.payAmount ?? 0)}</p>
+              <p className="mt-0.5 text-[11px] font-semibold text-ok">Approved</p>
             </div>
           )}
 
