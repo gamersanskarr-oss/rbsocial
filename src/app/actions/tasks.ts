@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { adminDb, Timestamp, FieldValue } from "@/lib/data";
+import { adminDb, Timestamp, FieldValue, parseISTDateTime, shiftISTDay } from "@/lib/data";
 import { requireAdminOrManager, requireUser } from "@/lib/auth";
 
 export type SubmitState = { error?: string; success?: string };
@@ -18,7 +18,8 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
     return { error: "Amount must be a valid number." };
   }
   try {
-    new URL(submissionLink);
+    const u = new URL(submissionLink);
+    if (u.protocol !== "https:" && u.protocol !== "http:") throw new Error();
   } catch {
     return { error: "That does not look like a valid URL." };
   }
@@ -166,8 +167,8 @@ export async function updateTask(_prev: SubmitState, formData: FormData): Promis
   if (actor.role === "ADMIN" && payAmount !== null && (isNaN(payAmount) || payAmount < 0)) {
     return { error: "Pay amount must be a valid number." };
   }
-  const deadlineDate = new Date(deadline);
-  if (isNaN(deadlineDate.getTime())) return { error: "Invalid deadline date." };
+  const deadlineDate = parseISTDateTime(deadline);
+  if (!deadlineDate) return { error: "Invalid deadline date." };
 
   const doc = await adminDb.collection("tasks").doc(taskId).get();
   if (!doc.exists) return { error: "Task not found." };
@@ -201,16 +202,16 @@ export async function updateTask(_prev: SubmitState, formData: FormData): Promis
     : oldStatus === "MISSED" && status !== "MISSED" ? -1
     : 0;
 
+  // Task update first — the strike adjust must not block it if the
+  // assignee's user doc is missing/inconsistent.
+  await doc.ref.update(update);
   if (strikeDelta !== 0 && assignedToId) {
     const userRef = adminDb.collection("users").doc(String(assignedToId));
     const u = await userRef.get();
-    const cur = Number(u.data()?.missedDeadlines ?? 0);
-    const batch = adminDb.batch();
-    batch.update(doc.ref, update);
-    batch.update(userRef, { missedDeadlines: Math.max(0, cur + strikeDelta) });
-    await batch.commit();
-  } else {
-    await doc.ref.update(update);
+    if (u.exists) {
+      const cur = Number(u.data()?.missedDeadlines ?? 0);
+      await userRef.update({ missedDeadlines: Math.max(0, cur + strikeDelta) });
+    }
   }
 
   for (const p of [
@@ -222,44 +223,49 @@ export async function updateTask(_prev: SubmitState, formData: FormData): Promis
   return { success: "Task updated." };
 }
 
-/** Drag-reschedule: keep the deadline's time-of-day, move it to `isoDay` ("YYYY-MM-DD"). */
-export async function moveTaskDeadline(taskId: string, isoDay: string) {
+/** Drag-reschedule: keep the deadline's IST time-of-day, move it to `isoDay`
+    ("YYYY-MM-DD"). Returns an error string on failure so the calendar can
+    revert the optimistic chip move. */
+export async function moveTaskDeadline(
+  taskId: string,
+  isoDay: string
+): Promise<{ ok: boolean; error?: string }> {
   await requireAdminOrManager();
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDay);
-  if (!taskId || !m) return;
+  if (!taskId || !m) return { ok: false, error: "Bad task or date." };
 
   const doc = await adminDb.collection("tasks").doc(taskId).get();
-  if (!doc.exists) return;
+  if (!doc.exists) return { ok: false, error: "Task not found." };
   const data = doc.data()!;
   const raw = data.deadline;
   const old: Date = typeof raw?.toDate === "function" ? raw.toDate() : new Date(raw);
-  const next = new Date(old);
-  next.setFullYear(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+  const next = shiftISTDay(old, Number(m[1]), Number(m[2]) - 1, Number(m[3]));
 
   // Status follows the new deadline: past = missed, future = back to pending.
   const status = String(data.status ?? "PENDING");
   const past = next.getTime() < Date.now();
-  const assignee = String(data.assignedToId ?? "");
-  const userRef = assignee ? adminDb.collection("users").doc(assignee) : null;
+  const strikeDelta =
+    status === "PENDING" && past ? 1 : status === "MISSED" && !past ? -1 : 0;
+  const newStatus =
+    status === "COMPLETED" ? status : past ? "MISSED" : "PENDING";
 
-  if (status === "PENDING" && past) {
-    const batch = adminDb.batch();
-    batch.update(doc.ref, { deadline: Timestamp.fromDate(next), status: "MISSED" });
-    if (userRef) batch.update(userRef, { missedDeadlines: FieldValue.increment(1) });
-    await batch.commit();
-  } else if (status === "MISSED" && !past) {
-    if (userRef) {
+  // The deadline write must never be hostage to the strike counter —
+  // update the task first, then adjust the strike best-effort.
+  await doc.ref.update({
+    deadline: Timestamp.fromDate(next),
+    status: newStatus,
+  });
+
+  if (strikeDelta !== 0) {
+    const assignee = String(data.assignedToId ?? "");
+    if (assignee) {
+      const userRef = adminDb.collection("users").doc(assignee);
       const u = await userRef.get();
-      const cur = Number(u.data()?.missedDeadlines ?? 0);
-      const batch = adminDb.batch();
-      batch.update(doc.ref, { deadline: Timestamp.fromDate(next), status: "PENDING" });
-      batch.update(userRef, { missedDeadlines: Math.max(0, cur - 1) });
-      await batch.commit();
-    } else {
-      await doc.ref.update({ deadline: Timestamp.fromDate(next), status: "PENDING" });
+      if (u.exists) {
+        const cur = Number(u.data()?.missedDeadlines ?? 0);
+        await userRef.update({ missedDeadlines: Math.max(0, cur + strikeDelta) });
+      }
     }
-  } else {
-    await doc.ref.update({ deadline: Timestamp.fromDate(next) });
   }
 
   revalidatePath("/admin/calendar");
@@ -268,4 +274,5 @@ export async function moveTaskDeadline(taskId: string, isoDay: string) {
   revalidatePath("/admin/tasks");
   revalidatePath("/manager/tasks");
   revalidatePath("/dashboard");
+  return { ok: true };
 }

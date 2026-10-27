@@ -269,7 +269,18 @@ export function TaskCalendar({
     setDropKey(null);
     setDragId(null);
     startMove(async () => {
-      await moveTaskDeadline(taskId, iso);
+      try {
+        const res = await moveTaskDeadline(taskId, iso);
+        if (!res?.ok) throw new Error(res?.error ?? "Move failed");
+      } catch (err) {
+        // Revert the optimistic chip — the server didn't save the move.
+        console.error("Could not move task:", err);
+        setMoved((m) => {
+          const copy = { ...m };
+          delete copy[taskId];
+          return copy;
+        });
+      }
       router.refresh();
     });
   };
@@ -428,8 +439,11 @@ export function TaskCalendar({
                         </svg>
                       </span>
                     )}
-                    <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
-                      {dayTasks.slice(0, 2).map((t) => {
+                    <div
+                      className="max-h-[64px] space-y-1 overflow-y-auto pr-0.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line [&::-webkit-scrollbar-track]:bg-transparent"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {dayTasks.map((t) => {
                         // Optimistic status after a drag: past deadline = missed, future = pending
                         const movedDate = moved[t.id];
                         const st = movedDate
@@ -502,11 +516,6 @@ export function TaskCalendar({
                           </div>
                         );
                       })}
-                      {dayTasks.length > 2 && (
-                        <p className="px-1.5 text-[11px] font-semibold text-faint">
-                          +{dayTasks.length - 2} more
-                        </p>
-                      )}
                     </div>
                   </>
                 )}

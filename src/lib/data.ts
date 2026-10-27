@@ -169,6 +169,44 @@ export type ActivityRecord = {
 export { adminDb, Timestamp, FieldValue };
 
 /** Parse the requirement rows serialized by the client forms (requirementsJson). */
+/** datetime-local/date inputs carry no timezone — the whole team works in
+    IST (+05:30), so we always parse bare inputs as India time and store the
+    real instant. */
+export const IST_OFFSET_MS = 5.5 * 36e5;
+
+export function parseISTDateTime(input: string): Date | null {
+  const s = input.trim();
+  if (!s) return null;
+  // Bare wall-clock input (no zone) → parse as IST, strictly.
+  const m = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2}))?)?$/.exec(s);
+  if (m) {
+    const [, y, mo, d, hh = "00", mm = "00", ss = "00"] = m;
+    const dt = new Date(`${y}-${mo}-${d}T${hh}:${mm}:${ss}+05:30`);
+    if (isNaN(dt.getTime())) return null;
+    // JS happily rolls impossible dates forward (Feb 30 → Mar 2) — reject them.
+    const ist = new Date(dt.getTime() + IST_OFFSET_MS);
+    if (
+      ist.getUTCFullYear() !== Number(y) ||
+      ist.getUTCMonth() !== Number(mo) - 1 ||
+      ist.getUTCDate() !== Number(d)
+    ) {
+      return null;
+    }
+    return dt;
+  }
+  // Anything else (already zoned, or odd formats) → normal parse.
+  const d2 = new Date(s);
+  return isNaN(d2.getTime()) ? null : d2;
+}
+
+/** Move an instant to a new calendar day while keeping its IST wall-clock
+    time (18:00 IST stays 18:00 IST), independent of the server's timezone. */
+export function shiftISTDay(date: Date, y: number, m: number, d: number): Date {
+  const ist = new Date(date.getTime() + IST_OFFSET_MS);
+  ist.setUTCFullYear(y, m, d);
+  return new Date(ist.getTime() - IST_OFFSET_MS);
+}
+
 /** A client's designers — prefers the multi list, falls back to the legacy single id. */
 export const clientAssignees = (c: {
   assignedToId?: string | null;

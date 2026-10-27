@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth";
-import { listTasksForUser } from "@/lib/data";
+import { getUser, listTasksForUser } from "@/lib/data";
 import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT, payoutStatus } from "@/lib/deadlines";
 import { StatusBadge } from "@/components/ui";
 import { TimeGreeting } from "@/components/time-greeting";
@@ -41,6 +41,9 @@ export default async function DashboardPage({
 }) {
   const user = await requireEmployee();
   await checkMissedDeadlines();
+  // The scan above may have just flipped tasks to MISSED and bumped the
+  // strike counter — re-read the user so stats show fresh numbers.
+  const missedCount = (await getUser(user.id))?.missedDeadlines ?? user.missedDeadlines;
 
   const allTasks = await listTasksForUser(user.id);
 
@@ -54,7 +57,7 @@ export default async function DashboardPage({
     (t) => (!fClient || t.client.name === fClient) && (!fStatus || t.status === fStatus)
   );
 
-  const payout = payoutStatus(user.missedDeadlines);
+  const payout = payoutStatus(missedCount);
   // Missed tasks stay actionable — the employee can still submit them late
   const pending = tasks.filter((t) => t.status !== "COMPLETED");
   const urgent = pending.filter(
@@ -83,9 +86,9 @@ export default async function DashboardPage({
           <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Done</p>
         </div>
         <div className="card p-4 text-center">
-          <p className="text-2xl">{user.missedDeadlines === 0 ? "😌" : "😬"}</p>
+          <p className="text-2xl">{missedCount === 0 ? "😌" : "😬"}</p>
           <p className="mt-1 text-xl font-extrabold text-ink">
-            {user.missedDeadlines}/{MISSED_DEADLINE_LIMIT}
+            {missedCount}/{MISSED_DEADLINE_LIMIT}
           </p>
           <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Missed</p>
           <p className="mt-0.5 text-[10px] font-medium text-faint">≤1 per month keeps your bonus</p>
@@ -97,12 +100,12 @@ export default async function DashboardPage({
         className={`rounded-2xl border p-4 text-sm font-medium ${
           payout.reduced
             ? "border-rose-200 bg-bad-soft text-bad"
-            : user.missedDeadlines > 0
+            : missedCount > 0
               ? "border-amber-200 bg-warn-soft text-warn"
               : "border-emerald-200 bg-ok-soft text-ok"
         }`}
       >
-        {payoutLine(user.missedDeadlines, payout.reduced, payout.percent)}
+        {payoutLine(missedCount, payout.reduced, payout.percent)}
       </div>
 
       {/* Urgent tasks — overdue or due within 48h */}

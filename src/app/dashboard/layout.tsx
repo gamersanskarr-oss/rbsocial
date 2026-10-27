@@ -1,6 +1,6 @@
 import { requireEmployee } from "@/lib/auth";
 import { getUser, listTasksForUser, taskPay } from "@/lib/data";
-import { BONUS_GRACE_MISSES, PAYOUT_BONUS, payoutStatus } from "@/lib/deadlines";
+import { BONUS_GRACE_MISSES, PAYOUT_BONUS, payoutStatus, checkMissedDeadlines } from "@/lib/deadlines";
 import { DashboardShell } from "@/components/dashboard-shell";
 
 const nav = [
@@ -16,6 +16,9 @@ const nav = [
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const user = await requireEmployee();
+  // Flip overdue tasks + bump strikes BEFORE reading the user/tasks, so the
+  // earnings box and bonus math below never see stale numbers.
+  await checkMissedDeadlines();
 
   const monthStart = new Date();
   monthStart.setDate(1);

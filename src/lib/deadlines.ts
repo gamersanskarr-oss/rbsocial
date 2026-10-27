@@ -21,9 +21,13 @@ export async function checkMissedDeadlines() {
     counts.set(t.assignedToId, (counts.get(t.assignedToId) ?? 0) + 1);
   }
   for (const [userId, count] of counts) {
-    batch.update(adminDb.collection("users").doc(userId), {
-      missedDeadlines: FieldValue.increment(count),
-    });
+    // batch.update on a missing doc would reject the whole batch — skip
+    // assignees whose user doc doesn't exist instead of losing the scan.
+    const userRef = adminDb.collection("users").doc(userId);
+    const u = await userRef.get();
+    if (u.exists) {
+      batch.update(userRef, { missedDeadlines: FieldValue.increment(count) });
+    }
   }
   await batch.commit();
 }

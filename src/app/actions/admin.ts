@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { adminDb, Timestamp, FieldValue, parseClientRequirements } from "@/lib/data";
+import { adminDb, Timestamp, FieldValue, parseClientRequirements, parseISTDateTime } from "@/lib/data";
 import { adminAuth } from "@/lib/firebase-admin";
 import { requireAdmin, requireAdminOrManager } from "@/lib/auth";
 
@@ -155,8 +155,8 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
   if (slideCount !== null && (isNaN(slideCount) || slideCount < 1 || slideCount > 99)) {
     return { error: "Slide count must be between 1 and 99." };
   }
-  const deadlineDate = new Date(deadline);
-  if (isNaN(deadlineDate.getTime())) return { error: "Invalid deadline date." };
+  const deadlineDate = parseISTDateTime(deadline);
+  if (!deadlineDate) return { error: "Invalid deadline date." };
 
   try {
     await adminDb.collection("tasks").add({
