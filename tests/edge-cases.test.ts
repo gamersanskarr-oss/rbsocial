@@ -214,6 +214,15 @@ describe("submitTask edge cases", () => {
     expect(res.error).toBe("Task not found.");
   });
 
+  it("a PENDING task submitted after its deadline is still flagged late", async () => {
+    // deadline passed but the scan hadn't flipped it to MISSED yet
+    seedTask("t1", { deadline: ts(hours(-2)) });
+    await submitTask({}, validSubmit());
+    const t = doc("tasks/t1")!;
+    expect(t.status).toBe("COMPLETED");
+    expect(t.lateSubmission).toBe(true);
+  });
+
   it("a resubmission after changes wipes the old review note and re-queues review", async () => {
     seedTask("t1", {
       status: "PENDING",

@@ -31,11 +31,20 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
     return { error: "This task can no longer be submitted." };
   }
 
+  // Late = the task was flagged MISSED, or its deadline had already passed
+  // even if the scan hadn't flipped the status yet.
+  const dl = task.deadline;
+  const deadlineDate =
+    dl && typeof dl.toDate === "function" ? dl.toDate() : new Date(dl);
   const update: Record<string, unknown> = {
     status: "COMPLETED",
     submissionLink,
     completedAt: Timestamp.now(),
-    lateSubmission: task.status === "MISSED",
+    lateSubmission:
+      task.status === "MISSED" ||
+      (deadlineDate instanceof Date &&
+        !isNaN(deadlineDate.getTime()) &&
+        deadlineDate.getTime() < Date.now()),
     approval: "PENDING", // waits for admin/manager review
     reviewNote: null,
   };

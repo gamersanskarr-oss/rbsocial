@@ -26,11 +26,24 @@ function timeLeft(d: Date) {
   return `due in ${Math.ceil(h / 24)}d`;
 }
 
-function payoutLine(missed: number, reduced: boolean, percent: number) {
+function payoutLine(
+  missed: number,
+  openMissed: number,
+  reduced: boolean,
+  percent: number
+) {
+  // openMissed = tasks still flagged MISSED (not yet submitted). The banner
+  // must stay honest even when the strike counter was waived/reset.
+  const openNote =
+    openMissed > 0
+      ? ` ${openMissed} missed ${openMissed === 1 ? "task" : "tasks"} still open — late submissions still count.`
+      : "";
   if (reduced)
-    return `🚨 ${missed} missed deadlines — ${percent}% payout cut is active. Submit on time to stay safe.`;
+    return `🚨 ${missed} missed deadlines — ${percent}% payout cut is active.${openNote}`;
   if (missed > 0)
-    return `👀 You've missed ${missed} of ${MISSED_DEADLINE_LIMIT} allowed deadlines. Be careful — one more affects your pay.`;
+    return `👀 You've missed ${missed} of ${MISSED_DEADLINE_LIMIT} allowed deadlines — one more affects your pay.${openNote}`;
+  if (openMissed > 0)
+    return `⚠️${openNote} Your strike counter is clean — no payout impact.`;
   return "✨ No missed deadlines. Keep it up this month for a +10% bonus. 🎁";
 }
 
@@ -68,6 +81,9 @@ export default async function DashboardPage({
   );
   const done = tasks.filter((t) => t.status === "COMPLETED");
   const completed = done.length;
+  // Tasks still flagged MISSED (waiting for a late submission) — the strike
+  // counter can be waived, but these stay honest.
+  const openMissed = allTasks.filter((t) => t.status === "MISSED").length;
 
   return (
     <div className="space-y-8">
@@ -86,12 +102,14 @@ export default async function DashboardPage({
           <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Done</p>
         </div>
         <div className="card p-4 text-center">
-          <p className="text-2xl">{missedCount === 0 ? "😌" : "😬"}</p>
+          <p className="text-2xl">{missedCount === 0 && openMissed === 0 ? "😌" : "😬"}</p>
           <p className="mt-1 text-xl font-extrabold text-ink">
             {missedCount}/{MISSED_DEADLINE_LIMIT}
           </p>
           <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Missed</p>
-          <p className="mt-0.5 text-[10px] font-medium text-faint">≤1 per month keeps your bonus</p>
+          <p className="mt-0.5 text-[10px] font-medium text-faint">
+            {openMissed > 0 ? `${openMissed} still open · ` : ""}≤1 per month keeps your bonus
+          </p>
         </div>
       </div>
 
@@ -100,12 +118,12 @@ export default async function DashboardPage({
         className={`rounded-2xl border p-4 text-sm font-medium ${
           payout.reduced
             ? "border-rose-200 bg-bad-soft text-bad"
-            : missedCount > 0
+            : missedCount > 0 || openMissed > 0
               ? "border-amber-200 bg-warn-soft text-warn"
               : "border-emerald-200 bg-ok-soft text-ok"
         }`}
       >
-        {payoutLine(missedCount, payout.reduced, payout.percent)}
+        {payoutLine(missedCount, openMissed, payout.reduced, payout.percent)}
       </div>
 
       {/* Urgent tasks — overdue or due within 48h */}

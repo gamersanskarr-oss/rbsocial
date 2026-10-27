@@ -137,19 +137,32 @@ export default async function TaskDetailPage({
           )}
 
           {isCompleted && (
-            <div className="rounded-2xl border border-emerald-200/70 bg-ok-soft p-6">
+            <div
+              className={`rounded-2xl border p-6 ${
+                task.lateSubmission
+                  ? "border-amber-200/70 bg-warn-soft"
+                  : "border-emerald-200/70 bg-ok-soft"
+              }`}
+            >
               <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-ok-soft0 text-white">
+                <span
+                  className={`flex h-8 w-8 items-center justify-center rounded-full text-white ${
+                    task.lateSubmission ? "bg-warn" : "bg-ok-soft0"
+                  }`}
+                >
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 </span>
-                <h2 className="text-sm font-bold text-ok">
-                  Task completed{task.lateSubmission ? " — late submission" : ""}
+                <h2 className={`text-sm font-bold ${task.lateSubmission ? "text-warn" : "text-ok"}`}>
+                  {task.lateSubmission
+                    ? "Task completed — submitted late ⚠"
+                    : "Task completed"}
                 </h2>
               </div>
-              <p className="mt-3 text-sm font-medium text-ok">
+              <p className={`mt-3 text-sm font-medium ${task.lateSubmission ? "text-warn" : "text-ok"}`}>
                 Submitted on {task.completedAt?.toLocaleDateString()}
+                {task.lateSubmission && " — after the deadline"}
               </p>
               {task.approval === "APPROVED" ? (
                 <p className="mt-1 text-sm font-bold text-ok">
@@ -309,7 +322,19 @@ export default async function TaskDetailPage({
               </p>
             )}
             {isCompleted && (
-              <p className="mt-2 text-sm font-semibold text-ok">Submitted in time ✓</p>
+              <p
+                className={`mt-2 text-sm font-semibold ${
+                  task.lateSubmission ||
+                  (task.completedAt && task.completedAt > task.deadline)
+                    ? "text-bad"
+                    : "text-ok"
+                }`}
+              >
+                {task.lateSubmission ||
+                (task.completedAt && task.completedAt > task.deadline)
+                  ? "Late submission ⚠ — was missed"
+                  : "Submitted in time ✓"}
+              </p>
             )}
             <p className="mt-1 text-xs font-medium text-muted">
               <DueTime iso={task.deadline.toISOString()} />
