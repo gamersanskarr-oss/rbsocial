@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import ScrollExpand from "@/components/scroll-expand";
-import LightRays from "@/components/light-rays";
-import TextLoop from "@/components/text-loop";
-import SideRays from "@/components/side-rays";
-import ContactArt from "@/components/contact-art";
+import {
+  ScrollExpand,
+  LightRays,
+  TextLoop,
+  SideRays,
+  ContactArt,
+} from "@/components/lazy-fx";
 
 
 

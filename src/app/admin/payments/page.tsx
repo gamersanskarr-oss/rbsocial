@@ -9,6 +9,7 @@ import {
 import { requireAdminOrAccountant } from "@/lib/auth";
 import { deletePayment, markPaymentReceived } from "@/app/actions/finance";
 import { PageHeader } from "@/components/ui";
+import { ToastForm } from "@/components/toast";
 import RecordPaymentForm from "./record-payment-form";
 import EditPaymentDialog from "./edit-payment-dialog";
 
@@ -226,13 +227,13 @@ export default async function PaymentsPage({
                         />
                         {st !== "RECEIVED" ? (
                           <>
-                            <form action={markPaymentReceived}>
+                            <ToastForm action={markPaymentReceived} success="Payment marked received.">
                               <input type="hidden" name="paymentId" value={p.id} />
                               <input type="hidden" name="method" value="ONLINE" />
                               <button className="whitespace-nowrap rounded-lg bg-ink px-2 py-1 text-[11px] font-semibold text-canvas shadow-sm transition hover:bg-accent-hover">
                                 Received
                               </button>
-                            </form>
+                            </ToastForm>
                           </>
                         ) : (
                           <Link
@@ -242,12 +243,12 @@ export default async function PaymentsPage({
                             Invoice
                           </Link>
                         )}
-                        <form action={deletePayment}>
+                        <ToastForm action={deletePayment} success="Payment deleted.">
                           <input type="hidden" name="paymentId" value={p.id} />
                           <button className="px-1 text-xs font-semibold text-faint transition hover:text-rose-500">
                             Del
                           </button>
-                        </form>
+                        </ToastForm>
                       </div>
                     </td>
                   </tr>

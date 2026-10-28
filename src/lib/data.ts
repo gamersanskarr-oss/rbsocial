@@ -172,6 +172,15 @@ export { adminDb, Timestamp, FieldValue };
 /** datetime-local/date inputs carry no timezone — the whole team works in
     IST (+05:30), so we always parse bare inputs as India time and store the
     real instant. */
+/** Renders user-entered URLs safely — strips script/data schemes while
+ *  keeping http(s) and scheme-less ("instagram.com/x") links working. */
+export function safeHref(url: string | null | undefined): string {
+  const u = (url ?? "").trim();
+  if (!u) return "#";
+  if (/^(javascript|data|vbscript)\s*:/i.test(u)) return "#";
+  return u;
+}
+
 export const IST_OFFSET_MS = 5.5 * 36e5;
 
 export function parseISTDateTime(input: string): Date | null {
@@ -584,6 +593,51 @@ export async function listRequestsWithRefs(): Promise<
 export async function countOpenRequests(): Promise<number> {
   const snap = await adminDb.collection("taskRequests").where("status", "==", "OPEN").get();
   return snap.size;
+}
+
+/** Submitted tasks waiting on an admin/manager review decision. */
+export async function countPendingReviews(): Promise<number> {
+  const snap = await adminDb.collection("tasks").where("approval", "==", "PENDING").get();
+  return snap.size;
+}
+
+/** Employee price quotes waiting for approval. */
+export async function countPendingQuotes(): Promise<number> {
+  const snap = await adminDb.collection("tasks").where("payStatus", "==", "PENDING").get();
+  return snap.size;
+}
+
+export async function countNewApplications(): Promise<number> {
+  const snap = await adminDb
+    .collection("jobApplications")
+    .where("status", "==", "NEW")
+    .get();
+  return snap.size;
+}
+
+/** Unpaid invoices whose due date has arrived or passed. */
+export async function countDuePayments(): Promise<number> {
+  const snap = await adminDb.collection("clientPayments").get();
+  const now = Date.now();
+  let n = 0;
+  for (const d of snap.docs) {
+    const p = d.data();
+    if (p.receivedAt || p.paidAt) continue;
+    const due = p.dueDate && typeof p.dueDate.toDate === "function" ? p.dueDate.toDate() : p.dueDate ? new Date(p.dueDate) : null;
+    if (due && !isNaN(due.getTime()) && due.getTime() <= now) n++;
+  }
+  return n;
+}
+
+/** An employee's unfinished tasks (PENDING + MISSED). */
+export async function countOpenTasksForUser(userId: string): Promise<number> {
+  const snap = await adminDb
+    .collection("tasks")
+    .where("assignedToId", "==", userId)
+    .get();
+  let n = 0;
+  for (const d of snap.docs) if (d.data().status !== "COMPLETED") n++;
+  return n;
 }
 
 // ---------------------------------------------------------------------------

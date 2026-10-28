@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { clientAssignees, getClient, tasksByClient, userNameMap } from "@/lib/data";
+import { clientAssignees, getClient, tasksByClient, userNameMap, safeHref } from "@/lib/data";
 import { requireManager } from "@/lib/auth";
 import { PageHeader, StatusBadge } from "@/components/ui";
 
@@ -74,17 +74,17 @@ export default async function ManagerClientDetailPage({
               <p className="text-xs font-semibold uppercase tracking-wider text-faint">Socials</p>
               <div className="mt-1.5 flex flex-wrap gap-2">
                 {client.instagram && (
-                  <a href={client.instagram} target="_blank" rel="noreferrer" className="link text-sm">
+                  <a href={safeHref(client.instagram)} target="_blank" rel="noreferrer" className="link text-sm">
                     Instagram ↗
                   </a>
                 )}
                 {client.facebook && (
-                  <a href={client.facebook} target="_blank" rel="noreferrer" className="link text-sm">
+                  <a href={safeHref(client.facebook)} target="_blank" rel="noreferrer" className="link text-sm">
                     Facebook ↗
                   </a>
                 )}
                 {client.website && (
-                  <a href={client.website} target="_blank" rel="noreferrer" className="link text-sm">
+                  <a href={safeHref(client.website)} target="_blank" rel="noreferrer" className="link text-sm">
                     Website ↗
                   </a>
                 )}

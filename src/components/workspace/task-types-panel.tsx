@@ -3,12 +3,14 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { addTaskType, type ActionState } from "@/app/actions/admin";
+import { useToast } from "@/components/toast";
 
 export default function TaskTypesPanel({ taskTypes }: { taskTypes: string[] }) {
   const router = useRouter();
   const [newType, setNewType] = useState("");
   const [msg, setMsg] = useState<ActionState>({});
   const [adding, startAdding] = useTransition();
+  const toast = useToast();
 
   const save = () => {
     const v = newType.trim();
@@ -16,6 +18,8 @@ export default function TaskTypesPanel({ taskTypes }: { taskTypes: string[] }) {
     startAdding(async () => {
       const res = await addTaskType(v);
       setMsg(res);
+      if (res.error) toast("error", res.error);
+      else if (res.success) toast("success", res.success);
       if (res.success) setNewType("");
       router.refresh();
     });

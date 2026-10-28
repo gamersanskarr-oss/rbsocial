@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { clientAssignees, listClients, taskCountsByClient, userNameMap } from "@/lib/data";
+import { clientAssignees, listClients, taskCountsByClient, userNameMap, safeHref } from "@/lib/data";
 import { requireManager } from "@/lib/auth";
 import { PageHeader } from "@/components/ui";
 
@@ -55,17 +55,17 @@ export default async function ManagerClientsPage() {
                   <td className="td">
                     <div className="flex gap-2 text-xs font-semibold">
                       {c.instagram && (
-                        <a href={c.instagram} target="_blank" rel="noreferrer" className="link">
+                        <a href={safeHref(c.instagram)} target="_blank" rel="noreferrer" className="link">
                           IG
                         </a>
                       )}
                       {c.facebook && (
-                        <a href={c.facebook} target="_blank" rel="noreferrer" className="link">
+                        <a href={safeHref(c.facebook)} target="_blank" rel="noreferrer" className="link">
                           FB
                         </a>
                       )}
                       {c.website && (
-                        <a href={c.website} target="_blank" rel="noreferrer" className="link">
+                        <a href={safeHref(c.website)} target="_blank" rel="noreferrer" className="link">
                           Web
                         </a>
                       )}

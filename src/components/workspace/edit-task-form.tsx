@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { useRouter } from "next/navigation";
 import { updateTask, type SubmitState } from "@/app/actions/tasks";
 
@@ -42,6 +43,7 @@ export default function EditTaskForm({
   isAdmin: boolean;
 }) {
   const [state, formAction, pending] = useActionState(updateTask, initial);
+  useActionToast(state);
   const router = useRouter();
   const [selType, setSelType] = useState(task.type ?? "");
 

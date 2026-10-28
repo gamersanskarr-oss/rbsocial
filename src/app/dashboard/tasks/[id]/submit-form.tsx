@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitTask, type SubmitState } from "@/app/actions/tasks";
+import { useActionToast } from "@/components/toast";
 
 const initial: SubmitState = {};
 
@@ -13,6 +14,7 @@ export default function SubmitTaskForm({
   defaultAmount: number | null;
 }) {
   const [state, formAction, pending] = useActionState(submitTask, initial);
+  useActionToast(state);
 
   return (
     <form action={formAction} className="space-y-4">

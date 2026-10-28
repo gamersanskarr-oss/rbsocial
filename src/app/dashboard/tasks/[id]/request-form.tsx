@@ -1,12 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { addTaskRequest, type RequestState } from "@/app/actions/requests";
 
 const initial: RequestState = {};
 
 export default function RequestForm({ taskId }: { taskId: string }) {
   const [state, formAction, pending] = useActionState(addTaskRequest, initial);
+  useActionToast(state);
 
   return (
     <form action={formAction} className="space-y-3">

@@ -1,12 +1,14 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useActionToast } from "@/components/toast";
 import { addEmployee, type ActionState } from "@/app/actions/admin";
 
 const initial: ActionState = {};
 
 export default function AddEmployeeForm() {
   const [state, formAction, pending] = useActionState(addEmployee, initial);
+  useActionToast(state);
   const [role, setRole] = useState("EMPLOYEE");
 
   return (

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { useRouter } from "next/navigation";
 import { createTask, type ActionState } from "@/app/actions/admin";
 
@@ -19,6 +20,7 @@ export default function CreateTaskForm({
   basePath?: string;
 }) {
   const [state, formAction, pending] = useActionState(createTask, initial);
+  useActionToast(state);
   const router = useRouter();
 
   const [payAmt, setPayAmt] = useState("");

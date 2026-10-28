@@ -3,11 +3,16 @@ import { getUser, listTasksForUser, taskPay } from "@/lib/data";
 import { BONUS_GRACE_MISSES, PAYOUT_BONUS, payoutStatus, checkMissedDeadlines } from "@/lib/deadlines";
 import { DashboardShell } from "@/components/dashboard-shell";
 
-const nav = [
+const buildNav = (openTasks: number) => [
   {
     label: "My work",
     items: [
-      { href: "/dashboard", label: "My Tasks", icon: "my-tasks" as const },
+      {
+        href: "/dashboard",
+        label: "My Tasks",
+        icon: "my-tasks" as const,
+        badge: openTasks,
+      },
       { href: "/dashboard/calendar", label: "Calendar", icon: "calendar" as const },
       { href: "/dashboard/clients", label: "My Clients", icon: "clients" as const },
     ],
@@ -26,6 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1);
 
   const [fresh, myTasks] = await Promise.all([getUser(user.id), listTasksForUser(user.id)]);
+  const nav = buildNav(myTasks.filter((t) => t.status !== "COMPLETED").length);
 
   const rate = fresh?.perPostPay ?? null;
   const done = myTasks.filter((t) => t.status === "COMPLETED");

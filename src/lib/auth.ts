@@ -35,7 +35,17 @@ export async function createSession(idToken: string) {
 export async function destroySession() {
   const store = await cookies();
   const cookie = store.get(COOKIE_NAME)?.value;
-  if (cookie) sessionCache().delete(cookie);
+  if (cookie) {
+    sessionCache().delete(cookie);
+    // Revoke the user's tokens server-side too — with checkRevoked enabled in
+    // verifySessionCookie, this kills the session everywhere, not just here.
+    try {
+      const decoded = await adminAuth.verifySessionCookie(cookie);
+      await adminAuth.revokeRefreshTokens(decoded.uid);
+    } catch {
+      // Cookie already invalid/expired — nothing to revoke.
+    }
+  }
   store.delete(COOKIE_NAME);
 }
 

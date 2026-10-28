@@ -17,6 +17,7 @@ import {
 } from "@/lib/deadlines";
 import { setPerPostPay } from "@/app/actions/admin";
 import { Card, PageHeader, TeamBadge } from "@/components/ui";
+import { ToastForm } from "@/components/toast";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
@@ -360,7 +361,7 @@ export default async function PayoutsPage({
                     <TeamBadge team={e.team} />
                   </td>
                   <td className="td">
-                    <form action={setPerPostPay} className="flex items-center gap-1.5">
+                    <ToastForm action={setPerPostPay} success="Rate updated." className="flex items-center gap-1.5">
                       <input type="hidden" name="userId" value={e.id} />
                       <span className="text-xs font-semibold text-faint">₹</span>
                       <input
@@ -378,7 +379,7 @@ export default async function PayoutsPage({
                       >
                         Save
                       </button>
-                    </form>
+                    </ToastForm>
                   </td>
                 </tr>
               ))}

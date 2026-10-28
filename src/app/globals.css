@@ -269,6 +269,25 @@ html {
   background-size: 220% 220%;
   animation: gradient-pan 9s ease-in-out infinite;
 }
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.animate-toast-in { animation: toast-in 0.22s ease-out; }
+
+/* Native date/time controls inside the dark dashboards — makes the
+   calendar-picker icon (and the popup) render light instead of black. */
+.theme-dark {
+  color-scheme: dark;
+}
+.theme-dark input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.65;
+  cursor: pointer;
+}
+.theme-dark input::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
 @media (prefers-reduced-motion: reduce) {
   .animate-drift, .animate-drift-alt, .animate-wave, .animate-wave-slow,
   .animate-gradient-pan, .animate-marquee, .animate-float {

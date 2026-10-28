@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listRequestsWithRefs } from "@/lib/data";
 import { PageHeader } from "@/components/ui";
 import { resolveRequest } from "@/app/actions/requests";
+import { ToastForm } from "@/components/toast";
 
 export default async function RequestsView({ basePath }: { basePath: string }) {
   const requests = await listRequestsWithRefs();
@@ -47,10 +48,10 @@ export default async function RequestsView({ basePath }: { basePath: string }) {
                   {r.createdAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </p>
               </div>
-              <form action={resolveRequest}>
+              <ToastForm action={resolveRequest} success="Request resolved.">
                 <input type="hidden" name="requestId" value={r.id} />
                 <button className="btn-primary">Mark Resolved</button>
-              </form>
+              </ToastForm>
             </div>
           </div>
         ))}

@@ -1,12 +1,14 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useActionToast } from "@/components/toast";
 import { createShareLink, type FinState } from "@/app/actions/finance";
 
 const initial: FinState = {};
 
 export default function ShareButton({ horizon }: { horizon: string }) {
   const [state, formAction, pending] = useActionState(createShareLink, initial);
+  useActionToast(state);
   const [copied, setCopied] = useState(false);
   const fullUrl = state.shareUrl ? `${window.location.origin}${state.shareUrl}` : null;
 

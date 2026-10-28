@@ -8,6 +8,7 @@ import {
 import { requireAdminOrAccountant } from "@/lib/auth";
 import { deleteDisbursement, updateFinanceSettings } from "@/app/actions/finance";
 import { PageHeader, Card } from "@/components/ui";
+import { ToastForm } from "@/components/toast";
 import AddDisbursementForm from "./add-disbursement-form";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
@@ -123,12 +124,12 @@ export default async function DharamPage() {
                   <td className="td text-muted">{d.cause ?? "—"}</td>
                   <td className="td font-bold text-ink">{inr(d.amount)}</td>
                   <td className="td">
-                    <form action={deleteDisbursement}>
+                    <ToastForm action={deleteDisbursement} success="Disbursement deleted.">
                       <input type="hidden" name="disbursementId" value={d.id} />
                       <button className="text-xs font-semibold text-faint transition hover:text-rose-500">
                         Del
                       </button>
-                    </form>
+                    </ToastForm>
                   </td>
                 </tr>
               ))}
@@ -140,7 +141,7 @@ export default async function DharamPage() {
       {user.role === "ADMIN" && (
         <div className="card p-6">
           <h2 className="mb-4 text-sm font-bold text-ink">Settings</h2>
-          <form action={updateFinanceSettings} className="flex flex-wrap items-end gap-3">
+          <ToastForm action={updateFinanceSettings} success="Settings saved." className="flex flex-wrap items-end gap-3">
             <div>
               <label className="mb-1 block text-xs font-semibold text-faint">
                 Dharam allocation (% of net profit)
@@ -170,7 +171,7 @@ export default async function DharamPage() {
               />
             </div>
             <button className="btn-secondary px-4 py-2">Save</button>
-          </form>
+          </ToastForm>
         </div>
       )}
     </div>

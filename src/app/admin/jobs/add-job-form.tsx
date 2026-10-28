@@ -1,12 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { addJob, type ActionState } from "@/app/actions/admin";
 
 const initial: ActionState = {};
 
 export default function AddJobForm() {
   const [state, formAction, pending] = useActionState(addJob, initial);
+  useActionToast(state);
 
   return (
     <form action={formAction} className="space-y-4">

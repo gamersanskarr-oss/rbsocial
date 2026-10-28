@@ -1,12 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { addSubscription, type FinState } from "@/app/actions/finance";
 
 const initial: FinState = {};
 
 export default function AddSubscriptionForm() {
   const [state, formAction, pending] = useActionState(addSubscription, initial);
+  useActionToast(state);
   const today = new Date().toISOString().slice(0, 10);
 
   return (

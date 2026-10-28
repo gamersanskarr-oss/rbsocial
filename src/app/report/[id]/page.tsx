@@ -40,7 +40,10 @@ export default async function SharedReportPage({
   const { id } = await params;
   const doc = await adminDb.collection("sharedReports").doc(id).get();
   if (!doc.exists) notFound();
-  const snap = doc.data()!.snapshot as Snapshot;
+  const data = doc.data()!;
+  const expiresAt = data.expiresAt?.toDate?.() ?? null;
+  if (expiresAt && expiresAt.getTime() < Date.now()) notFound();
+  const snap = data.snapshot as Snapshot;
 
   const received = snap.payments
     .filter((p) => p.receivedAt)

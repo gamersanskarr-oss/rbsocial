@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { clientAssignees, getClient, listAssets, listTaskTypes, tasksByClient, userNameMap } from "@/lib/data";
+import { clientAssignees, getClient, listAssets, listTaskTypes, tasksByClient, userNameMap, safeHref } from "@/lib/data";
 import { requireAdmin } from "@/lib/auth";
 import { StatusBadge } from "@/components/ui";
 import { ClientLogo } from "@/components/client-logo";
@@ -9,6 +9,7 @@ import { updateClientBilling } from "@/app/actions/finance";
 import { BILLING_MODELS } from "@/lib/constants";
 import ClientDetailsForm from "./client-details-form";
 import AssetForm from "./asset-form";
+import { ToastForm } from "@/components/toast";
 
 export default async function AdminClientDetailPage({
   params,
@@ -67,7 +68,7 @@ export default async function AdminClientDetailPage({
             {socials.map((s) => (
               <a
                 key={s.label}
-                href={s.url!}
+                href={safeHref(s.url)}
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
@@ -104,7 +105,7 @@ export default async function AdminClientDetailPage({
           <p className="mb-4 text-sm font-medium text-muted">
             Set the monthly fee and billing cycle — a pending payment is auto-created each month.
           </p>
-          <form action={updateClientBilling} className="space-y-4">
+          <ToastForm action={updateClientBilling} success="Billing saved." className="space-y-4">
             <input type="hidden" name="clientId" value={client.id} />
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
@@ -159,7 +160,7 @@ export default async function AdminClientDetailPage({
               </p>
             )}
             <button className="btn-secondary">Save billing</button>
-          </form>
+          </ToastForm>
         </div>
         </div>
 
@@ -184,11 +185,11 @@ export default async function AdminClientDetailPage({
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-ink">{a.name}</p>
-                    <a href={a.url} target="_blank" rel="noreferrer" className="link block truncate text-xs">
+                    <a href={safeHref(a.url)} target="_blank" rel="noreferrer" className="link block truncate text-xs">
                       {a.url} ↗
                     </a>
                   </div>
-                  <form action={deleteClientAsset}>
+                  <ToastForm action={deleteClientAsset} success="Asset deleted.">
                     <input type="hidden" name="assetId" value={a.id} />
                     <button
                       title="Delete asset"
@@ -199,7 +200,7 @@ export default async function AdminClientDetailPage({
                         <path d="M6 6l12 12" />
                       </svg>
                     </button>
-                  </form>
+                  </ToastForm>
                 </li>
               ))}
             </ul>

@@ -22,13 +22,34 @@ Single-page marketing site at `/`, plus three role-based dashboards
   `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY`
   (keep `\n` escapes).
 
-## Demo logins (after `npm run seed`)
+## Accounts (production — database was wiped clean Oct 2026)
 
-- Admin: `admin@pixeldesk.com` / `admin123`
-- Manager: `manager@pixeldesk.com` / `manager123`
-- Accountant: `accountant@pixeldesk.com` / `accounts123`
-- Employees (password `user123`): `priya@pixeldesk.com` (Design),
-  `rahul@pixeldesk.com` (Design), `arjun@pixeldesk.com` (IT)
+- The only account is the owner's ADMIN login; managers/employees/
+  accountants are added from `/admin/employees` (Role dropdown).
+- `npm run wipe` — deletes ALL Firestore data + Auth users except the
+  keep-list in `scripts/wipe.ts` (currently the admin).
+- `npx tsx scripts/make-admin.ts <email> <password>` — create an admin.
+- `npx tsx scripts/del-user.ts <email>` — remove a user fully.
+- `npm run seed` — demo dataset (`admin@pixeldesk.com`/`admin123`,
+  `manager@pixeldesk.com`/`manager123`, `accountant@pixeldesk.com`/
+  `accounts123`, employees `priya/rahul/arjun@pixeldesk.com`/`user123`)
+  — only runs on an empty DB.
+
+## Security notes
+
+- `src/lib/rate-limit.ts` — in-memory sliding-window limiter applied to
+  public endpoints (`applyForJob`, `createSessionFromIdToken`) and
+  employee actions (`submitTask`, `submitMissReason`, `addTaskRequest`,
+  `createShareLink`).
+- Security headers (CSP, X-Frame-Options, nosniff, Referrer-Policy,
+  Permissions-Policy) are set in `next.config.ts`.
+- `safeHref()` in `data.ts` strips `javascript:`/`data:`/`vbscript:` URLs
+  — use it for every user-entered link rendered as `href`.
+- `destroySession` revokes Firebase refresh tokens on logout, so logout
+  kills the session on all devices (session cookie verify uses
+  `checkRevoked=true`).
+- Shared report links (`/report/[id]`) expire after 90 days.
+- Never hardcode credentials in scripts — they take argv/env input.
 
 ## Architecture
 

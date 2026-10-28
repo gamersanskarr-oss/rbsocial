@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireEmployee } from "@/lib/auth";
-import { getTaskDetail, getUser } from "@/lib/data";
+import { getTaskDetail, getUser, safeHref } from "@/lib/data";
 import { StatusBadge } from "@/components/ui";
 import { deleteRequest } from "@/app/actions/requests";
 import SubmitTaskForm from "./submit-form";
 import RequestForm from "./request-form";
 import ReasonForm from "./reason-form";
 import { DueTime } from "@/components/due-time";
+import { ToastForm } from "@/components/toast";
 
 function relativeDeadline(deadline: Date) {
   const diffMs = deadline.getTime() - Date.now();
@@ -188,7 +189,7 @@ export default async function TaskDetailPage({
               )}
               {task.submissionLink && (
                 <a
-                  href={task.submissionLink}
+                  href={safeHref(task.submissionLink)}
                   target="_blank"
                   rel="noreferrer"
                   className="link mt-2 inline-block break-all text-sm"
@@ -266,7 +267,7 @@ export default async function TaskDetailPage({
                         <span className="rounded-full bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn ring-1 ring-inset ring-warn-line">
                           Waiting
                         </span>
-                        <form action={deleteRequest}>
+                        <ToastForm action={deleteRequest} success="Request deleted.">
                           <input type="hidden" name="requestId" value={r.id} />
                           <button
                             title="Delete request"
@@ -277,7 +278,7 @@ export default async function TaskDetailPage({
                               <path d="M6 6l12 12" />
                             </svg>
                           </button>
-                        </form>
+                        </ToastForm>
                       </>
                     )}
                   </div>
@@ -393,7 +394,7 @@ export default async function TaskDetailPage({
               <div className="space-y-2">
                 {task.referenceLink && (
                   <a
-                    href={task.referenceLink}
+                    href={safeHref(task.referenceLink)}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel/60 px-3.5 py-2.5 text-sm font-semibold text-ink transition hover:bg-hover"
@@ -404,7 +405,7 @@ export default async function TaskDetailPage({
                 )}
                 {task.submissionLink && (
                   <a
-                    href={task.submissionLink}
+                    href={safeHref(task.submissionLink)}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel/60 px-3.5 py-2.5 text-sm font-semibold text-ink transition hover:bg-hover"

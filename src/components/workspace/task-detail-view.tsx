@@ -6,9 +6,11 @@ import {
   listClientOptions,
   listEmployeeOptions,
   listTaskTypes,
+  safeHref,
 } from "@/lib/data";
 import { StatusBadge, TeamBadge } from "@/components/ui";
 import { reviewTaskPay } from "@/app/actions/admin";
+import { ToastForm } from "@/components/toast";
 import EditTaskForm from "./edit-task-form";
 import ReviewTaskForm from "./review-task-form";
 
@@ -104,7 +106,7 @@ export default async function TaskDetailView({
                   {task.completedAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </p>
                 <a
-                  href={task.submissionLink}
+                  href={safeHref(task.submissionLink)}
                   target="_blank"
                   rel="noreferrer"
                   className="link mt-2 inline-block break-all text-sm"
@@ -119,7 +121,7 @@ export default async function TaskDetailView({
                       {assignee?.name ?? "the employee"} — approve or decline the amount
                     </p>
                     <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <form action={reviewTaskPay} className="flex items-center gap-2">
+                      <ToastForm action={reviewTaskPay} success="Quote approved." className="flex items-center gap-2">
                         <input type="hidden" name="taskId" value={task.id} />
                         <input type="hidden" name="mode" value="approve" />
                         <input
@@ -133,14 +135,14 @@ export default async function TaskDetailView({
                           aria-label="Approved amount"
                         />
                         <button className="btn-primary py-1.5 text-xs">Approve ₹ ✓</button>
-                      </form>
-                      <form action={reviewTaskPay}>
+                      </ToastForm>
+                      <ToastForm action={reviewTaskPay} success="Quote declined — base rate applies.">
                         <input type="hidden" name="taskId" value={task.id} />
                         <input type="hidden" name="mode" value="decline" />
                         <button className="rounded-lg border border-line bg-elevated px-3 py-1.5 text-xs font-semibold text-muted transition hover:bg-panel hover:text-ink">
                           Decline — pay at base rate
                         </button>
-                      </form>
+                      </ToastForm>
                     </div>
                     <p className="mt-2 text-[11px] font-medium text-muted">
                       Until approved, this task counts at the employee&apos;s base per-post rate.
@@ -283,7 +285,7 @@ export default async function TaskDetailView({
               <div className="space-y-2">
                 {task.referenceLink && (
                   <a
-                    href={task.referenceLink}
+                    href={safeHref(task.referenceLink)}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel/60 px-3.5 py-2.5 text-sm font-semibold text-ink transition hover:bg-hover"
@@ -294,7 +296,7 @@ export default async function TaskDetailView({
                 )}
                 {task.submissionLink && (
                   <a
-                    href={task.submissionLink}
+                    href={safeHref(task.submissionLink)}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center justify-between gap-2 rounded-xl border border-line bg-panel/60 px-3.5 py-2.5 text-sm font-semibold text-ink transition hover:bg-hover"

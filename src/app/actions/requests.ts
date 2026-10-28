@@ -1,13 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { adminDb, FieldValue, Timestamp } from "@/lib/data";
+import { adminDb, FieldValue, Timestamp, logActivity } from "@/lib/data";
 import { requireUser, requireAdminOrManager } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type RequestState = { error?: string; success?: string };
 
 export async function addTaskRequest(_prev: RequestState, formData: FormData): Promise<RequestState> {
   const user = await requireUser();
+  if (!rateLimit(`request:${user.id}`, 10, 60 * 60 * 1000)) {
+    return { error: "Too many requests — wait a bit and try again." };
+  }
   const taskId = String(formData.get("taskId") ?? "");
   const message = String(formData.get("message") ?? "").trim();
 
@@ -65,6 +69,7 @@ export async function deleteRequest(formData: FormData) {
   const taskDoc = await adminDb.collection("tasks").doc(String(request.taskId)).get();
   if (taskDoc.exists && taskDoc.data()?.assignedToId === user.id) {
     await doc.ref.delete();
+    await logActivity("request", `${user.name} deleted their task request.`);
   }
   revalidatePath(`/dashboard/tasks/${request.taskId}`);
   revalidatePath("/admin/requests");

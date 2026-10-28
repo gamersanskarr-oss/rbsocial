@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { deleteJob, toggleJob } from "@/app/actions/admin";
 import { deleteJobApplication, markApplicationReviewed } from "@/app/actions/careers";
 import { PageHeader } from "@/components/ui";
+import { ToastForm } from "@/components/toast";
 import AddJobForm from "./add-job-form";
 
 const TYPE_LABEL: Record<string, string> = {
@@ -99,18 +100,18 @@ export default async function JobsPage() {
                   </td>
                   <td className="td">
                     <div className="flex items-center justify-end gap-2">
-                      <form action={toggleJob}>
+                      <ToastForm action={toggleJob} success={j.active ? "Job paused." : "Job published."}>
                         <input type="hidden" name="jobId" value={j.id} />
                         <button className="rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel">
                           {j.active ? "Pause" : "Publish"}
                         </button>
-                      </form>
-                      <form action={deleteJob}>
+                      </ToastForm>
+                      <ToastForm action={deleteJob} success="Job deleted.">
                         <input type="hidden" name="jobId" value={j.id} />
                         <button className="rounded-lg px-2 py-1.5 text-xs font-semibold text-faint transition hover:bg-hover hover:text-rose-500">
                           Delete
                         </button>
-                      </form>
+                      </ToastForm>
                     </div>
                   </td>
                 </tr>
@@ -204,18 +205,18 @@ export default async function JobsPage() {
                   </td>
                   <td className="td">
                     <div className="flex items-center justify-end gap-2">
-                      <form action={markApplicationReviewed}>
+                      <ToastForm action={markApplicationReviewed} success={a.status === "NEW" ? "Marked as reviewed." : "Reopened — back to New."}>
                         <input type="hidden" name="applicationId" value={a.id} />
                         <button className="rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel">
                           {a.status === "NEW" ? "Reviewed" : "Reopen"}
                         </button>
-                      </form>
-                      <form action={deleteJobApplication}>
+                      </ToastForm>
+                      <ToastForm action={deleteJobApplication} success="Application deleted.">
                         <input type="hidden" name="applicationId" value={a.id} />
                         <button className="rounded-lg px-2 py-1.5 text-xs font-semibold text-faint transition hover:bg-hover hover:text-rose-500">
                           Del
                         </button>
-                      </form>
+                      </ToastForm>
                     </div>
                   </td>
                 </tr>

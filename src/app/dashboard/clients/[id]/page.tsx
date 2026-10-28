@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireEmployee } from "@/lib/auth";
-import { clientAssignees, getClient, listAssets, tasksByClient } from "@/lib/data";
+import { clientAssignees, getClient, listAssets, tasksByClient, safeHref } from "@/lib/data";
 import { StatusBadge } from "@/components/ui";
 import { ClientLogo } from "@/components/client-logo";
 
@@ -67,7 +67,7 @@ export default async function MyClientDetailPage({
             {socials.map((s) => (
               <a
                 key={s.label}
-                href={s.url!}
+                href={safeHref(s.url)}
                 target="_blank"
                 rel="noreferrer"
                 className="rounded-xl border border-line bg-elevated px-3.5 py-2 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel"
@@ -102,7 +102,7 @@ export default async function MyClientDetailPage({
               {assets.map((a) => (
                 <li key={a.id}>
                   <a
-                    href={a.url}
+                    href={safeHref(a.url)}
                     target="_blank"
                     rel="noreferrer"
                     className="flex items-center justify-between gap-3 rounded-xl border border-line bg-panel/50 px-4 py-3 transition hover:bg-hover"

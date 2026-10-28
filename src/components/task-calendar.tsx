@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useActionState } from "react";
 import { createTask, type ActionState } from "@/app/actions/admin";
 import { moveTaskDeadline } from "@/app/actions/tasks";
+import { useActionToast, useToast } from "@/components/toast";
 
 export type CalendarTask = {
   id: string;
@@ -55,6 +56,7 @@ function AssignModal({
 }) {
   const initial: ActionState = {};
   const [state, formAction, pending] = useActionState(createTask, initial);
+  useActionToast(state);
   const [selType, setSelType] = useState("");
   const [payAmt, setPayAmt] = useState("");
 
@@ -234,6 +236,7 @@ export function TaskCalendar({
   const [dropKey, setDropKey] = useState<string | null>(null);
   const [moved, setMoved] = useState<Record<string, Date>>({}); // taskId -> new deadline (optimistic)
   const [, startMove] = useTransition();
+  const toast = useToast();
 
   // Client filter options: prefer the option list, else derive from tasks
   const clientNames = clients.length
@@ -272,9 +275,11 @@ export function TaskCalendar({
       try {
         const res = await moveTaskDeadline(taskId, iso);
         if (!res?.ok) throw new Error(res?.error ?? "Move failed");
+        toast("success", `Moved to ${new Date(next).toLocaleDateString(undefined, { day: "numeric", month: "short" })}`);
       } catch (err) {
         // Revert the optimistic chip — the server didn't save the move.
         console.error("Could not move task:", err);
+        toast("error", "Could not move the task — try again.");
         setMoved((m) => {
           const copy = { ...m };
           delete copy[taskId];

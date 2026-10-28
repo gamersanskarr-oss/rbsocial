@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { listClientOptions, listEmployeeOptions, listTasksWithRefs, listTaskTypes } from "@/lib/data";
+import { listClientOptions, listEmployeeOptions, listTasksWithRefs, listTaskTypes, safeHref } from "@/lib/data";
 import { checkMissedDeadlines } from "@/lib/deadlines";
 import { PageHeader, StatusBadge } from "@/components/ui";
 import CreateTaskForm from "./create-task-form";
@@ -134,7 +134,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
                       <div className="flex items-center gap-2.5">
                         {t.submissionLink ? (
                         <a
-                          href={t.submissionLink}
+                          href={safeHref(t.submissionLink)}
                           target="_blank"
                           rel="noreferrer"
                           className="link"

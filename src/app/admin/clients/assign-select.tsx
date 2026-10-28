@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { assignClient } from "@/app/actions/admin";
+import { useToast } from "@/components/toast";
 
 const WIDTH = 192; // w-48
 
@@ -21,6 +22,7 @@ export default function AssignSelect({
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set(currentIds));
   const [pending, startTransition] = useTransition();
+  const toast = useToast();
 
   // Keep local state in sync when the server data refreshes
   useEffect(() => setChecked(new Set(currentIds)), [currentIds]);
@@ -57,8 +59,13 @@ export default function AssignSelect({
     fd.set("clientId", clientId);
     next.forEach((v) => fd.append("assignedToIds", v));
     startTransition(async () => {
-      await assignClient(fd);
-      router.refresh();
+      try {
+        await assignClient(fd);
+        toast("success", "Assignment saved.");
+        router.refresh();
+      } catch {
+        toast("error", "Could not save the assignment.");
+      }
     });
   };
 

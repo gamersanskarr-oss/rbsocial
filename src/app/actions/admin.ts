@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { adminDb, Timestamp, FieldValue, parseClientRequirements, parseISTDateTime } from "@/lib/data";
+import { adminDb, Timestamp, FieldValue, parseClientRequirements, parseISTDateTime, logActivity } from "@/lib/data";
 import { adminAuth } from "@/lib/firebase-admin";
 import { requireAdmin, requireAdminOrManager } from "@/lib/auth";
 
@@ -123,6 +123,10 @@ export async function waiveMiss(formData: FormData) {
     .collection("users")
     .doc(userId)
     .update({ missedDeadlines: mode === "all" ? 0 : Math.max(0, current - 1) });
+  await logActivity(
+    "admin",
+    `${doc.data()?.name ?? "Employee"}'s strikes ${mode === "all" ? `reset (${current} → 0)` : `waived (${current} → ${current - 1})`}.`
+  );
 
   revalidatePath("/admin/employees");
   revalidatePath("/admin/payouts");
@@ -238,6 +242,7 @@ export async function toggleJob(formData: FormData) {
   const doc = await adminDb.collection("jobs").doc(jobId).get();
   if (!doc.exists) return;
   await doc.ref.update({ active: !doc.data()?.active });
+  await logActivity("admin", `Job ${doc.data()?.active ? "paused" : "published"}: ${doc.data()?.title ?? jobId}.`);
   revalidatePath("/admin/jobs");
   revalidatePath("/careers");
 }
@@ -245,7 +250,11 @@ export async function toggleJob(formData: FormData) {
 export async function deleteJob(formData: FormData) {
   await requireAdmin();
   const jobId = String(formData.get("jobId") ?? "");
-  if (jobId) await adminDb.collection("jobs").doc(jobId).delete();
+  if (jobId) {
+    const doc = await adminDb.collection("jobs").doc(jobId).get();
+    await doc.ref.delete();
+    await logActivity("admin", `Job deleted: ${doc.data()?.title ?? jobId}.`);
+  }
   revalidatePath("/admin/jobs");
   revalidatePath("/careers");
 }

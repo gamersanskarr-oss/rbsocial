@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions/auth";
 import { Logo } from "@/components/logo";
+import { ToastProvider } from "@/components/toast";
 
 export type NavIcon =
   | "overview"
@@ -320,6 +321,7 @@ export function DashboardShell({
   );
 
   return (
+    <ToastProvider>
     <div className="theme-dark min-h-screen bg-canvas text-ink">
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-line bg-panel md:block">
@@ -412,5 +414,6 @@ export function DashboardShell({
         </div>
       </main>
     </div>
+    </ToastProvider>
   );
 }

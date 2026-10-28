@@ -16,6 +16,7 @@ import {
 } from "@/lib/data";
 import { EXPENSE_CATEGORIES } from "@/lib/constants";
 import { requireAdmin, requireAdminOrAccountant } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type FinState = { error?: string; success?: string; shareUrl?: string };
 
@@ -152,7 +153,10 @@ export async function logFollowUp(formData: FormData) {
 export async function deletePayment(formData: FormData) {
   await requireAdminOrAccountant();
   const id = String(formData.get("paymentId") ?? "");
-  if (id) await adminDb.collection("clientPayments").doc(id).delete().catch(() => null);
+  if (id) {
+    await adminDb.collection("clientPayments").doc(id).delete().catch(() => null);
+    await logActivity("payment", "A payment record was deleted.");
+  }
   revalidateFinance();
 }
 
@@ -222,7 +226,10 @@ export async function addExpense(_prev: FinState, formData: FormData): Promise<F
 export async function deleteExpense(formData: FormData) {
   await requireAdminOrAccountant();
   const id = String(formData.get("expenseId") ?? "");
-  if (id) await adminDb.collection("expenses").doc(id).delete().catch(() => null);
+  if (id) {
+    await adminDb.collection("expenses").doc(id).delete().catch(() => null);
+    await logActivity("expense", "An expense record was deleted.");
+  }
   revalidateFinance();
 }
 
@@ -265,7 +272,10 @@ export async function toggleSubscription(formData: FormData) {
 export async function deleteSubscription(formData: FormData) {
   await requireAdminOrAccountant();
   const id = String(formData.get("subscriptionId") ?? "");
-  if (id) await adminDb.collection("subscriptions").doc(id).delete().catch(() => null);
+  if (id) {
+    await adminDb.collection("subscriptions").doc(id).delete().catch(() => null);
+    await logActivity("subscription", "A subscription was deleted.");
+  }
   revalidateFinance();
 }
 
@@ -296,7 +306,10 @@ export async function addDisbursement(_prev: FinState, formData: FormData): Prom
 export async function deleteDisbursement(formData: FormData) {
   await requireAdminOrAccountant();
   const id = String(formData.get("disbursementId") ?? "");
-  if (id) await adminDb.collection("dharamDisbursements").doc(id).delete().catch(() => null);
+  if (id) {
+    await adminDb.collection("dharamDisbursements").doc(id).delete().catch(() => null);
+    await logActivity("dharam", "A disbursement record was deleted.");
+  }
   revalidateFinance();
 }
 
@@ -326,7 +339,10 @@ export async function createShareLink(
   _prev: FinState,
   formData: FormData
 ): Promise<FinState> {
-  await requireAdminOrAccountant();
+  const sharer = await requireAdminOrAccountant();
+  if (!rateLimit(`sharelink:${sharer.id}`, 20, 60 * 60 * 1000)) {
+    return { error: "Too many links created — wait a bit and try again." };
+  }
   const horizon = String(formData.get("horizon") ?? "this-month");
 
   const [payments, expenses, settings, clients] = await Promise.all([
@@ -363,6 +379,8 @@ export async function createShareLink(
   const ref = await adminDb.collection("sharedReports").add({
     snapshot,
     createdAt: FieldValue.serverTimestamp(),
+    // Public links auto-expire after 90 days — regenerate if a client needs more.
+    expiresAt: Timestamp.fromMillis(Date.now() + 90 * 24 * 60 * 60 * 1000),
   });
   await logActivity("report", `A shareable ${horizon} report link was generated.`);
   return { success: "Share link created.", shareUrl: `/report/${ref.id}` };

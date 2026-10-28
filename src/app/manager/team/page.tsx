@@ -3,6 +3,7 @@ import { listEmployees, listTasksWithRefs } from "@/lib/data";
 import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT } from "@/lib/deadlines";
 import { waiveMiss } from "@/app/actions/admin";
 import { PageHeader, StatusBadge, TeamBadge } from "@/components/ui";
+import { ToastForm } from "@/components/toast";
 
 const fmtDate = (d: Date) =>
   d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
@@ -152,7 +153,7 @@ export default async function ManagerTeamPage({
                             {u.missedDeadlines}/{MISSED_DEADLINE_LIMIT}
                             {u.missedDeadlines >= MISSED_DEADLINE_LIMIT ? " · cut" : ""}
                           </span>
-                          <form action={waiveMiss}>
+                          <ToastForm action={waiveMiss} success="One strike waived.">
                             <input type="hidden" name="userId" value={u.id} />
                             <input type="hidden" name="mode" value="one" />
                             <button
@@ -161,8 +162,8 @@ export default async function ManagerTeamPage({
                             >
                               Waive 1
                             </button>
-                          </form>
-                          <form action={waiveMiss}>
+                          </ToastForm>
+                          <ToastForm action={waiveMiss} success="All strikes cleared.">
                             <input type="hidden" name="userId" value={u.id} />
                             <input type="hidden" name="mode" value="all" />
                             <button
@@ -171,7 +172,7 @@ export default async function ManagerTeamPage({
                             >
                               Reset
                             </button>
-                          </form>
+                          </ToastForm>
                         </div>
                       ) : (
                         <span className="text-xs font-medium text-faint">clean</span>

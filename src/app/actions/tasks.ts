@@ -3,11 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { adminDb, Timestamp, FieldValue, parseISTDateTime, shiftISTDay } from "@/lib/data";
 import { requireAdminOrManager, requireUser } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type SubmitState = { error?: string; success?: string };
 
 export async function submitTask(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
   const user = await requireUser();
+  if (!rateLimit(`submit:${user.id}`, 40, 60 * 60 * 1000)) {
+    return { error: "Too many submissions — wait a bit and try again." };
+  }
   const taskId = String(formData.get("taskId") ?? "");
   const submissionLink = String(formData.get("submissionLink") ?? "").trim();
   const payRaw = String(formData.get("payAmount") ?? "").trim();
@@ -72,6 +76,9 @@ export async function submitMissReason(
   formData: FormData
 ): Promise<SubmitState> {
   const user = await requireUser();
+  if (!rateLimit(`missreason:${user.id}`, 30, 60 * 60 * 1000)) {
+    return { error: "Too many attempts — wait a bit and try again." };
+  }
   const taskId = String(formData.get("taskId") ?? "");
   const reason = String(formData.get("missReason") ?? "").trim().slice(0, 500);
   if (!reason) return { error: "Please write a short reason." };

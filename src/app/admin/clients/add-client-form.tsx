@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { addClient, type ActionState } from "@/app/actions/admin";
 import RequirementsEditor from "@/components/requirements-editor";
 
@@ -14,6 +15,7 @@ export default function AddClientForm({
   taskTypes: string[];
 }) {
   const [state, formAction, pending] = useActionState(addClient, initial);
+  useActionToast(state);
 
   return (
     <form action={formAction} className="space-y-4">

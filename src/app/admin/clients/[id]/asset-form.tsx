@@ -1,12 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { addClientAsset, type ClientState } from "@/app/actions/clients";
 
 const initial: ClientState = {};
 
 export default function AssetForm({ clientId }: { clientId: string }) {
   const [state, formAction, pending] = useActionState(addClientAsset, initial);
+  useActionToast(state);
 
   return (
     <form action={formAction} className="space-y-3">

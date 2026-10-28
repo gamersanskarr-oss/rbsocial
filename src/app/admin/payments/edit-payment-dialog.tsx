@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { useActionToast } from "@/components/toast";
 import { updatePayment, type FinState } from "@/app/actions/finance";
 
 export type EditablePayment = {
@@ -17,6 +18,7 @@ export type EditablePayment = {
 export default function EditPaymentDialog({ payment }: { payment: EditablePayment }) {
   const [open, setOpen] = useState(false);
   const [state, formAction, pending] = useActionState<FinState, FormData>(updatePayment, {});
+  useActionToast(state);
 
   useEffect(() => {
     if (state.success) setOpen(false);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { useActionToast } from "@/components/toast";
 import { recordPayment, type FinState } from "@/app/actions/finance";
 
 const initial: FinState = {};
@@ -11,6 +12,7 @@ export default function RecordPaymentForm({
   clients: { id: string; name: string; monthlyFee: number | null }[];
 }) {
   const [state, formAction, pending] = useActionState(recordPayment, initial);
+  useActionToast(state);
   const [clientId, setClientId] = useState("");
   const thisMonth = new Date().toISOString().slice(0, 7);
   const fee = clients.find((c) => c.id === clientId)?.monthlyFee;

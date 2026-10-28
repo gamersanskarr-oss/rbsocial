@@ -1,8 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { adminDb, FieldValue } from "@/lib/data";
+import { adminDb, FieldValue, logActivity } from "@/lib/data";
 import { requireAdmin } from "@/lib/auth";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 export type ApplyState = { error?: string; success?: string };
 
@@ -12,6 +13,10 @@ const str = (fd: FormData, key: string, max: number) =>
 /** PUBLIC — anyone can apply from /careers. No auth required.
  *  `jobIds` is a repeated field — one application doc is written per role. */
 export async function applyForJob(_prev: ApplyState, formData: FormData): Promise<ApplyState> {
+  // Public endpoint — throttle by IP so bots can't flood the applications table.
+  if (!rateLimit(`apply:${await clientIp()}`, 10, 60 * 60 * 1000)) {
+    return { error: "Too many attempts — please try again in a while." };
+  }
   const jobIds = formData.getAll("jobIds").map((v) => String(v).slice(0, 100)).filter(Boolean);
   const name = str(formData, "name", 100);
   const email = str(formData, "email", 150);
@@ -92,6 +97,10 @@ export async function markApplicationReviewed(formData: FormData) {
 export async function deleteJobApplication(formData: FormData) {
   await requireAdmin();
   const id = String(formData.get("applicationId") ?? "");
-  if (id) await adminDb.collection("jobApplications").doc(id).delete();
+  if (id) {
+    const doc = await adminDb.collection("jobApplications").doc(id).get();
+    await doc.ref.delete();
+    await logActivity("admin", `Application deleted: ${doc.data()?.name ?? id}.`);
+  }
   revalidatePath("/admin/jobs");
 }

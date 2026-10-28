@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { addExpense, type FinState } from "@/app/actions/finance";
 import { EXPENSE_CATEGORIES } from "@/lib/constants";
 
@@ -8,6 +9,7 @@ const initial: FinState = {};
 
 export default function AddExpenseForm({ staff }: { staff: { id: string; name: string }[] }) {
   const [state, formAction, pending] = useActionState(addExpense, initial);
+  useActionToast(state);
   const today = new Date().toISOString().slice(0, 10);
 
   return (

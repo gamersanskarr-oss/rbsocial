@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useActionState } from "react";
+import { useActionToast } from "@/components/toast";
 import { useRouter } from "next/navigation";
 import { reviewTask, type SubmitState } from "@/app/actions/tasks";
 
@@ -30,6 +31,7 @@ const options = [
 
 export default function ReviewTaskForm({ taskId }: { taskId: string }) {
   const [state, formAction, pending] = useActionState(reviewTask, initial);
+  useActionToast(state);
   const router = useRouter();
   const [decision, setDecision] = useState("");
 

@@ -7,6 +7,7 @@ import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT, payoutStatus } from "@/lib
 import { requireAdmin } from "@/lib/auth";
 import { setPerPostPay, waiveMiss } from "@/app/actions/admin";
 import { PageHeader, TeamBadge } from "@/components/ui";
+import { ToastForm } from "@/components/toast";
 import AddEmployeeForm from "./add-employee-form";
 
 const ROLE_BADGE: Record<string, { label: string; cls: string }> = {
@@ -87,7 +88,7 @@ export default async function EmployeesPage() {
                     {isEmployee ? (
                       <>
                         <td className="td">
-                          <form action={setPerPostPay} className="flex items-center gap-1.5">
+                          <ToastForm action={setPerPostPay} success="Rate updated." className="flex items-center gap-1.5">
                             <input type="hidden" name="userId" value={u.id} />
                             <span className="text-xs font-semibold text-faint">₹</span>
                             <input
@@ -105,7 +106,7 @@ export default async function EmployeesPage() {
                             >
                               Save
                             </button>
-                          </form>
+                          </ToastForm>
                         </td>
                         <td className="td">
                           {u.perPostPay != null ? (
@@ -140,7 +141,7 @@ export default async function EmployeesPage() {
                         <td className="td">
                           {u.missedDeadlines > 0 ? (
                             <div className="flex items-center gap-2">
-                              <form action={waiveMiss}>
+                              <ToastForm action={waiveMiss} success="One strike waived.">
                                 <input type="hidden" name="userId" value={u.id} />
                                 <input type="hidden" name="mode" value="one" />
                                 <button
@@ -149,8 +150,8 @@ export default async function EmployeesPage() {
                                 >
                                   Waive 1
                                 </button>
-                              </form>
-                              <form action={waiveMiss}>
+                              </ToastForm>
+                              <ToastForm action={waiveMiss} success="All strikes cleared.">
                                 <input type="hidden" name="userId" value={u.id} />
                                 <input type="hidden" name="mode" value="all" />
                                 <button
@@ -159,7 +160,7 @@ export default async function EmployeesPage() {
                                 >
                                   Reset
                                 </button>
-                              </form>
+                              </ToastForm>
                             </div>
                           ) : (
                             <span className="text-xs text-faint">—</span>
