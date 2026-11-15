@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { TextLoop, SideRays, FlexCarousel, ScrollReveal } from "@/components/lazy-fx";
+import { TextLoop, SideRays, FlexCarousel, ScrollReveal, LightTunnel } from "@/components/lazy-fx";
 import { SiteMenu } from "@/components/site-menu";
 
 /* ── Brand tokens ─────────────────────────────────────────────────── */
@@ -231,7 +231,18 @@ export default function Home() {
               </a>
             ))}
           </div>
-          <SiteMenu links={navLinks} whatsapp={WHATSAPP} />
+          <a
+            href={WHATSAPP}
+            target="_blank"
+            rel="noreferrer"
+            className="relative hidden rounded-full px-5 py-2 text-[13px] font-bold text-[#13203b] ring-1 ring-white/20 transition duration-200 hover:opacity-90 active:scale-[0.98] lg:inline-flex"
+            style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`, boxShadow: `0 8px 24px -10px ${ACCENT}90` }}
+          >
+            Let&apos;s Talk
+          </a>
+          <span className="lg:hidden">
+            <SiteMenu links={navLinks} whatsapp={WHATSAPP} />
+          </span>
         </nav>
       </header>
 
@@ -249,6 +260,29 @@ export default function Home() {
             ].join(", "),
           }}
         />
+        {/* WebGL light tunnel — radial cables with traveling coral pulses */}
+        <div aria-hidden className="absolute inset-0 opacity-80">
+          <LightTunnel
+            cableColor="#4a5f9e"
+            pulseColor="#ff6a5a"
+            tunnelColor="#13203b"
+            tunnelOpacity={0.18}
+            speed={0.12}
+            pulseSpeed={1.6}
+            pulseDensity={0.4}
+            cableCount={64}
+            thickness={0.3}
+            glow={1.2}
+            brightness={0.9}
+            size={1.15}
+            centerY={-0.05}
+            fadeFar={2.4}
+            opacity={0.75}
+            mouseStrength={0.06}
+            grain
+            grainIntensity={0.03}
+          />
+        </div>
         <div
           aria-hidden
           className="absolute inset-0"

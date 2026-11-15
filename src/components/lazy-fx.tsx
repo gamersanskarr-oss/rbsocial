@@ -21,3 +21,7 @@ export const FlexCarousel = dynamic(() => import("./flex-carousel.jsx"), {
 export const ScrollReveal = dynamic(() => import("./scroll-reveal.jsx"), {
   ssr: false,
 }) as unknown as ComponentType<Record<string, unknown>>;
+
+export const LightTunnel = dynamic(() => import("./light-tunnel.jsx"), {
+  ssr: false,
+}) as unknown as ComponentType<Record<string, unknown>>;
