@@ -125,6 +125,30 @@ body {
   color: #0b0c0e;
 }
 
+/* Landing-page palette — deep navy canvas, warm cream ink, coral accent.
+   Scoped to the marketing site only; dashboards keep .theme-dark defaults. */
+.theme-site {
+  --t-ink: #f4ebe0;
+  --t-foreground: #f4ebe0;
+  --t-muted: #b9ad99;
+  --t-faint: #8f8672;
+  --t-line: rgb(244 235 224 / 0.12);
+}
+.theme-site ::selection {
+  background: #ff6a5a;
+  color: #13203b;
+}
+
+/* Per-section blue gradient washes — transparent at top/bottom edges so
+   sections blend into each other instead of ending in hard lines. */
+.theme-site > section,
+.theme-site > footer {
+  background: linear-gradient(178deg, transparent 0%, rgb(22 37 74 / 0.3) 14%, rgb(13 21 44 / 0.4) 55%, rgb(5 8 17 / 0.5) 86%, transparent 100%);
+}
+.theme-site > section:nth-of-type(even) {
+  background: linear-gradient(182deg, transparent 0%, rgb(22 37 74 / 0.26) 14%, rgb(13 21 44 / 0.44) 55%, rgb(5 8 17 / 0.52) 86%, transparent 100%);
+}
+
 /* Slim dark scrollbars inside the dashboard scope */
 .theme-dark {
   scrollbar-width: thin;

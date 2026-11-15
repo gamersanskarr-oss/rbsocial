@@ -1,313 +1,489 @@
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import {
-  ScrollExpand,
-  LightRays,
-  TextLoop,
-  SideRays,
-  ContactArt,
-} from "@/components/lazy-fx";
+import { TextLoop, SideRays, FlexCarousel, ScrollReveal } from "@/components/lazy-fx";
+import { SiteMenu } from "@/components/site-menu";
 
+/* ── Brand tokens ─────────────────────────────────────────────────── */
+const ACCENT = "#ff6a5a"; // coral accent
+const ACCENT_DARK = "#d94836";
+const CREAM = "#f4ebe0";
+const NAVY = "#2a3a6e"; // glow/gradient tone on the #13203b canvas
 
+/* ── Fill these in when assets arrive ─────────────────────────────── */
 
-/* Brand colors lifted from the logo: flame red-orange + deep navy */
-const FLAME = "#c51c1a";
-const NAVY = "#060365";
+const SOCIAL = {
+  instagram: "https://instagram.com/rbsocialbranding",
+  facebook: "https://facebook.com/rbsocialbranding",
+  linkedin: "https://linkedin.com/company/rbsocialbranding",
+};
+
+const UNSPLASH = (id: string) =>
+  `https://images.unsplash.com/${id}?w=1200&q=80&auto=format&fit=max`;
+
+const WHATSAPP = "https://wa.me/919216426456";
+const EMAIL = "rbsocialbranding@gmail.com";
+const MAPS_URL =
+  "https://www.google.com/maps/search/?api=1&query=" +
+  encodeURIComponent(
+    "Roshan Bharat Office, Patrakar Colony, Near RK Girls College, Madanganj, Kishangarh, Rajasthan, India"
+  );
+
+/* Client logos — replace the names with <img> tiles when the real
+   logos (15–20) arrive. */
+const CLIENT_LOGOS = [
+  "Client 01", "Client 02", "Client 03", "Client 04", "Client 05", "Client 06",
+  "Client 07", "Client 08", "Client 09", "Client 10", "Client 11", "Client 12",
+  "Client 13", "Client 14", "Client 15", "Client 16", "Client 17", "Client 18",
+];
+
+/* Portfolio — drop the real Instagram Reel URLs into `reels` for each
+   industry and swap `thumb` for the real reel covers. */
+const PORTFOLIO: { industry: string; thumb: string; reels: string[] }[] = [
+  { industry: "Education", thumb: UNSPLASH("photo-1503676260728-1c00da094a0b"), reels: [SOCIAL.instagram] },
+  { industry: "Healthcare", thumb: UNSPLASH("photo-1576091160399-112ba8d25d1d"), reels: [SOCIAL.instagram] },
+  { industry: "Marble & Stone", thumb: UNSPLASH("photo-1615729947596-a598e5de0ab3"), reels: [SOCIAL.instagram] },
+  { industry: "Construction", thumb: UNSPLASH("photo-1541888946425-d81bb19240f5"), reels: [SOCIAL.instagram] },
+  { industry: "Solar & Energy", thumb: UNSPLASH("photo-1509391366360-2e959784a276"), reels: [SOCIAL.instagram] },
+  { industry: "Manufacturing", thumb: UNSPLASH("photo-1581091226825-a6a2a5aee158"), reels: [SOCIAL.instagram] },
+  { industry: "Automobiles", thumb: UNSPLASH("photo-1494976388531-d1058494cdd8"), reels: [SOCIAL.instagram] },
+  { industry: "Retail & Lifestyle", thumb: UNSPLASH("photo-1441986300917-64674bd600d8"), reels: [SOCIAL.instagram] },
+  { industry: "More Industries", thumb: UNSPLASH("photo-1557804506-669a67965ba0"), reels: [SOCIAL.instagram] },
+];
+
+/* Testimonials — one featured video + three supporting. Drop in the
+   video URLs (Instagram/YouTube/drive) and client names/logos. */
+const TESTIMONIALS = [
+  { name: "Client name", business: "Business · featured", url: SOCIAL.instagram },
+  { name: "Client name", business: "Business", url: SOCIAL.instagram },
+  { name: "Client name", business: "Business", url: SOCIAL.instagram },
+  { name: "Client name", business: "Business", url: SOCIAL.instagram },
+];
+
+/* Showcase carousel — dummy Unsplash frames for now; swap `src` for real
+   campaign/work stills when assets arrive. */
+const SHOWCASE_ITEMS = [
+  { src: UNSPLASH("photo-1737071371043-761e02b1ef95"), title: "Campaign Studio", subtitle: "Creative direction", alt: "Studio campaign visual" },
+  { src: UNSPLASH("photo-1693645325828-62cd35c8da8f"), title: "Brand Shoots", subtitle: "Professional production", alt: "Brand shoot on white backdrop" },
+  { src: UNSPLASH("photo-1739056238917-d89cd05c48d5"), title: "Product Films", subtitle: "Reels & video edits", alt: "Product film still" },
+  { src: UNSPLASH("photo-1747191092806-c7da11881986"), title: "Portraits", subtitle: "Photography", alt: "Profile portrait study" },
+  { src: UNSPLASH("photo-1605034313761-73ea4a0cfbf3"), title: "Retail Campaigns", subtitle: "E-commerce content", alt: "Product campaign still" },
+  { src: UNSPLASH("photo-1495462911434-be47104d70fa"), title: "Fashion Edits", subtitle: "Editorial styling", alt: "Editorial fashion still" },
+  { src: UNSPLASH("photo-1786835568925-20cd20007ed0"), title: "Design Systems", subtitle: "Graphic design", alt: "Abstract design composition" },
+  { src: UNSPLASH("photo-1770062422885-2dfcbe8fb65b"), title: "Behind the Scenes", subtitle: "On-ground coverage", alt: "On-set production still" },
+];
+
+/* ── Content ──────────────────────────────────────────────────────── */
 
 const services = [
   {
     n: "01",
-    title: "Social Media Design",
-    desc: "Feed posts, carousels and stories designed around your brand system — consistent grids, on a schedule you can plan around.",
-    tags: ["Posts", "Carousels", "Stories"],
+    title: "Social Media Management",
+    desc: "Complete management of your brand's social media presence — from content planning and scheduling to publishing and account management.",
   },
   {
     n: "02",
-    title: "Brand Identity",
-    desc: "Logos, color systems, typography and guidelines that make your business instantly recognizable across every touchpoint.",
-    tags: ["Logo", "Colors", "Guidelines"],
+    title: "Content Creation & Production",
+    desc: "Content strategy, scripting, professional shoots, reels, video editing, photography and graphic designing.",
   },
   {
     n: "03",
-    title: "Campaign Creatives",
-    desc: "Ad creatives and campaign assets engineered to convert — festive sales, launches, offers and seasonal pushes.",
-    tags: ["Ads", "Launches", "Offers"],
+    title: "Digital Marketing & Advertising",
+    desc: "Performance marketing through Meta Ads & Google My Business — plus promotional opportunities through Roshan Bharat's media platforms.",
   },
   {
     n: "04",
-    title: "Reels & Video Covers",
-    desc: "Scroll-stopping reel covers, thumbnails and motion-ready frames that keep your video content looking premium.",
-    tags: ["Reels", "Thumbnails", "Covers"],
+    title: "Website Development",
+    desc: "Professional, responsive websites designed around your business, brand identity and requirements.",
   },
   {
     n: "05",
-    title: "Web & Landing Pages",
-    desc: "Fast, modern landing pages and microsites that match your brand and turn visitors into enquiries.",
-    tags: ["Landing pages", "Microsites", "SEO-ready"],
+    title: "Software & Digital Solutions",
+    desc: "Custom software development and digital solutions designed to support business operations and requirements.",
+  },
+];
+
+const whys = [
+  {
+    title: "Everything Under One Roof",
+    desc: "Content creation, social media management, advertising, web development and software solutions — all your digital requirements, one team.",
   },
   {
-    n: "06",
-    title: "IT & Automation Support",
-    desc: "Our IT team keeps your tools, pages and workflows running — form fixes, integrations and behind-the-scenes reliability.",
-    tags: ["Fixes", "Integrations", "Support"],
+    title: "Marketing Meets Media",
+    desc: "Through Roshan Bharat, we offer sponsored posts, promotional reels, brand features and on-ground campaigns.",
+  },
+  {
+    title: "Content Backed by Strategy",
+    desc: "Content should have a purpose — every creative direction and activity is planned around the brand and its objectives.",
+  },
+  {
+    title: "One Connected Team",
+    desc: "Strategy, scripting, shooting, editing, designing, publishing and advertising work together under one coordinated approach.",
+  },
+  {
+    title: "Built Around Your Business",
+    desc: "Every business is different — we shape our marketing around your industry, audience, requirements and goals.",
   },
 ];
 
 const steps = [
-  { n: "01", title: "Brief", desc: "Share your goals and brand — we match a dedicated designer to your account within 24 hours." },
-  { n: "02", title: "Design", desc: "Your designer crafts the creatives and shares a Canva link — review and comment in one place." },
-  { n: "03", title: "Track", desc: "Every task lives in your dashboard with a real deadline — you always know what ships when." },
-  { n: "04", title: "Deliver", desc: "Approve and receive final files, on time, every time. Monthly invoice, zero surprises." },
-];
-
-const stats = [
-  { v: "1,200+", l: "posts delivered" },
-  { v: "48h", l: "average turnaround" },
-  { v: "95%", l: "on-time rate" },
-  { v: "20+", l: "brands managed" },
-];
-
-const audiences = [
-  "Cafés & Restaurants",
-  "Fitness Studios",
-  "Real Estate",
-  "Retail & Fashion",
-  "Clinics & Wellness",
-  "Startups",
-];
-
-const plans = [
   {
-    name: "Starter",
-    price: "₹9,999",
-    period: "/month",
-    desc: "For businesses getting consistent on social.",
-    features: ["8 posts / month", "1 platform", "2 revisions per post", "Monthly content calendar"],
-    cta: "Start with Starter",
-    featured: false,
+    n: "01",
+    title: "We Plan Ahead",
+    desc: "Monthly content calendars, creative concepts and scripts prepared in advance — every shoot and campaign has a clear direction.",
   },
   {
-    name: "Growth",
-    price: "₹19,999",
-    period: "/month",
-    desc: "For brands that want to own their niche.",
-    features: [
-      "16 posts + stories / month",
-      "2 platforms",
-      "Unlimited revisions",
-      "Reel covers & thumbnails",
-      "Priority designer",
-    ],
-    cta: "Grow with Growth",
-    featured: true,
+    n: "02",
+    title: "We Follow Trends With Purpose",
+    desc: "We stay updated with changing trends and formats — but never follow them blindly. Every decision should make sense for the brand.",
   },
   {
-    name: "Scale",
-    price: "₹39,999",
-    period: "/month",
-    desc: "Full content ops with web and IT support.",
-    features: [
-      "30+ assets / month",
-      "All platforms",
-      "Landing pages & web fixes",
-      "IT & automation support",
-      "Dedicated account manager",
-    ],
-    cta: "Scale with Scale",
-    featured: false,
+    n: "03",
+    title: "We Connect Every Activity",
+    desc: "Content, production, social media and advertising work together under one clear strategy — not disconnected activities.",
+  },
+  {
+    n: "04",
+    title: "We Believe in Communication",
+    desc: "Regular communication with clients — we value feedback and keep you involved throughout the process.",
+  },
+  {
+    n: "05",
+    title: "We Measure and Improve",
+    desc: "Monthly performance reports help us review content, understand audiences and plan better marketing.",
   },
 ];
 
-const faqs = [
-  {
-    q: "How fast will I get my designs?",
-    a: "Standard turnaround is 48 hours per asset. Campaign batches are scheduled against a shared content calendar, and every task carries a real deadline in your dashboard.",
-  },
-  {
-    q: "How do I review and approve designs?",
-    a: "Your designer shares a Canva link for every task. Comment directly on the design — revisions happen in the same thread until you approve.",
-  },
-  {
-    q: "Is there a lock-in contract?",
-    a: "No. Plans are monthly retainers — pause, scale or cancel at any month boundary. Your brand assets stay yours.",
-  },
-  {
-    q: "What if I need something urgent?",
-    a: "Growth and Scale plans include priority queue. Tell us in the brief and urgent assets jump the line — usually delivered within 24 hours.",
-  },
-  {
-    q: "How do payments work?",
-    a: "Simple monthly retainers with a proper invoice for every cycle. Your billing month, due date and receipts are all tracked in the client portal.",
-  },
+const industries = [
+  "Education",
+  "Healthcare",
+  "Marble & Stone",
+  "Construction",
+  "Solar & Energy",
+  "Manufacturing",
+  "Automobiles",
+  "Retail & Lifestyle",
+  "And More",
+];
+
+const mediaPerks = [
+  "Newspaper & digital brand features",
+  "Sponsored social media posts",
+  "Promotional reels",
+  "Business stories & interviews",
+  "Social media advertising campaigns",
+  "On-ground brand coverage & promotions",
 ];
 
 const marqueeWords = [
-  "Instagram posts",
-  "Brand identities",
-  "Ad creatives",
-  "Reel covers",
-  "Story designs",
-  "Landing pages",
-  "Campaign kits",
-  "Web support",
+  "Content creation",
+  "Social media management",
+  "Performance marketing",
+  "Reels & shoots",
+  "Web development",
+  "Brand advertising",
+  "Software solutions",
+];
+
+const navLinks = [
+  { label: "Home", href: "#top" },
+  { label: "About", href: "#about" },
+  { label: "Services", href: "#services" },
+  { label: "Our Work", href: "#work" },
+  { label: "Testimonials", href: "#testimonials" },
+  { label: "Roshan Bharat", href: "#roshan-bharat" },
+  { label: "Careers", href: "#careers" },
 ];
 
 export default function Home() {
   return (
-    <div className="theme-dark min-h-screen bg-[#07080d] text-ink">
-      {/* ══ Nav — floating glass capsule ═══════════════════════════════ */}
-      <header className="absolute inset-x-0 top-4 z-40 px-4">
-        <nav className="relative mx-auto flex max-w-4xl items-center justify-between overflow-hidden rounded-full border border-white/10 bg-white/[0.06] py-2 pl-4 pr-2 shadow-[0_20px_60px_-24px_rgba(0,0,0,0.8)] backdrop-blur-2xl backdrop-saturate-150">
-          {/* glass sheen + top hairline */}
-          <span aria-hidden className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/[0.10] via-white/[0.03] to-transparent" />
+    <div id="top" className="theme-dark theme-site min-h-screen scroll-smooth bg-[#070d1c] text-ink">
+      {/* Sticky backdrop — near-black canvas with faded blue circle glows.
+          Fixed to the viewport; all sections scroll above it. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 -z-10"
+        style={{
+          background: [
+            `radial-gradient(640px 640px at 12% 12%, #2a4a9e5c, transparent 65%)`,
+            `radial-gradient(560px 560px at 88% 8%, #1e3a8a52, transparent 65%)`,
+            `radial-gradient(720px 720px at 92% 55%, #2a4a9e48, transparent 66%)`,
+            `radial-gradient(600px 600px at 8% 70%, #1e3a8a4e, transparent 65%)`,
+            `radial-gradient(680px 680px at 55% 100%, #2a4a9e44, transparent 66%)`,
+            `linear-gradient(165deg, #1d2f58 0%, #12224a 40%, #0a1230 72%, #060a18 100%)`,
+          ].join(", "),
+        }}
+      />
+
+      {/* ══ Nav — floating glass capsule ═════════════════════════════ */}
+      <header className="fixed inset-x-0 top-4 z-40 px-4">
+        <nav className="relative mx-auto flex max-w-5xl items-center justify-between overflow-hidden rounded-full border border-white/10 bg-black/50 py-2 pl-4 pr-2 shadow-[0_20px_60px_-24px_rgba(0,0,0,0.8)] backdrop-blur-2xl backdrop-saturate-150">
+          <span aria-hidden className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-transparent" />
           <span aria-hidden className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
 
-          <span className="relative flex items-center gap-2.5">
+          <a href="#top" className="relative flex items-center gap-2.5">
             <Logo size={32} />
             <span className="text-sm font-bold tracking-tight">RB Social Branding</span>
-          </span>
-          <div className="relative hidden items-center gap-0.5 text-[13px] font-medium text-muted md:flex">
-            <a href="#services" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Services</a>
-            <a href="#work" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Work</a>
-            <a href="#process" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Process</a>
-            <a href="#pricing" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Pricing</a>
-            <a href="#faq" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">FAQ</a>
-            <Link href="/careers" className="rounded-full px-3.5 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">Careers</Link>
+          </a>
+          <div className="relative hidden items-center gap-0.5 text-[13px] font-medium text-muted lg:flex">
+            {navLinks.slice(1).map((l) => (
+              <a key={l.href} href={l.href} className="rounded-full px-3 py-1.5 transition duration-200 hover:bg-white/10 hover:text-ink">
+                {l.label}
+              </a>
+            ))}
           </div>
-          <Link
-            href="/login"
-            className="relative rounded-full px-5 py-2 text-[13px] font-bold text-white ring-1 ring-white/20 transition duration-200 hover:opacity-90 active:scale-[0.98]"
-            style={{ background: `linear-gradient(135deg, ${FLAME}, #8f1410)`, boxShadow: `0 8px 24px -10px ${FLAME}90` }}
-          >
-            Team Login
-          </Link>
+          <SiteMenu links={navLinks} whatsapp={WHATSAPP} />
         </nav>
       </header>
 
-      {/* ══ Hero ═══════════════════════════════════════════════════════ */}
-      <section className="relative flex min-h-svh items-center overflow-hidden">
-        {/* drifting gradient orbs — navy base, flame edge */}
+      {/* ══ 01 · Hero ════════════════════════════════════════════════ */}
+      <section className="relative flex min-h-[92svh] flex-col overflow-hidden">
+        {/* backdrop — navy base + warm coral glow + vertical blinds */}
         <div
-          className="animate-drift pointer-events-none absolute -top-64 left-1/2 h-[640px] w-[1100px] -translate-x-1/2 rounded-full opacity-60 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${NAVY}66, transparent)` }}
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background: [
+              `radial-gradient(1000px 700px at 58% 50%, ${ACCENT}6e, ${ACCENT_DARK}2e 44%, transparent 70%)`,
+              `radial-gradient(720px 540px at 26% 36%, #4a5f9e40, transparent 62%)`,
+              `linear-gradient(178deg, #0d1330 0%, #0b1024 55%, #060912 100%)`,
+            ].join(", "),
+          }}
         />
         <div
-          className="animate-drift-alt pointer-events-none absolute -right-40 top-24 h-[440px] w-[440px] rounded-full opacity-30 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${FLAME}55, transparent)` }}
-        />
-        <div
-          className="animate-drift pointer-events-none absolute -left-52 top-72 h-[400px] w-[400px] rounded-full opacity-25 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${NAVY}88, transparent)`, animationDelay: "-8s" }}
-        />
-        <div
-          className="animate-drift-alt pointer-events-none absolute bottom-0 left-1/3 h-[300px] w-[300px] rounded-full opacity-20 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${FLAME}44, transparent)`, animationDelay: "-5s" }}
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(90deg, transparent 0px, transparent 7px, rgb(255 255 255 / 0.045) 7px, rgb(255 255 255 / 0.045) 8px)",
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, black 18%, black 80%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 18%, black 80%, transparent 100%)",
+          }}
         />
 
-        {/* WebGL light rays — flame beams from the top, subtly mouse-reactive */}
-        <div className="absolute inset-0">
-          <LightRays
-            raysOrigin="top-center"
-            raysColor="#e04438"
-            raysSpeed={0.55}
-            lightSpread={1.35}
-            rayLength={1.7}
-            fadeDistance={0.85}
-            saturation={1.15}
-            followMouse
-            mouseInfluence={0.08}
-            noiseAmount={0.06}
-            distortion={0.15}
-          />
-        </div>
-
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-6 py-24 text-center">
+        {/* main row — headline left, glass panel right */}
+        <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 items-center gap-14 px-6 pb-8 pt-28">
+          <div className="max-w-3xl">
           <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-muted backdrop-blur">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: FLAME }} />
-              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: FLAME }} />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: ACCENT }} />
+              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: ACCENT }} />
             </span>
-            Design team for growing businesses — onboarding this month
+            A Digital Marketing &amp; Creative Division of Roshan Bharat
           </p>
 
-          <h1 className="mx-auto max-w-3xl text-4xl font-extrabold leading-[1.04] tracking-tight md:text-6xl">
-            Your brand,{" "}
+          <h1 className="text-5xl font-extrabold leading-[0.98] tracking-tight sm:text-6xl lg:text-7xl">
+            We help businesses grow through{" "}
             <span
               className="animate-gradient-pan bg-clip-text text-transparent"
-              style={{ backgroundImage: `linear-gradient(100deg, ${FLAME} 10%, #f0554c 40%, #c9cfff 50%, ${NAVY} 90%)` }}
+              style={{ backgroundImage: `linear-gradient(100deg, ${ACCENT} 10%, #ffb1a4 40%, ${CREAM} 50%, #8fa3e8 90%)` }}
             >
-              designed daily
-            </span>
-            <br />
-            and delivered on time.
+              content, creativity
+            </span>{" "}
+            &amp; marketing.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-xl text-sm font-medium leading-relaxed text-muted">
-            RB Social Branding pairs your business with a dedicated graphic designer and a
-            reliable IT team — every post tracked in one clear dashboard with real deadlines.
+          <p className="mt-6 max-w-md text-base font-medium leading-relaxed text-muted">
+            From content planning and professional production to social media
+            management, performance marketing and advertisement — everything
+            under one roof.
           </p>
 
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center gap-5">
             <a
-              href="#contact"
-              className="rounded-full px-7 py-3 text-sm font-bold text-white shadow-lg transition duration-200 hover:opacity-90 hover:shadow-xl active:scale-[0.98]"
-              style={{ background: `linear-gradient(135deg, ${FLAME}, #8f1410)`, boxShadow: `0 12px 32px -12px ${FLAME}80` }}
+              href={WHATSAPP}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-[#13203b] shadow-lg transition duration-200 hover:opacity-90 hover:shadow-xl active:scale-[0.98]"
+              style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`, boxShadow: `0 12px 32px -12px ${ACCENT}80` }}
             >
-              Get Started
+              <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
+                <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07a8.2 8.2 0 0 1-2.4-1.49 9 9 0 0 1-1.66-2.07c-.17-.3-.02-.46.13-.6.14-.15.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.61-.92-2.2-.24-.59-.49-.5-.67-.52h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.89.12.57-.09 1.76-.72 2-1.42.25-.7.25-1.3.18-1.42-.08-.13-.28-.2-.57-.35ZM12.05 21.79h-.01a9.77 9.77 0 0 1-5-1.37l-.35-.21-3.7.97.99-3.61-.23-.37a9.77 9.77 0 1 1 8.3 4.6Zm0-21.55a11.8 11.8 0 0 0-10.05 18.1L.24 24l5.79-1.52A11.77 11.77 0 0 0 12.05 24 11.8 11.8 0 0 0 12.05.24Z" />
+              </svg>
+              Let&apos;s Talk — WhatsApp
             </a>
             <a
               href="#work"
-              className="rounded-full border border-white/10 bg-white/5 px-7 py-3 text-sm font-bold text-ink backdrop-blur transition duration-200 hover:bg-white/10 active:scale-[0.98]"
+              className="group inline-flex items-center gap-1.5 text-sm font-bold text-ink transition duration-200 hover:opacity-80"
             >
-              See the work
+              Our Work
+              <span className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">↗</span>
             </a>
           </div>
+          </div>
 
-          {/* stats strip */}
-          <div className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 backdrop-blur md:grid-cols-4">
-            {stats.map((s) => (
-              <div key={s.l} className="bg-[#0a0c12]/90 px-5 py-6">
-                <p className="text-2xl font-extrabold tracking-tight" style={{ color: FLAME }}>
-                  {s.v}
+          {/* right glass panel — capabilities, hidden on small screens */}
+          <div className="ml-auto hidden w-[21rem] shrink-0 flex-col gap-3 lg:flex">
+            <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-6 shadow-lift backdrop-blur-xl">
+              <div className="flex items-center justify-between">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-faint">
+                  What we handle
                 </p>
-                <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-faint">{s.l}</p>
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: ACCENT }} />
+              </div>
+              <div className="mt-4 space-y-3">
+                {[
+                  { k: "Content & shoots", v: "Planned monthly" },
+                  { k: "Social media", v: "Fully managed" },
+                  { k: "Ads + media", v: "Meta · GMB · Roshan Bharat" },
+                ].map((r) => (
+                  <div
+                    key={r.k}
+                    className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3"
+                  >
+                    <div>
+                      <p className="text-sm font-bold text-ink">{r.k}</p>
+                      <p className="text-[11px] font-semibold text-faint">{r.v}</p>
+                    </div>
+                    <span className="text-faint">↗</span>
+                  </div>
+                ))}
+              </div>
+              <div
+                className="mt-4 rounded-full px-4 py-2 text-center text-[11px] font-bold text-[#13203b]"
+                style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
+              >
+                One team · One strategy
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* curved moving text loop — inside the hero */}
+        <div className="relative z-10 h-[max(6.5rem,18vw)] overflow-hidden bg-transparent md:h-[6.5vw]">
+            <div className="absolute left-1/2 top-1/2 w-[160%] -translate-x-1/2 -translate-y-1/2 scale-125 md:w-full md:scale-100">
+              <TextLoop
+                text={marqueeWords.join("  ✦  ")}
+                shape="wave"
+                curviness={18}
+                speed={42}
+                fontSize={14}
+                fontWeight={800}
+                letterSpacing={2.2}
+                separator=""
+                color={CREAM}
+                ribbon
+                ribbonGradient={["#ffb1a4", ACCENT, ACCENT_DARK]}
+                ribbonWidth={28}
+                pauseOnHover={false}
+              />
+            </div>
+          </div>
+
+        {/* bottom trust strip — icon feature row */}
+        <div className="relative z-10 border-t border-white/10 bg-black/20 backdrop-blur-sm">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-y-4 px-6 py-5 sm:grid-cols-5 sm:gap-y-0 sm:divide-x sm:divide-white/10">
+            {[
+              { icon: "◈", title: "Everything under", sub: "one roof" },
+              { icon: "◎", title: "700K+ audience", sub: "via Roshan Bharat" },
+              { icon: "✦", title: "Strategy-first", sub: "content planning" },
+              { icon: "▤", title: "Monthly reports", sub: "measure & improve" },
+              { icon: "∞", title: "One team", sub: "fully connected" },
+            ].map((f) => (
+              <div key={f.title} className="flex items-start gap-2.5 sm:justify-center sm:px-4">
+                <span className="mt-0.5 text-sm" style={{ color: ACCENT }}>{f.icon}</span>
+                <div className="text-[11px] font-semibold leading-snug text-muted">
+                  <p>{f.title}</p>
+                  <p className="text-faint">{f.sub}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ Curved moving text loop ════════════════════════════════════ */}
-      <div className="relative h-[max(9rem,18vw)] overflow-hidden bg-transparent md:h-[11vw]">
-        <div className="absolute left-1/2 top-1/2 w-[160%] -translate-x-1/2 -translate-y-1/2 md:w-full">
-          <TextLoop
-            text={marqueeWords.join("  ✦  ")}
-            shape="wave"
-            curviness={40}
-            speed={42}
-            fontSize={18}
-            fontWeight={800}
-            letterSpacing={2.5}
-            separator=""
-            color="#ffffff"
-            ribbon
-            ribbonGradient={["#f0554c", FLAME, "#8f1410"]}
-            ribbonWidth={40}
-            pauseOnHover={false}
+      {/* ══ 02 · About ═══════════════════════════════════════════════ */}
+      <section id="about" className="relative scroll-mt-24">
+        <div className="mx-auto max-w-6xl px-6 py-24">
+        <div className="max-w-3xl">
+          <p className="section-label" style={{ color: ACCENT }}>About us</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            More than just social media.
+          </ScrollReveal>
+          <div className="mt-6 space-y-4 text-base font-medium leading-relaxed text-muted">
+            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02}>
+              RB Social Branding is a digital marketing and creative division of{" "}
+              <span className="font-bold text-ink">Roshan Bharat</span>, helping businesses
+              build and strengthen their digital presence.
+            </ScrollReveal>
+            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02}>
+              We work as an extended in-house marketing team — bringing strategy, content
+              creation, professional production, social media management, performance
+              marketing and advertising together under one roof.
+            </ScrollReveal>
+            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02}>
+              From understanding your business and planning content to executing campaigns
+              and developing digital solutions, we bring every part of your marketing
+              together under one coordinated approach.
+            </ScrollReveal>
+          </div>
+        </div>
+        </div>
+      </section>
+
+      {/* ══ Showcase — WebGL carousel ════════════════════════════════ */}
+      <section id="showcase" className="relative overflow-hidden py-20">
+        <div className="mx-auto max-w-6xl px-6 text-center">
+          <p className="section-label" style={{ color: ACCENT }}>Showcase</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Work in motion.
+          </ScrollReveal>
+          <p className="mx-auto mt-4 max-w-lg text-sm font-medium text-muted">
+            A moving glimpse of the kind of content we plan, shoot and ship — drag,
+            scroll or click a frame to zoom in.
+          </p>
+        </div>
+        <div className="mt-12 h-[52vh] min-h-[340px] w-full sm:h-[68vh] sm:min-h-[420px]">
+          <FlexCarousel
+            items={SHOWCASE_ITEMS}
+            preset="liquid"
+            intro="rise"
+            cardHeight={0.62}
+            gap={16}
+            fit="portrait"
+            captions
+            autoplay
+            interval={4.5}
+            captureWheel={false}
           />
         </div>
-      </div>
+      </section>
 
-      {/* ══ Services ═══════════════════════════════════════════════════ */}
-      <section id="services" className="relative mx-auto max-w-6xl px-6 py-28">
-        <div className="max-w-2xl">
-          <p className="section-label" style={{ color: FLAME }}>Services</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-            Everything your brand posts, ships and runs on.
-          </h2>
-          <p className="mt-4 text-lg font-medium text-muted">
-            Six capabilities, one accountable team — retainer pricing, no per-design surprises.
-          </p>
+      {/* ══ 03 · Brands we've worked with ════════════════════════════ */}
+      <section id="brands" className="relative">
+        <div className="mx-auto max-w-6xl px-6 py-24">
+          <div className="max-w-2xl">
+            <p className="section-label" style={{ color: ACCENT }}>Brands we&apos;ve worked with</p>
+            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+              Trusted across industries.
+            </ScrollReveal>
+            <p className="mt-3 text-sm font-medium text-muted">
+              A look at the businesses and brands we&apos;ve had the opportunity to work with.
+            </p>
+          </div>
+          {/* Swap these tiles for real <img> logos when they arrive. */}
+          <div className="mt-12 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
+            {CLIENT_LOGOS.map((name) => (
+              <div
+                key={name}
+                className="flex h-20 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] transition duration-300 hover:border-white/25 hover:bg-white/[0.06]"
+              >
+                <span className="text-xs font-bold uppercase tracking-wider text-faint">{name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ 04 · What we do ══════════════════════════════════════════ */}
+      <section id="services" className="relative scroll-mt-24">
+        <div className="mx-auto max-w-6xl px-6 py-28">
+        <div className="max-w-3xl">
+          <p className="section-label" style={{ color: ACCENT }}>What we do</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Everything your business needs to build, manage and grow its digital presence.
+          </ScrollReveal>
         </div>
 
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -318,12 +494,12 @@ export default function Home() {
             >
               <div
                 className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-0 blur-2xl transition duration-500 group-hover:opacity-30"
-                style={{ background: `radial-gradient(closest-side, ${FLAME}, transparent)` }}
+                style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
               />
               <div className="flex items-center justify-between">
                 <span
                   className="flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-extrabold"
-                  style={{ background: `${NAVY}33`, color: "#9db1ff" }}
+                  style={{ background: `${NAVY}33`, color: "#ffb1a4" }}
                 >
                   {s.n}
                 </span>
@@ -331,438 +507,447 @@ export default function Home() {
               </div>
               <h3 className="mt-6 text-lg font-bold tracking-tight">{s.title}</h3>
               <p className="mt-2.5 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
-              <div className="mt-5 flex flex-wrap gap-2">
-                {s.tags.map((t) => (
-                  <span key={t} className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] font-semibold text-muted">
-                    {t}
-                  </span>
-                ))}
-              </div>
             </div>
           ))}
         </div>
+        </div>
       </section>
 
-      {/* ══ Work showcase ══════════════════════════════════════════════ */}
-      <section id="work" className="relative overflow-hidden border-y border-white/5">
-        {/* ambient glow behind the grid */}
+      {/* ══ 05 · Why RB Social Branding ══════════════════════════════ */}
+      <section id="why" className="relative overflow-hidden">
         <div
-          aria-hidden
-          className="pointer-events-none absolute -top-32 right-[10%] h-80 w-[520px] rounded-full opacity-25 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${NAVY}99, transparent)` }}
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -bottom-24 left-[6%] h-72 w-[420px] rounded-full opacity-20 blur-3xl"
-          style={{ background: `radial-gradient(closest-side, ${FLAME}66, transparent)` }}
-        />
+          className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[36rem] w-[52rem] -translate-x-1/2 -translate-y-1/2 opacity-60 blur-2xl lg:block"
+          style={{
+            maskImage:
+              "radial-gradient(closest-side, black 30%, transparent 95%)",
+            WebkitMaskImage:
+              "radial-gradient(closest-side, black 30%, transparent 95%)",
+          }}
+        >
+          <SideRays rayColor1="#ff8a7a" rayColor2="#8fa3e8" origin="top-right" opacity={0.9} />
+        </div>
         <div className="relative mx-auto max-w-6xl px-6 py-28">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div className="max-w-2xl">
-              <p className="section-label" style={{ color: FLAME }}>Selected work</p>
-              <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-                Industries we make look good.
-              </h2>
-            </div>
-            <p className="max-w-sm text-sm font-medium text-muted">
-              Every tile below is a live engagement — content systems we run month after month.
-            </p>
-          </div>
-
-          <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {audiences.map((a, i) => (
+          <p className="section-label" style={{ color: ACCENT }}>Why us</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Why RB Social Branding?
+          </ScrollReveal>
+          <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {whys.map((w, i) => (
               <div
-                key={a}
-                className="group relative h-56 overflow-hidden rounded-3xl border border-white/10 transition duration-300 hover:-translate-y-1.5 hover:border-white/25 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)]"
+                key={w.title}
+                className={`rounded-3xl border border-white/10 bg-white/[0.03] p-7 transition duration-300 hover:-translate-y-1 hover:border-white/20 ${
+                  i === 0 ? "md:col-span-2 lg:col-span-1" : ""
+                }`}
               >
-                <div
-                  className="absolute inset-0 transition duration-500 group-hover:scale-[1.04]"
-                  style={{
-                    background:
-                      i % 3 === 0
-                        ? `linear-gradient(135deg, ${NAVY}cc, #0a0c14 70%)`
-                        : i % 3 === 1
-                          ? `linear-gradient(135deg, ${FLAME}b3, #0a0c14 75%)`
-                          : `linear-gradient(135deg, #0b0c33, ${NAVY}55 60%, ${FLAME}44)`,
-                  }}
-                />
-                {/* light sheen sweep on hover */}
-                <div className="pointer-events-none absolute inset-0 -translate-x-[110%] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent transition duration-700 ease-out group-hover:translate-x-[110%]" />
-                <div
-                  className={`animate-drift absolute -right-12 -top-12 h-36 w-36 rounded-full opacity-40 blur-2xl transition-opacity group-hover:opacity-70 ${i % 2 ? "" : "animate-drift-alt"}`}
-                  style={{ background: "radial-gradient(closest-side, #ffffff66, transparent)" }}
-                />
-                {/* ghost index */}
-                <span className="pointer-events-none absolute right-5 top-3 text-5xl font-extrabold tracking-tight text-white/[0.07] transition duration-300 group-hover:text-white/[0.14]">
-                  {String(i + 1).padStart(2, "0")}
+                <span
+                  className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-extrabold text-[#13203b]"
+                  style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
+                >
+                  {i + 1}
                 </span>
-                {/* live status pill */}
-                <span className="absolute left-5 top-5 inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-black/25 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white/60 backdrop-blur">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  </span>
-                  Live
-                </span>
-                <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-6">
-                  <div>
-                    <p className="text-lg font-bold tracking-tight text-white">{a}</p>
-                    <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-white/50">
-                      Content system · active
-                    </p>
-                  </div>
-                  <span className="flex h-9 w-9 translate-y-1 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white opacity-0 backdrop-blur transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    ↗
-                  </span>
-                </div>
+                <h3 className="mt-5 text-lg font-bold tracking-tight">{w.title}</h3>
+                <p className="mt-2 text-sm font-medium leading-relaxed text-muted">{w.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ Process ════════════════════════════════════════════════════ */}
-      <section id="process" className="mx-auto max-w-6xl px-6 py-28">
+      {/* ══ 06 · How we work ═════════════════════════════════════════ */}
+      <section id="process" className="relative scroll-mt-24">
+        <div className="mx-auto max-w-6xl px-6 py-28">
         <div className="max-w-2xl">
-          <p className="section-label" style={{ color: FLAME }}>Process</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-            How it works.
-          </h2>
-          <p className="mt-4 text-lg font-medium text-muted">
-            Simple, transparent, on schedule — the same four steps for every brand.
+          <p className="section-label" style={{ color: ACCENT }}>How we work</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Good marketing doesn&apos;t happen by accident. It&apos;s planned.
+          </ScrollReveal>
+          <p className="mt-4 text-base font-medium text-muted">
+            Our approach combines thoughtful planning, creative execution and consistent
+            communication to keep every marketing activity aligned with the brand.
           </p>
         </div>
-
-        <div className="mt-14 grid gap-5 md:grid-cols-4">
-          {steps.map((s, i) => (
-            <div key={s.n} className="relative rounded-3xl border border-white/10 bg-white/[0.03] p-7">
-              {i < steps.length - 1 && (
-                <span className="absolute right-[-13px] top-1/2 z-10 hidden h-6 w-6 -translate-y-1/2 items-center justify-center md:flex">
-                  <span className="h-px w-6 bg-gradient-to-r from-white/20 to-transparent" />
-                </span>
-              )}
+        <div className="mt-14 space-y-4">
+          {steps.map((s) => (
+            <div
+              key={s.n}
+              className="flex gap-5 rounded-3xl border border-white/10 bg-white/[0.02] p-6 transition duration-300 hover:border-white/20 hover:bg-white/[0.04]"
+            >
               <span
-                className="inline-block rounded-full px-3 py-1 text-xs font-extrabold"
-                style={{ background: `${FLAME}1f`, color: FLAME }}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-extrabold text-[#13203b]"
+                style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
               >
                 {s.n}
               </span>
-              <h3 className="mt-5 text-lg font-bold tracking-tight">{s.title}</h3>
-              <p className="mt-2 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
+              <div>
+                <h3 className="text-base font-bold tracking-tight">{s.title}</h3>
+                <p className="mt-1 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
+              </div>
             </div>
           ))}
         </div>
-      </section>
-
-      {/* ══ Dashboard teaser ═══════════════════════════════════════════ */}
-      <section className="border-y border-white/5">
-        <div className="mx-auto grid max-w-6xl items-center gap-14 px-6 py-28 lg:grid-cols-2">
-          <div>
-            <p className="section-label" style={{ color: FLAME }}>The dashboard</p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-              Not just pretty posts — a real delivery system.
-            </h2>
-            <p className="mt-4 text-lg font-medium leading-relaxed text-muted">
-              Every task, deadline, revision and invoice lives in your client portal. You see
-              exactly what&apos;s in design, what&apos;s queued and what&apos;s delivered — no
-              chasing anyone on WhatsApp.
-            </p>
-            <ul className="mt-8 space-y-4">
-              {[
-                "Live task board with real deadlines per post",
-                "Approve designs from a single Canva link",
-                "Monthly invoices with downloadable receipts",
-                "Content calendar for every scheduled post",
-              ].map((f) => (
-                <li key={f} className="flex items-start gap-3 text-sm font-medium text-muted">
-                  <span
-                    className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full"
-                    style={{ background: `${FLAME}1f` }}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke={FLAME} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="h-3 w-3">
-                      <path d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* stylized dashboard mock */}
-          <div className="relative">
-            <div
-              className="pointer-events-none absolute -inset-8 rounded-[2.5rem] opacity-40 blur-3xl"
-              style={{ background: `radial-gradient(closest-side, ${NAVY}55, transparent)` }}
-            />
-            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0c0e15] shadow-2xl">
-              <div className="flex items-center gap-2 border-b border-white/5 px-5 py-3.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
-                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
-                <span className="ml-3 text-xs font-semibold text-faint">rbsocial — client portal</span>
-              </div>
-              <div className="space-y-3 p-5">
-                {[
-                  { t: "Diwali sale carousel", c: "Acme Cafe", s: "In design", tone: FLAME },
-                  { t: "Membership reel cover", c: "GlowUp Fitness", s: "In review", tone: "#fbbf24" },
-                  { t: "Project listing flyer", c: "Nova Realty", s: "Delivered", tone: "#34d399" },
-                  { t: "Weekend story set", c: "Acme Cafe", s: "Queued", tone: "#8b8f9c" },
-                ].map((r) => (
-                  <div key={r.t} className="flex items-center justify-between rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3.5">
-                    <div>
-                      <p className="text-sm font-semibold text-ink">{r.t}</p>
-                      <p className="text-xs font-medium text-faint">{r.c}</p>
-                    </div>
-                    <span
-                      className="rounded-full px-2.5 py-1 text-[11px] font-bold"
-                      style={{ background: `${r.tone}1f`, color: r.tone }}
-                    >
-                      {r.s}
-                    </span>
-                  </div>
-                ))}
-                <div className="rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3.5">
-                  <div className="flex items-center justify-between text-xs font-semibold text-faint">
-                    <span>OCTOBER RETAINER</span>
-                    <span style={{ color: FLAME }}>DUE IN 5 DAYS</span>
-                  </div>
-                  <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-white/5">
-                    <div className="h-full w-2/3 rounded-full" style={{ background: `linear-gradient(90deg, ${NAVY}, ${FLAME})` }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* ══ Pricing ════════════════════════════════════════════════════ */}
-      <section id="pricing" className="relative py-28">
-        {/* animated light rays — full-width background, edge to edge */}
-        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-          <SideRays
-            origin="top-right"
-            rayColor1={FLAME}
-            rayColor2={NAVY}
-            speed={2}
-            intensity={1.4}
-            spread={2.4}
-            saturation={1.2}
-            blend={0.6}
-            opacity={0.5}
-          />
-        </div>
-        <div className="relative mx-auto max-w-6xl px-6">
-          <div className="mx-auto max-w-2xl text-center">
-          <p className="section-label" style={{ color: FLAME }}>Pricing</p>
-          <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-            Monthly retainers. Zero surprises.
-          </h2>
-          <p className="mt-4 text-lg font-medium text-muted">
-            Pick a pace — scale up or pause at any month boundary.
+      {/* ══ 07 · Industries ══════════════════════════════════════════ */}
+      <section id="industries">
+        <div className="mx-auto max-w-6xl px-6 py-24 text-center">
+          <p className="section-label" style={{ color: ACCENT }}>Industries</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Across industries. One creative approach.
+          </ScrollReveal>
+          <p className="mx-auto mt-4 max-w-xl text-sm font-medium text-muted">
+            From education and healthcare to construction, manufacturing and retail — we
+            work with businesses across diverse industries.
           </p>
-        </div>
-
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
-          {plans.map((p) => (
-            <div
-              key={p.name}
-              className={`relative rounded-3xl border p-8 transition duration-300 hover:-translate-y-1 ${
-                p.featured
-                  ? "border-transparent bg-[#0d101c]"
-                  : "border-white/10 bg-white/[0.03] hover:bg-white/[0.05]"
-              }`}
-              style={p.featured ? { boxShadow: `0 0 0 1px ${FLAME}55, 0 24px 60px -24px ${FLAME}40` } : undefined}
-            >
-              {p.featured && (
-                <span
-                  className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-3.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-white"
-                  style={{ background: `linear-gradient(135deg, ${FLAME}, #8f1410)` }}
-                >
-                  Most popular
-                </span>
-              )}
-              <h3 className="text-sm font-bold uppercase tracking-wider text-muted">{p.name}</h3>
-              <p className="mt-4 flex items-baseline gap-1">
-                <span className="text-4xl font-extrabold tracking-tight">{p.price}</span>
-                <span className="text-sm font-medium text-faint">{p.period}</span>
-              </p>
-              <p className="mt-2 text-sm font-medium text-muted">{p.desc}</p>
-              <ul className="mt-7 space-y-3">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2.5 text-sm font-medium text-muted">
-                    <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: p.featured ? FLAME : NAVY }} />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a
-                href="#contact"
-                className={`mt-8 block rounded-xl px-5 py-3 text-center text-sm font-bold transition duration-200 active:scale-[0.98] ${
-                  p.featured
-                    ? "text-white hover:opacity-90"
-                    : "border border-white/10 bg-white/5 text-ink hover:bg-white/10"
-                }`}
-                style={p.featured ? { background: `linear-gradient(135deg, ${FLAME}, #8f1410)` } : undefined}
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+            {industries.map((i) => (
+              <span
+                key={i}
+                className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-bold text-ink transition duration-200 hover:border-white/30 hover:bg-white/[0.08]"
               >
-                {p.cta}
-              </a>
-            </div>
-          ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══ FAQ ════════════════════════════════════════════════════════ */}
-      <section id="faq" className="relative">
-        <div className="mx-auto max-w-3xl px-6 pb-28 pt-32">
-          <div className="text-center">
-            <p className="section-label" style={{ color: FLAME }}>FAQ</p>
-            <h2 className="mt-3 text-4xl font-extrabold tracking-tight md:text-5xl">
-              Questions, answered.
-            </h2>
-          </div>
-          <div className="mt-12 space-y-3">
-            {faqs.map((f) => (
-              <details key={f.q} className="group rounded-2xl border border-white/10 bg-white/[0.03] transition duration-200 hover:border-white/20 open:bg-white/[0.05]">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-sm font-bold text-ink [&::-webkit-details-marker]:hidden">
-                  {f.q}
-                  <span
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-lg font-bold leading-none transition duration-300 group-open:rotate-45"
-                    style={{ background: `${FLAME}1f`, color: FLAME }}
-                  >
-                    +
-                  </span>
-                </summary>
-                <p className="px-6 pb-6 text-sm font-medium leading-relaxed text-muted">{f.a}</p>
-              </details>
+                {i}
+              </span>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ Contact CTA ════════════════════════════════════════════════ */}
-      <section
-        id="contact"
-        className="relative"
-        style={{ background: "linear-gradient(180deg, transparent 0%, transparent 45%, #4d0c0a 78%, #7a1210 100%)" }}
-      >
-        <ScrollExpand
-          useWindowScroll
-          media={<ContactArt />}
-          title="Your brand, upgraded"
-          scrollHint="Scroll to expand"
-          startWidth={38}
-          startHeight={54}
-          startRadius={48}
-          mediaZoom={1.28}
-          scrollDistance={0.65}
-          holdDistance={0.25}
-          smoothing={0.1}
-          overlayScrim={0.7}
-        >
-          <div className="pointer-events-none absolute inset-0">
-            <LightRays
-              raysOrigin="top-center"
-              raysColor="#e04438"
-              raysSpeed={0.45}
-              lightSpread={1.0}
-              rayLength={1.2}
-              fadeDistance={0.9}
-              saturation={1.1}
-              followMouse
-              mouseInfluence={0.1}
-              noiseAmount={0.05}
-              distortion={0.12}
-            />
+      {/* ══ 08 · Our work ════════════════════════════════════════════ */}
+      <section id="work" className="relative scroll-mt-24 overflow-hidden">
+        {/* blue backdrop — radial glows over a deep blue gradient */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: [
+              `radial-gradient(900px 500px at 85% 8%, #2a4a9e52, transparent 62%)`,
+              `radial-gradient(800px 520px at 8% 92%, #2a4a9e42, transparent 64%)`,
+              `linear-gradient(168deg, #1b2c55 0%, #101c3d 48%, #0a1124 100%)`,
+            ].join(", "),
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, black 16%, black 84%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 16%, black 84%, transparent 100%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-6xl px-6 py-28">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <p className="section-label" style={{ color: ACCENT }}>Our work</p>
+            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+              Different industries. Different stories.
+            </ScrollReveal>
           </div>
-          <div className="relative max-w-2xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-white/80 backdrop-blur">
-              <span className="h-1.5 w-1.5 rounded-full" style={{ background: FLAME }} />
-              Start a project
-            </p>
-            <h2 className="mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl">
-              Ready to hand off{" "}
-              <span
-                className="bg-clip-text text-transparent"
-                style={{ backgroundImage: `linear-gradient(100deg, #f0554c, ${FLAME} 60%, #c9cfff)` }}
-              >
-                design work?
-              </span>
-            </h2>
-            <p className="mx-auto mt-5 max-w-lg text-base font-medium leading-relaxed text-white/65">
-              Tell us about your business — we&apos;ll match you with a dedicated
-              designer within 24 hours.
-            </p>
-            <form className="mx-auto mt-9 flex max-w-md items-center gap-1.5 rounded-full border border-white/15 bg-black/30 p-1.5 backdrop-blur-xl">
-              <input
-                type="email"
-                required
-                placeholder="you@company.com"
-                className="w-full min-w-0 flex-1 rounded-full bg-transparent px-5 py-3 text-sm text-white outline-none placeholder:text-white/40"
+          <p className="max-w-sm text-sm font-medium text-muted">
+            A glimpse of the content and creative work we&apos;ve produced — tap a reel
+            to watch it on Instagram.
+          </p>
+        </div>
+
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {PORTFOLIO.map((p, i) => (
+            <a
+              key={p.industry}
+              href={p.reels[0]}
+              target="_blank"
+              rel="noreferrer"
+              className="group relative block aspect-[9/16] max-h-[420px] overflow-hidden rounded-3xl border border-white/10 transition duration-300 hover:-translate-y-1.5 hover:border-white/25 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)]"
+            >
+              {/* reel thumbnail — swap `thumb` for the real cover later */}
+              <img
+                src={p.thumb}
+                alt={`${p.industry} work`}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
               />
-              <button
-                type="button"
-                className="shrink-0 rounded-full px-7 py-3 text-sm font-bold text-white transition duration-200 hover:opacity-90 active:scale-[0.98]"
-                style={{ background: `linear-gradient(135deg, ${FLAME}, #8f1410)`, boxShadow: `0 10px 30px -10px ${FLAME}90` }}
-              >
-                Contact Us
-              </button>
-            </form>
-          </div>
-        </ScrollExpand>
+              {/* brand tint + readable scrims */}
+              <div
+                className="absolute inset-0 mix-blend-multiply transition duration-500 group-hover:opacity-60"
+                style={{ background: `linear-gradient(160deg, ${NAVY}55, ${ACCENT}30 90%)` }}
+              />
+              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/50 to-transparent" />
+              <div className="pointer-events-none absolute inset-0 -translate-x-[110%] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent transition duration-700 ease-out group-hover:translate-x-[110%]" />
+              {/* reel badge */}
+              <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#f4ebe0] backdrop-blur">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3 w-3" aria-hidden>
+                  <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><path d="M17.5 6.5h.01" />
+                </svg>
+                Reel
+              </span>
+              {/* play icon */}
+              <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-[#f4ebe0] backdrop-blur transition duration-300 group-hover:scale-110 group-hover:bg-[#ff6a5a]/85 group-hover:text-[#13203b] group-hover:border-transparent">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="ml-0.5 h-5 w-5" aria-hidden>
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </span>
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-5">
+                <div>
+                  <p className="text-base font-bold tracking-tight text-[#f4ebe0]">{p.industry}</p>
+                  <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wider text-[#f4ebe0]/50">
+                    Watch on Instagram ↗
+                  </p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+        </div>
       </section>
 
-      {/* ══ Footer — deep flame red, merged into the expand section ════ */}
-      <footer className="relative overflow-hidden" style={{ background: "linear-gradient(180deg, #7a1210 0%, #63100d 55%, #400a08 100%)" }}>
-        {/* soft top glow so it blends out of the artwork above */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-black/20 to-transparent" />
+      {/* ══ 09 · Testimonials ════════════════════════════════════════ */}
+      <section id="testimonials" className="relative">
+        <div className="mx-auto max-w-6xl px-6 py-28">
+          <div className="max-w-2xl">
+            <p className="section-label" style={{ color: ACCENT }}>Testimonials</p>
+            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+              What our clients say.
+            </ScrollReveal>
+            <p className="mt-4 text-sm font-medium text-muted">
+              Real experiences. Genuine partnerships.
+            </p>
+          </div>
 
-        <div className="relative mx-auto max-w-6xl px-6 pb-10 pt-20">
-          <div className="flex flex-col justify-between gap-12 md:flex-row md:items-start">
-            <div className="max-w-sm">
-              <span className="flex items-center gap-3">
-                <Logo size={48} rounded="rounded-2xl" />
-                <span className="text-base font-extrabold tracking-tight text-white">RB Social Branding</span>
-              </span>
-              <p className="mt-5 text-sm font-medium leading-relaxed text-white/60">
-                A design agency and delivery system for growing businesses — powered by ROSHAN
-                BHARAT.
+          {/* Featured + 3 supporting — replace the card bodies with the
+              real video embeds/links when they arrive. */}
+          <div className="mt-14 grid gap-5 lg:grid-cols-3">
+            {TESTIMONIALS.map((t, i) => (
+              <a
+                key={i}
+                href={t.url}
+                target="_blank"
+                rel="noreferrer"
+                className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] transition duration-300 hover:-translate-y-1 hover:border-white/25 ${
+                  i === 0 ? "aspect-video lg:col-span-2 lg:row-span-1" : "aspect-video"
+                }`}
+              >
+                <div
+                  className="absolute inset-0 transition duration-500 group-hover:scale-[1.03]"
+                  style={{
+                    background:
+                      i === 0
+                        ? `linear-gradient(140deg, ${ACCENT}66, #0d1526 65%)`
+                        : `linear-gradient(140deg, ${NAVY}88, #0d1526 70%)`,
+                  }}
+                />
+                <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/30 text-[#f4ebe0] backdrop-blur transition duration-300 group-hover:scale-110">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="ml-1 h-6 w-6" aria-hidden>
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </span>
+                <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-5">
+                  <span
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-extrabold text-[#13203b]"
+                    style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
+                  >
+                    {t.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-[#13203b]">{t.name}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#f4ebe0]/50">
+                      {t.business}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ 10 · Roshan Bharat ═══════════════════════════════════════ */}
+      <section id="roshan-bharat" className="relative overflow-hidden scroll-mt-24">
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(140deg, ${NAVY}30 0%, #070a14 55%, ${ACCENT}24 100%)`,
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 14%, black 86%, transparent 100%)",
+          }}
+        />
+        {/* newspaper texture lines */}
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-[0.05]"
+          style={{
+            backgroundImage:
+              "repeating-linear-gradient(0deg, transparent, transparent 22px, #fff 22px, #fff 23px)",
+          }}
+        />
+        <div className="relative mx-auto max-w-6xl px-6 py-28">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            <div>
+              <p className="section-label" style={{ color: ACCENT }}>Roshan Bharat</p>
+              <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+                More than marketing. The power of media.
+              </ScrollReveal>
+              <p className="mt-5 text-base font-medium leading-relaxed text-muted">
+                Roshan Bharat is a newspaper with a strong presence across social media,
+                connecting with audiences through news, local stories and updates. Through
+                RB Social Branding, businesses get the opportunity to leverage this media
+                presence to build visibility and connect with a wider audience.
               </p>
+              <ul className="mt-7 space-y-2.5">
+                {mediaPerks.map((m) => (
+                  <li key={m} className="flex items-start gap-2.5 text-sm font-semibold text-ink">
+                    <span className="mt-0.5" style={{ color: ACCENT }}>✦</span>
+                    {m}
+                  </li>
+                ))}
+              </ul>
             </div>
-
-            <div className="grid grid-cols-2 gap-14">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/45">Services</p>
-                <ul className="mt-5 space-y-3 text-sm font-semibold text-white/75">
-                  {services.slice(0, 4).map((s) => (
-                    <li key={s.title}>
-                      <a href="#services" className="transition duration-200 hover:text-white">{s.title}</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/45">Company</p>
-                <ul className="mt-5 space-y-3 text-sm font-semibold text-white/75">
-                  <li><a href="#process" className="transition duration-200 hover:text-white">Process</a></li>
-                  <li><a href="#pricing" className="transition duration-200 hover:text-white">Pricing</a></li>
-                  <li><a href="#faq" className="transition duration-200 hover:text-white">FAQ</a></li>
-                  <li><Link href="/careers" className="transition duration-200 hover:text-white">Careers</Link></li>
-                  <li><Link href="/login" className="transition duration-200 hover:text-white">Team Login</Link></li>
-                </ul>
+            <div className="relative">
+              <div
+                className="rounded-3xl border border-white/10 p-10 text-center shadow-lift"
+                style={{ background: `linear-gradient(150deg, ${NAVY}55, #0d1526)` }}
+              >
+                <p
+                  className="animate-gradient-pan bg-clip-text text-7xl font-extrabold tracking-tight text-transparent md:text-8xl"
+                  style={{ backgroundImage: `linear-gradient(120deg, ${CREAM} 20%, ${ACCENT} 55%, #ffb1a4)` }}
+                >
+                  700K+
+                </p>
+                <p className="mt-3 text-sm font-bold uppercase tracking-[0.2em] text-muted">
+                  Social media audience
+                </p>
+                <div className="mx-auto mt-7 h-px w-24 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                <p className="mt-6 text-sm font-medium leading-relaxed text-muted">
+                  Reach your customers through Roshan Bharat&apos;s newspaper readership
+                  and social media following — powered by RB Social Branding.
+                </p>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-white/15 pt-7 text-[13px] font-medium text-white/50 sm:flex-row">
-            <span>© {new Date().getFullYear()} RB Social Branding. All rights reserved.</span>
-            <span className="flex items-center gap-1.5">
-              Powered by
-              <span className="font-bold text-white">ROSHAN</span>
-              <span className="font-bold" style={{ color: "#c9cfff" }}>BHARAT</span>
-            </span>
+      {/* ══ 11 · Careers ═════════════════════════════════════════════ */}
+      <section id="careers" className="relative scroll-mt-24">
+        <div className="mx-auto max-w-6xl px-6 py-28">
+        <div className="relative overflow-hidden rounded-[2rem] border border-white/10 px-8 py-16 text-center md:py-20"
+          style={{ background: `linear-gradient(135deg, ${ACCENT}30, #0d1526 60%, ${NAVY}40)` }}
+        >
+          <div className="pointer-events-none absolute -top-24 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full opacity-40 blur-3xl"
+            style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
+          />
+          <ScrollReveal containerClassName="relative" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Create. Collaborate. Grow with us.
+          </ScrollReveal>
+          <p className="relative mx-auto mt-4 max-w-xl text-sm font-medium leading-relaxed text-muted">
+            We&apos;re always looking for creative and passionate people who want to work
+            on exciting projects and grow with a dynamic team.
+          </p>
+          <Link
+            href="/careers"
+            className="relative mt-8 inline-block rounded-full px-8 py-3.5 text-sm font-bold text-[#13203b] shadow-lg transition duration-200 hover:opacity-90 active:scale-[0.98]"
+            style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`, boxShadow: `0 12px 32px -12px ${ACCENT}80` }}
+          >
+            See open roles →
+          </Link>
+        </div>
+        </div>
+      </section>
+
+      {/* ══ 12 · Contact & Footer ════════════════════════════════════ */}
+      <footer id="contact" className="relative overflow-hidden">
+        <div
+          className="pointer-events-none absolute -bottom-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full opacity-25 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, ${ACCENT}66, transparent)` }}
+        />
+        <div className="relative mx-auto max-w-6xl px-6 py-20">
+          <div className="grid gap-12 md:grid-cols-2">
+            <div>
+              <div className="flex items-center gap-3">
+                <Logo size={40} />
+                <div>
+                  <p className="text-base font-bold tracking-tight">RB Social Branding</p>
+                  <p className="text-xs font-medium text-faint">
+                    A division of Roshan Bharat
+                  </p>
+                </div>
+              </div>
+              <p className="mt-5 max-w-sm text-sm font-medium leading-relaxed text-muted">
+                Content, creativity and marketing — everything your business needs to grow,
+                under one roof.
+              </p>
+              <div className="mt-6 flex items-center gap-3">
+                {[
+                  { label: "Instagram", href: SOCIAL.instagram, path: <><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><path d="M17.5 6.5h.01" /></> },
+                  { label: "Facebook", href: SOCIAL.facebook, path: <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /> },
+                  { label: "LinkedIn", href: SOCIAL.linkedin, path: <><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4V8h4v2a5.7 5.7 0 0 1 2-2z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></> },
+                ].map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={s.label}
+                    title={s.label}
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-muted transition duration-200 hover:border-white/25 hover:bg-white/10 hover:text-ink"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4.5 w-4.5" aria-hidden>
+                      {s.path}
+                    </svg>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <a
+                href={WHATSAPP}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition duration-200 hover:border-white/25 hover:bg-white/[0.07]"
+              >
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-faint">WhatsApp</p>
+                  <p className="mt-1 text-base font-bold text-ink">+91 92164 26456</p>
+                </div>
+                <span className="text-faint">↗</span>
+              </a>
+              <a
+                href={`mailto:${EMAIL}`}
+                className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition duration-200 hover:border-white/25 hover:bg-white/[0.07]"
+              >
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-faint">Email</p>
+                  <p className="mt-1 text-base font-bold text-ink">{EMAIL}</p>
+                </div>
+                <span className="text-faint">↗</span>
+              </a>
+              <a
+                href={MAPS_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-between gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition duration-200 hover:border-white/25 hover:bg-white/[0.07]"
+              >
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-faint">Office</p>
+                  <p className="mt-1 text-sm font-bold leading-relaxed text-ink">
+                    Roshan Bharat Office, Patrakar Colony, Near RK Girls College,
+                    Madanganj, Kishangarh, Rajasthan, India
+                  </p>
+                </div>
+                <span className="text-faint">↗</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-white/5 pt-7">
+            <p className="text-xs font-medium text-faint">
+              © {new Date().getFullYear()} RB Social Branding · A division of Roshan Bharat
+            </p>
+            <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-faint">
+              {navLinks.map((l) => (
+                <a key={l.href} href={l.href} className="transition hover:text-ink">
+                  {l.label}
+                </a>
+              ))}
+              <Link href="/login" className="transition hover:text-ink">Team Login</Link>
+            </div>
           </div>
         </div>
       </footer>
