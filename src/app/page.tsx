@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Logo } from "@/components/logo";
 import { TextLoop, SideRays, FlexCarousel, ScrollReveal, LightTunnel } from "@/components/lazy-fx";
 import { SiteMenu } from "@/components/site-menu";
+import { WorkCarousel } from "@/components/work-carousel";
 
 /* ── Brand tokens ─────────────────────────────────────────────────── */
 const ACCENT = "#ff6a5a"; // coral accent
@@ -236,7 +237,7 @@ export default function Home() {
             target="_blank"
             rel="noreferrer"
             className="relative hidden rounded-full px-5 py-2 text-[13px] font-bold text-[#13203b] ring-1 ring-white/20 transition duration-200 hover:opacity-90 active:scale-[0.98] lg:inline-flex"
-            style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`, boxShadow: `0 8px 24px -10px ${ACCENT}90` }}
+            style={{ background: `linear-gradient(135deg, ${CREAM}, #dfd2bf)`, boxShadow: `0 8px 24px -10px ${CREAM}55` }}
           >
             Let&apos;s Talk
           </a>
@@ -299,10 +300,10 @@ export default function Home() {
         {/* main row — headline left, glass panel right */}
         <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-1 items-center gap-14 px-6 pb-8 pt-28">
           <div className="max-w-3xl">
-          <p className="mb-6 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-muted backdrop-blur">
-            <span className="relative flex h-2 w-2">
+          <p className="mb-7 inline-flex max-w-full items-center gap-3 rounded-full border border-white/15 bg-white/[0.07] px-5 py-2.5 text-sm font-bold tracking-wide text-ink backdrop-blur">
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: ACCENT }} />
-              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: ACCENT }} />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ background: ACCENT }} />
             </span>
             A Digital Marketing &amp; Creative Division of Roshan Bharat
           </p>
@@ -330,7 +331,7 @@ export default function Home() {
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-[#13203b] shadow-lg transition duration-200 hover:opacity-90 hover:shadow-xl active:scale-[0.98]"
-              style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})`, boxShadow: `0 12px 32px -12px ${ACCENT}80` }}
+              style={{ background: `linear-gradient(135deg, ${CREAM}, #dfd2bf)`, boxShadow: `0 12px 32px -12px ${CREAM}55` }}
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
                 <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07a8.2 8.2 0 0 1-2.4-1.49 9 9 0 0 1-1.66-2.07c-.17-.3-.02-.46.13-.6.14-.15.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.61-.92-2.2-.24-.59-.49-.5-.67-.52h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.89.12.57-.09 1.76-.72 2-1.42.25-.7.25-1.3.18-1.42-.08-.13-.28-.2-.57-.35ZM12.05 21.79h-.01a9.77 9.77 0 0 1-5-1.37l-.35-.21-3.7.97.99-3.61-.23-.37a9.77 9.77 0 1 1 8.3 4.6Zm0-21.55a11.8 11.8 0 0 0-10.05 18.1L.24 24l5.79-1.52A11.77 11.77 0 0 0 12.05 24 11.8 11.8 0 0 0 12.05.24Z" />
@@ -352,15 +353,16 @@ export default function Home() {
             <div className="rounded-2xl border border-white/10 bg-white/[0.07] p-6 shadow-lift backdrop-blur-xl">
               <div className="flex items-center justify-between">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-faint">
-                  What we handle
+                  What we do
                 </p>
                 <span className="h-1.5 w-1.5 rounded-full" style={{ background: ACCENT }} />
               </div>
               <div className="mt-4 space-y-3">
                 {[
-                  { k: "Content & shoots", v: "Planned monthly" },
-                  { k: "Social media", v: "Fully managed" },
-                  { k: "Ads + media", v: "Meta · GMB · Roshan Bharat" },
+                  { k: "Social media management", v: "Fully managed" },
+                  { k: "Content & production", v: "Shoots · Reels · Edits" },
+                  { k: "Marketing & ads", v: "Meta · GMB · Roshan Bharat" },
+                  { k: "Web & software", v: "Sites · Digital solutions" },
                 ].map((r) => (
                   <div
                     key={r.k}
@@ -376,7 +378,7 @@ export default function Home() {
               </div>
               <div
                 className="mt-4 rounded-full px-4 py-2 text-center text-[11px] font-bold text-[#13203b]"
-                style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
+                style={{ background: `linear-gradient(135deg, ${CREAM}, #dfd2bf)` }}
               >
                 One team · One strategy
               </div>
@@ -428,25 +430,31 @@ export default function Home() {
       </section>
 
       {/* ══ 02 · About ═══════════════════════════════════════════════ */}
-      <section id="about" className="relative scroll-mt-24">
-        <div className="mx-auto max-w-6xl px-6 py-24">
+      <section id="about" className="relative scroll-mt-24 overflow-hidden">
+        {/* soft blue spotlight behind the copy */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-24 top-1/2 h-[30rem] w-[46rem] -translate-y-1/2 rounded-full opacity-60 blur-3xl"
+          style={{ background: `radial-gradient(closest-side, #2a4a9e5c, transparent)` }}
+        />
+        <div className="relative mx-auto max-w-6xl px-6 py-24">
         <div className="max-w-3xl">
           <p className="section-label" style={{ color: ACCENT }}>About us</p>
           <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
             More than just social media.
           </ScrollReveal>
           <div className="mt-6 space-y-4 text-base font-medium leading-relaxed text-muted">
-            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02}>
+            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02} baseOpacity={0.4}>
               RB Social Branding is a digital marketing and creative division of{" "}
               <span className="font-bold text-ink">Roshan Bharat</span>, helping businesses
               build and strengthen their digital presence.
             </ScrollReveal>
-            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02}>
+            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02} baseOpacity={0.4}>
               We work as an extended in-house marketing team — bringing strategy, content
               creation, professional production, social media management, performance
               marketing and advertising together under one roof.
             </ScrollReveal>
-            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02}>
+            <ScrollReveal containerClassName="-my-2" textClassName="text-base font-medium leading-relaxed text-muted" effect="fade" mode="enter" duration={0.7} stagger={0.02} baseOpacity={0.4}>
               From understanding your business and planning content to executing campaigns
               and developing digital solutions, we bring every part of your marketing
               together under one coordinated approach.
@@ -513,31 +521,30 @@ export default function Home() {
       {/* ══ 04 · What we do ══════════════════════════════════════════ */}
       <section id="services" className="relative scroll-mt-24">
         <div className="mx-auto max-w-6xl px-6 py-28">
-        <div className="max-w-3xl">
+        <div className="mx-auto max-w-3xl text-center">
           <p className="section-label" style={{ color: ACCENT }}>What we do</p>
           <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
             Everything your business needs to build, manage and grow its digital presence.
           </ScrollReveal>
         </div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-14 flex flex-wrap justify-center gap-5">
           {services.map((s) => (
             <div
               key={s.n}
-              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-7 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05]"
+              className="group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-7 text-center transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)]"
             >
               <div
                 className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-0 blur-2xl transition duration-500 group-hover:opacity-30"
                 style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
               />
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-center">
                 <span
                   className="flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-extrabold"
                   style={{ background: `${NAVY}33`, color: "#ffb1a4" }}
                 >
                   {s.n}
                 </span>
-                <span className="h-px flex-1 mx-4 bg-gradient-to-r from-white/10 to-transparent" />
               </div>
               <h3 className="mt-6 text-lg font-bold tracking-tight">{s.title}</h3>
               <p className="mt-2.5 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
@@ -561,20 +568,20 @@ export default function Home() {
           <SideRays rayColor1="#ff8a7a" rayColor2="#8fa3e8" origin="top-right" opacity={0.9} />
         </div>
         <div className="relative mx-auto max-w-6xl px-6 py-28">
-          <p className="section-label" style={{ color: ACCENT }}>Why us</p>
-          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
-            Why RB Social Branding?
-          </ScrollReveal>
-          <div className="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="section-label" style={{ color: ACCENT }}>Why us</p>
+            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+              Why RB Social Branding?
+            </ScrollReveal>
+          </div>
+          <div className="mt-14 flex flex-wrap justify-center gap-5">
             {whys.map((w, i) => (
               <div
                 key={w.title}
-                className={`rounded-3xl border border-white/10 bg-white/[0.03] p-7 transition duration-300 hover:-translate-y-1 hover:border-white/20 ${
-                  i === 0 ? "md:col-span-2 lg:col-span-1" : ""
-                }`}
+                className="w-full rounded-3xl border border-white/10 bg-white/[0.03] p-7 text-center transition duration-300 hover:-translate-y-1 hover:border-white/20 md:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)]"
               >
                 <span
-                  className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-extrabold text-[#13203b]"
+                  className="mx-auto flex h-9 w-9 items-center justify-center rounded-full text-sm font-extrabold text-[#13203b]"
                   style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
                 >
                   {i + 1}
@@ -678,53 +685,14 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {PORTFOLIO.map((p, i) => (
-            <a
-              key={p.industry}
-              href={p.reels[0]}
-              target="_blank"
-              rel="noreferrer"
-              className="group relative block aspect-[9/16] max-h-[420px] overflow-hidden rounded-3xl border border-white/10 transition duration-300 hover:-translate-y-1.5 hover:border-white/25 hover:shadow-[0_24px_60px_-24px_rgba(0,0,0,0.8)]"
-            >
-              {/* reel thumbnail — swap `thumb` for the real cover later */}
-              <img
-                src={p.thumb}
-                alt={`${p.industry} work`}
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
-              />
-              {/* brand tint + readable scrims */}
-              <div
-                className="absolute inset-0 mix-blend-multiply transition duration-500 group-hover:opacity-60"
-                style={{ background: `linear-gradient(160deg, ${NAVY}55, ${ACCENT}30 90%)` }}
-              />
-              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-              <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/50 to-transparent" />
-              <div className="pointer-events-none absolute inset-0 -translate-x-[110%] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent transition duration-700 ease-out group-hover:translate-x-[110%]" />
-              {/* reel badge */}
-              <span className="absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#f4ebe0] backdrop-blur">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3 w-3" aria-hidden>
-                  <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><path d="M17.5 6.5h.01" />
-                </svg>
-                Reel
-              </span>
-              {/* play icon */}
-              <span className="absolute left-1/2 top-1/2 flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/35 text-[#f4ebe0] backdrop-blur transition duration-300 group-hover:scale-110 group-hover:bg-[#ff6a5a]/85 group-hover:text-[#13203b] group-hover:border-transparent">
-                <svg viewBox="0 0 24 24" fill="currentColor" className="ml-0.5 h-5 w-5" aria-hidden>
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </span>
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-5">
-                <div>
-                  <p className="text-base font-bold tracking-tight text-[#f4ebe0]">{p.industry}</p>
-                  <p className="mt-0.5 text-[11px] font-semibold uppercase tracking-wider text-[#f4ebe0]/50">
-                    Watch on Instagram ↗
-                  </p>
-                </div>
-              </div>
-            </a>
-          ))}
+        <div className="mt-14">
+          <WorkCarousel
+            items={PORTFOLIO.map((p) => ({
+              industry: p.industry,
+              thumb: p.thumb,
+              href: p.reels[0],
+            }))}
+          />
         </div>
         </div>
       </section>
@@ -846,6 +814,27 @@ export default function Home() {
                 <p className="mt-3 text-sm font-bold uppercase tracking-[0.2em] text-muted">
                   Social media audience
                 </p>
+                {/* platform icons — Instagram · Facebook · WhatsApp */}
+                <div className="mt-5 flex items-center justify-center gap-3">
+                  {/* Instagram */}
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0]">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-[18px] w-[18px]" aria-label="Instagram">
+                      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><path d="M17.4 6.6h.01" strokeLinecap="round" strokeWidth="2.6" />
+                    </svg>
+                  </span>
+                  {/* Facebook */}
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0]">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]" aria-label="Facebook">
+                      <path d="M13.5 21.9v-7.6h2.55l.38-2.96H13.5V9.45c0-.86.24-1.44 1.47-1.44h1.57V5.37a20.9 20.9 0 0 0-2.29-.12c-2.27 0-3.82 1.38-3.82 3.93v2.16H7.87v2.96h2.56v7.6a12 12 0 0 0 3.07 0Z" />
+                    </svg>
+                  </span>
+                  {/* WhatsApp */}
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0]">
+                    <svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]" aria-label="WhatsApp">
+                      <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07a8.2 8.2 0 0 1-2.4-1.49 9 9 0 0 1-1.66-2.07c-.17-.3-.02-.46.13-.6.14-.15.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.61-.92-2.2-.24-.59-.49-.5-.67-.52h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.89.12.57-.09 1.76-.72 2-1.42.25-.7.25-1.3.18-1.42-.08-.13-.28-.2-.57-.35ZM12.05 21.79h-.01a9.77 9.77 0 0 1-5-1.37l-.35-.21-3.7.97.99-3.61-.23-.37a9.77 9.77 0 1 1 8.3 4.6Zm0-21.55a11.8 11.8 0 0 0-10.05 18.1L.24 24l5.79-1.52A11.77 11.77 0 0 0 12.05.24 11.8 11.8 0 0 0 12.05.24Z" />
+                    </svg>
+                  </span>
+                </div>
                 <div className="mx-auto mt-7 h-px w-24 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 <p className="mt-6 text-sm font-medium leading-relaxed text-muted">
                   Reach your customers through Roshan Bharat&apos;s newspaper readership

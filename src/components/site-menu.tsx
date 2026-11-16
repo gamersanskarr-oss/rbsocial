@@ -118,8 +118,8 @@ export function SiteMenu({ links, whatsapp }: SiteMenuProps) {
             rel="noreferrer"
             className="mt-3 flex items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold text-[#13203b] shadow-lg transition duration-200 hover:opacity-90 active:scale-[0.98]"
             style={{
-              background: "linear-gradient(135deg, #ff6a5a, #d94836)",
-              boxShadow: "0 12px 32px -12px rgba(255,106,90,0.5)",
+              background: "linear-gradient(135deg, #f4ebe0, #dfd2bf)",
+              boxShadow: "0 12px 32px -12px rgba(244,235,224,0.35)",
             }}
           >
             <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>

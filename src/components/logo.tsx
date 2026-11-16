@@ -16,7 +16,7 @@ export function Logo({
       width={size}
       height={size}
       priority
-      className={`shrink-0 bg-elevated object-contain ring-1 ring-line ${rounded} ${className}`}
+      className={`shrink-0 bg-white object-contain p-1 ring-1 ring-black/10 ${rounded} ${className}`}
     />
   );
 }

@@ -139,6 +139,22 @@ body {
   color: #13203b;
 }
 
+/* Continuous horizontal marquee — track holds two copies of the list,
+   -50% shift loops it seamlessly. */
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.marquee-track {
+  animation: marquee-x 36s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+}
+
 /* Per-section blue gradient washes — transparent at top/bottom edges so
    sections blend into each other instead of ending in hard lines. */
 .theme-site > section,
