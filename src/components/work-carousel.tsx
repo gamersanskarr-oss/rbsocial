@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 type WorkItem = {
   industry: string;
@@ -10,6 +10,7 @@ type WorkItem = {
 
 export function WorkCarousel({ items }: { items: WorkItem[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const pausedRef = useRef(false);
 
   const scrollBy = (dir: number) => {
     const track = trackRef.current;
@@ -17,8 +18,33 @@ export function WorkCarousel({ items }: { items: WorkItem[] }) {
     track.scrollBy({ left: dir * track.clientWidth * 0.8, behavior: "smooth" });
   };
 
+  // auto-slide every 3s — pauses on hover/touch, loops back at the end
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
+    const step = () => {
+      const card = track.firstElementChild as HTMLElement | null;
+      if (!card) return;
+      const distance = card.offsetWidth + 20; // card width + gap
+      const atEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 24;
+      track.scrollTo({ left: atEnd ? 0 : track.scrollLeft + distance, behavior: "smooth" });
+    };
+
+    const id = setInterval(() => {
+      if (!pausedRef.current && !document.hidden) step();
+    }, 3000);
+    return () => clearInterval(id);
+  }, [items]);
+
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onPointerEnter={() => (pausedRef.current = true)}
+      onPointerLeave={() => (pausedRef.current = false)}
+      onTouchStart={() => (pausedRef.current = true)}
+    >
       {/* scroll-snap strip */}
       <div
         ref={trackRef}

@@ -29,48 +29,62 @@ const MAPS_URL =
     "Roshan Bharat Office, Patrakar Colony, Near RK Girls College, Madanganj, Kishangarh, Rajasthan, India"
   );
 
-/* Client logos — replace the names with <img> tiles when the real
-   logos (15–20) arrive. */
-const CLIENT_LOGOS = [
-  "Client 01", "Client 02", "Client 03", "Client 04", "Client 05", "Client 06",
-  "Client 07", "Client 08", "Client 09", "Client 10", "Client 11", "Client 12",
-  "Client 13", "Client 14", "Client 15", "Client 16", "Client 17", "Client 18",
+/* Client logos — add more entries as new logos arrive. */
+/* Client logos — `keepColor` skips the white-silhouette filter (for logos
+   that already sit on a dark background). */
+const CLIENT_LOGOS: { name: string; src: string; keepColor?: boolean }[] = [
+  { name: "Rathi Auto", src: "/clients/rathi-auto.png" },
+  { name: "Ashoka Kishangarh", src: "/clients/ashoka-new-logo.png" },
+  { name: "HHH Medical", src: "/clients/hhh-medical.png" },
+  { name: "Amit Automobiles", src: "/clients/amit-automobiles-kishangarh.png" },
+  { name: "GNH", src: "/clients/gnh-logo.png" },
+  { name: "Aaradhya Restaurant", src: "/clients/img-20251002-wa0016-jpg.png" },
+  { name: "Jain Fertility Hospital", src: "/clients/jain-fertility.png" },
+  { name: "VSD Misthi", src: "/clients/logo.png" },
+  { name: "Sun Shine Marble", src: "/clients/logo-normal.png" },
+  { name: "Saint Stephen School", src: "/clients/logo-png.png" },
+  { name: "Meraki", src: "/clients/meraki-logo.png" },
+  { name: "Presidency", src: "/clients/presidency-logo-png-1.png" },
+  { name: "Ranka Group", src: "/clients/ranka-jpg.png" },
+  { name: "Sanskriti School", src: "/clients/sts-only.png" },
+  { name: "Subham Hospital", src: "/clients/subham-hospital-logo.png" },
+  { name: "Surajmal", src: "/clients/surajmal-transparent-logo.png" },
+  { name: "Breton", src: "/clients/890037-c-adbanao-1.png" },
+  { name: "Bhagwan Chashma Ghar", src: "/clients/bhagwan-chashma.png", keepColor: true },
 ];
 
 /* Portfolio — drop the real Instagram Reel URLs into `reels` for each
    industry and swap `thumb` for the real reel covers. */
 const PORTFOLIO: { industry: string; thumb: string; reels: string[] }[] = [
-  { industry: "Education", thumb: UNSPLASH("photo-1503676260728-1c00da094a0b"), reels: [SOCIAL.instagram] },
-  { industry: "Healthcare", thumb: UNSPLASH("photo-1576091160399-112ba8d25d1d"), reels: [SOCIAL.instagram] },
-  { industry: "Marble & Stone", thumb: UNSPLASH("photo-1615729947596-a598e5de0ab3"), reels: [SOCIAL.instagram] },
-  { industry: "Construction", thumb: UNSPLASH("photo-1541888946425-d81bb19240f5"), reels: [SOCIAL.instagram] },
-  { industry: "Solar & Energy", thumb: UNSPLASH("photo-1509391366360-2e959784a276"), reels: [SOCIAL.instagram] },
-  { industry: "Manufacturing", thumb: UNSPLASH("photo-1581091226825-a6a2a5aee158"), reels: [SOCIAL.instagram] },
-  { industry: "Automobiles", thumb: UNSPLASH("photo-1494976388531-d1058494cdd8"), reels: [SOCIAL.instagram] },
+  { industry: "Education", thumb: "/reels/education.jpg", reels: ["https://www.instagram.com/reel/DbNCK8Zy_VZ/"] },
+  { industry: "Healthcare", thumb: "/reels/healthcare.jpg", reels: ["https://www.instagram.com/reel/DbZrZH0N2If/"] },
+  { industry: "Marble & Stone", thumb: "/reels/marble-stone.jpg", reels: ["https://www.instagram.com/reel/Dd6CH0TT8yB/"] },
+  { industry: "Construction", thumb: "/reels/construction.jpg", reels: ["https://www.instagram.com/reel/DcK8IX-Tiuu/"] },
+  { industry: "Solar & Energy", thumb: "/reels/solar-energy.jpg", reels: ["https://www.instagram.com/reel/DeV_OhayqiS/"] },
+  { industry: "Manufacturing", thumb: "/reels/manufacturing.jpg", reels: ["https://www.instagram.com/reel/Dd_GticNPX2/"] },
+  { industry: "Automobiles", thumb: "/reels/automobiles.jpg", reels: ["https://www.instagram.com/reel/DeUDA6_Pxxs/"] },
   { industry: "Retail & Lifestyle", thumb: UNSPLASH("photo-1441986300917-64674bd600d8"), reels: [SOCIAL.instagram] },
   { industry: "More Industries", thumb: UNSPLASH("photo-1557804506-669a67965ba0"), reels: [SOCIAL.instagram] },
 ];
 
-/* Testimonials — one featured video + three supporting. Drop in the
-   video URLs (Instagram/YouTube/drive) and client names/logos. */
-const TESTIMONIALS = [
-  { name: "Client name", business: "Business · featured", url: SOCIAL.instagram },
-  { name: "Client name", business: "Business", url: SOCIAL.instagram },
-  { name: "Client name", business: "Business", url: SOCIAL.instagram },
-  { name: "Client name", business: "Business", url: SOCIAL.instagram },
+/* Testimonials — real reels; thumbs live in public/testimonials/. */
+const TESTIMONIALS: { name: string; business: string; url: string; thumb: string }[] = [
+  { name: "Sumit & Amit Jain", business: "Amit Automobiles · featured", url: "https://www.instagram.com/reel/DamaO7lvbwC/", thumb: "/testimonials/amit-automobiles.jpg" },
+  { name: "Isha Jain", business: "Ranka Ceramics & Stonex", url: "https://www.instagram.com/reel/DYXFiMnvZdn/", thumb: "/testimonials/ranka-ceramics.jpg" },
+  { name: "AP Sharma", business: "Presidency School, Ajmer", url: "https://www.instagram.com/reel/DYyk105sIXZ/", thumb: "/testimonials/presidency-school.jpg" },
+  { name: "Dr. Pahun & Dr. Twinkle Garg", business: "Shubham Hospital", url: "https://www.instagram.com/reel/DZKVtr0M9On/", thumb: "/testimonials/shubham-hospital.jpg" },
 ];
 
-/* Showcase carousel — dummy Unsplash frames for now; swap `src` for real
-   campaign/work stills when assets arrive. */
+/* Showcase carousel — real design work from public/showcase/. */
 const SHOWCASE_ITEMS = [
-  { src: UNSPLASH("photo-1737071371043-761e02b1ef95"), title: "Campaign Studio", subtitle: "Creative direction", alt: "Studio campaign visual" },
-  { src: UNSPLASH("photo-1693645325828-62cd35c8da8f"), title: "Brand Shoots", subtitle: "Professional production", alt: "Brand shoot on white backdrop" },
-  { src: UNSPLASH("photo-1739056238917-d89cd05c48d5"), title: "Product Films", subtitle: "Reels & video edits", alt: "Product film still" },
-  { src: UNSPLASH("photo-1747191092806-c7da11881986"), title: "Portraits", subtitle: "Photography", alt: "Profile portrait study" },
-  { src: UNSPLASH("photo-1605034313761-73ea4a0cfbf3"), title: "Retail Campaigns", subtitle: "E-commerce content", alt: "Product campaign still" },
-  { src: UNSPLASH("photo-1495462911434-be47104d70fa"), title: "Fashion Edits", subtitle: "Editorial styling", alt: "Editorial fashion still" },
-  { src: UNSPLASH("photo-1786835568925-20cd20007ed0"), title: "Design Systems", subtitle: "Graphic design", alt: "Abstract design composition" },
-  { src: UNSPLASH("photo-1770062422885-2dfcbe8fb65b"), title: "Behind the Scenes", subtitle: "On-ground coverage", alt: "On-set production still" },
+  { src: "/showcase/jk-super-cement.png", title: "JK Super Cement", subtitle: "Brand creative", alt: "JK Super Cement poster design" },
+  { src: "/showcase/little-minds.png", title: "Little Minds", subtitle: "Education campaign", alt: "Little Minds, Big Possibilities poster" },
+  { src: "/showcase/marble-name-14.png", title: "Marble Campaign", subtitle: "Product creative", alt: "Marble brand poster design" },
+  { src: "/showcase/marble-name-16.png", title: "Marble Campaign", subtitle: "Product creative", alt: "Marble brand poster design" },
+  { src: "/showcase/meraki-a2.png", title: "Meraki", subtitle: "Social creative", alt: "Meraki social media post design" },
+  { src: "/showcase/sans-a1.png", title: "Sanskriti", subtitle: "School campaign", alt: "Sanskriti school poster design" },
+  { src: "/showcase/poster-3.png", title: "Poster Design", subtitle: "Print & digital", alt: "Agency poster design" },
+  { src: "/showcase/1-8.png", title: "Creative Series", subtitle: "Design work", alt: "Creative poster design" },
 ];
 
 /* ── Content ──────────────────────────────────────────────────────── */
@@ -504,14 +518,24 @@ export default function Home() {
               A look at the businesses and brands we&apos;ve had the opportunity to work with.
             </p>
           </div>
-          {/* Swap these tiles for real <img> logos when they arrive. */}
-          <div className="mt-12 grid grid-cols-3 gap-4 sm:grid-cols-4 md:grid-cols-6">
-            {CLIENT_LOGOS.map((name) => (
+          <div className="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-6 sm:gap-x-12">
+            {CLIENT_LOGOS.map((logo) => (
               <div
-                key={name}
-                className="flex h-20 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] transition duration-300 hover:border-white/25 hover:bg-white/[0.06]"
+                key={logo.name}
+                className="group flex h-20 w-36 items-center justify-center transition duration-300 hover:-translate-y-1 sm:h-24 sm:w-44"
+                title={logo.name}
               >
-                <span className="text-xs font-bold uppercase tracking-wider text-faint">{name}</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={logo.src}
+                  alt={logo.name}
+                  className={
+                    "max-h-full max-w-full object-contain transition duration-300 " +
+                    (logo.keepColor
+                      ? "opacity-90 group-hover:opacity-100"
+                      : "opacity-80 grayscale invert-[75%] group-hover:opacity-100 group-hover:invert-0 group-hover:grayscale-0")
+                  }
+                />
               </div>
             ))}
           </div>
@@ -554,7 +578,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══ 05 · Why RB Social Branding ══════════════════════════════ */}
+      {/* ══ 05 · Our work ════════════════════════════════════════════ */}
+      <section id="work" className="relative scroll-mt-24 overflow-hidden">
+        {/* blue backdrop — radial glows over a deep blue gradient */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: [
+              `radial-gradient(900px 500px at 85% 8%, #2a4a9e52, transparent 62%)`,
+              `radial-gradient(800px 520px at 8% 92%, #2a4a9e42, transparent 64%)`,
+              `linear-gradient(168deg, #1b2c55 0%, #101c3d 48%, #0a1124 100%)`,
+            ].join(", "),
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, black 16%, black 84%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 16%, black 84%, transparent 100%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-6xl px-6 py-28">
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="max-w-2xl">
+            <p className="section-label" style={{ color: ACCENT }}>Our work</p>
+            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+              Different industries. Different stories.
+            </ScrollReveal>
+          </div>
+          <p className="max-w-sm text-sm font-medium text-muted">
+            A glimpse of the content and creative work we&apos;ve produced — tap a reel
+            to watch it on Instagram.
+          </p>
+        </div>
+
+        <div className="mt-14">
+          <WorkCarousel
+            items={PORTFOLIO.map((p) => ({
+              industry: p.industry,
+              thumb: p.thumb,
+              href: p.reels[0],
+            }))}
+          />
+        </div>
+        </div>
+      </section>
+
+      {/* ══ 06 · Why RB Social Branding ══════════════════════════════ */}
       <section id="why" className="relative overflow-hidden">
         <div
           className="pointer-events-none absolute left-1/2 top-1/2 hidden h-[36rem] w-[52rem] -translate-x-1/2 -translate-y-1/2 opacity-60 blur-2xl lg:block"
@@ -607,24 +675,35 @@ export default function Home() {
             communication to keep every marketing activity aligned with the brand.
           </p>
         </div>
-        <div className="mt-14 space-y-4">
-          {steps.map((s) => (
-            <div
-              key={s.n}
-              className="flex gap-5 rounded-3xl border border-white/10 bg-white/[0.02] p-6 transition duration-300 hover:border-white/20 hover:bg-white/[0.04]"
-            >
-              <span
-                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-extrabold text-[#13203b]"
-                style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
-              >
-                {s.n}
-              </span>
-              <div>
-                <h3 className="text-base font-bold tracking-tight">{s.title}</h3>
-                <p className="mt-1 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
+        {/* process flow — connecting line + alternating step cards */}
+        <div className="relative mt-16">
+          {/* the flow line */}
+          <div
+            aria-hidden
+            className="absolute left-5 top-0 h-full w-px bg-gradient-to-b from-[#ff6a5a] via-white/25 to-transparent lg:left-1/2"
+          />
+          <div className="space-y-8 lg:space-y-0">
+            {steps.map((s, i) => (
+              <div key={s.n} className="relative lg:grid lg:grid-cols-2 lg:gap-20 lg:py-7">
+                {/* numbered node on the line */}
+                <span
+                  className="absolute left-5 top-1/2 z-10 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl text-sm font-extrabold text-[#13203b] shadow-[0_10px_30px_-8px_rgba(255,106,90,0.6)] lg:left-1/2"
+                  style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
+                >
+                  {s.n}
+                </span>
+                {/* step card — alternates sides on desktop */}
+                <div
+                  className={`ml-14 rounded-3xl border border-white/10 bg-white/[0.02] p-6 transition duration-300 hover:border-white/20 hover:bg-white/[0.05] lg:ml-0 ${
+                    i % 2 === 1 ? "lg:col-start-1 lg:text-right" : "lg:col-start-2"
+                  }`}
+                >
+                  <h3 className="text-base font-bold tracking-tight">{s.title}</h3>
+                  <p className="mt-1.5 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         </div>
       </section>
@@ -653,50 +732,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══ 08 · Our work ════════════════════════════════════════════ */}
-      <section id="work" className="relative scroll-mt-24 overflow-hidden">
-        {/* blue backdrop — radial glows over a deep blue gradient */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0"
-          style={{
-            background: [
-              `radial-gradient(900px 500px at 85% 8%, #2a4a9e52, transparent 62%)`,
-              `radial-gradient(800px 520px at 8% 92%, #2a4a9e42, transparent 64%)`,
-              `linear-gradient(168deg, #1b2c55 0%, #101c3d 48%, #0a1124 100%)`,
-            ].join(", "),
-            maskImage:
-              "linear-gradient(to bottom, transparent 0%, black 16%, black 84%, transparent 100%)",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, transparent 0%, black 16%, black 84%, transparent 100%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-6xl px-6 py-28">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-2xl">
-            <p className="section-label" style={{ color: ACCENT }}>Our work</p>
-            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
-              Different industries. Different stories.
-            </ScrollReveal>
-          </div>
-          <p className="max-w-sm text-sm font-medium text-muted">
-            A glimpse of the content and creative work we&apos;ve produced — tap a reel
-            to watch it on Instagram.
-          </p>
-        </div>
-
-        <div className="mt-14">
-          <WorkCarousel
-            items={PORTFOLIO.map((p) => ({
-              industry: p.industry,
-              thumb: p.thumb,
-              href: p.reels[0],
-            }))}
-          />
-        </div>
-        </div>
-      </section>
-
       {/* ══ 09 · Testimonials ════════════════════════════════════════ */}
       <section id="testimonials" className="relative">
         <div className="mx-auto max-w-6xl px-6 py-28">
@@ -712,24 +747,30 @@ export default function Home() {
 
           {/* Featured + 3 supporting — replace the card bodies with the
               real video embeds/links when they arrive. */}
-          <div className="mt-14 grid gap-5 lg:grid-cols-3">
+          <div className="mt-14 grid grid-cols-2 gap-5 lg:grid-cols-4">
             {TESTIMONIALS.map((t, i) => (
               <a
                 key={i}
                 href={t.url}
                 target="_blank"
                 rel="noreferrer"
-                className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] transition duration-300 hover:-translate-y-1 hover:border-white/25 ${
-                  i === 0 ? "aspect-video lg:col-span-2 lg:row-span-1" : "aspect-video"
+                className={`group relative aspect-[9/16] overflow-hidden rounded-3xl border bg-white/[0.03] transition duration-300 hover:-translate-y-1 hover:border-white/25 ${
+                  i === 0 ? "border-[#ff6a5a]/50 ring-1 ring-[#ff6a5a]/30" : "border-white/10"
                 }`}
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={t.thumb}
+                  alt={`${t.name} testimonial`}
+                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                />
                 <div
-                  className="absolute inset-0 transition duration-500 group-hover:scale-[1.03]"
+                  className="absolute inset-0"
                   style={{
                     background:
                       i === 0
-                        ? `linear-gradient(140deg, ${ACCENT}66, #0d1526 65%)`
-                        : `linear-gradient(140deg, ${NAVY}88, #0d1526 70%)`,
+                        ? `linear-gradient(140deg, ${ACCENT}33, #0d1526cc 75%)`
+                        : `linear-gradient(180deg, transparent 30%, #0d1526dd 85%)`,
                   }}
                 />
                 <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/30 text-[#f4ebe0] backdrop-blur transition duration-300 group-hover:scale-110">
@@ -745,8 +786,8 @@ export default function Home() {
                     {t.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
                   </span>
                   <div>
-                    <p className="text-sm font-bold text-[#13203b]">{t.name}</p>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#f4ebe0]/50">
+                    <p className="text-sm font-bold text-[#f4ebe0]">{t.name}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#f4ebe0]/60">
                       {t.business}
                     </p>
                   </div>
@@ -817,23 +858,23 @@ export default function Home() {
                 {/* platform icons — Instagram · Facebook · WhatsApp */}
                 <div className="mt-5 flex items-center justify-center gap-3">
                   {/* Instagram */}
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0]">
+                  <a href="https://www.instagram.com/roshan.bharat__/" target="_blank" rel="noopener noreferrer" aria-label="Roshan Bharat on Instagram" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0] transition hover:border-[#ff6a5a]/60 hover:bg-white/[0.12] hover:text-white">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-[18px] w-[18px]" aria-label="Instagram">
                       <rect x="2.5" y="2.5" width="19" height="19" rx="5.5" /><circle cx="12" cy="12" r="4.2" /><path d="M17.4 6.6h.01" strokeLinecap="round" strokeWidth="2.6" />
                     </svg>
-                  </span>
+                  </a>
                   {/* Facebook */}
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0]">
+                  <a href="https://www.facebook.com/share/1K3h1Z2uAi/" target="_blank" rel="noopener noreferrer" aria-label="Roshan Bharat on Facebook" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0] transition hover:border-[#ff6a5a]/60 hover:bg-white/[0.12] hover:text-white">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]" aria-label="Facebook">
                       <path d="M13.5 21.9v-7.6h2.55l.38-2.96H13.5V9.45c0-.86.24-1.44 1.47-1.44h1.57V5.37a20.9 20.9 0 0 0-2.29-.12c-2.27 0-3.82 1.38-3.82 3.93v2.16H7.87v2.96h2.56v7.6a12 12 0 0 0 3.07 0Z" />
                     </svg>
-                  </span>
+                  </a>
                   {/* WhatsApp */}
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0]">
+                  <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0] transition hover:border-[#ff6a5a]/60 hover:bg-white/[0.12] hover:text-white">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]" aria-label="WhatsApp">
                       <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07a8.2 8.2 0 0 1-2.4-1.49 9 9 0 0 1-1.66-2.07c-.17-.3-.02-.46.13-.6.14-.15.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.61-.92-2.2-.24-.59-.49-.5-.67-.52h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.89.12.57-.09 1.76-.72 2-1.42.25-.7.25-1.3.18-1.42-.08-.13-.28-.2-.57-.35ZM12.05 21.79h-.01a9.77 9.77 0 0 1-5-1.37l-.35-.21-3.7.97.99-3.61-.23-.37a9.77 9.77 0 1 1 8.3 4.6Zm0-21.55a11.8 11.8 0 0 0-10.05 18.1L.24 24l5.79-1.52A11.77 11.77 0 0 0 12.05.24 11.8 11.8 0 0 0 12.05.24Z" />
                     </svg>
-                  </span>
+                  </a>
                 </div>
                 <div className="mx-auto mt-7 h-px w-24 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
                 <p className="mt-6 text-sm font-medium leading-relaxed text-muted">
