@@ -30,27 +30,31 @@ const MAPS_URL =
   );
 
 /* Client logos — add more entries as new logos arrive. */
-/* Client logos — `keepColor` skips the white-silhouette filter (for logos
-   that already sit on a dark background). */
-const CLIENT_LOGOS: { name: string; src: string; keepColor?: boolean }[] = [
-  { name: "Rathi Auto", src: "/clients/rathi-auto.png" },
-  { name: "Ashoka Kishangarh", src: "/clients/ashoka-new-logo.png" },
-  { name: "HHH Medical", src: "/clients/hhh-medical.png" },
-  { name: "Amit Automobiles", src: "/clients/amit-automobiles-kishangarh.png" },
-  { name: "GNH", src: "/clients/gnh-logo.png" },
-  { name: "Aaradhya Restaurant", src: "/clients/img-20251002-wa0016-jpg.png" },
-  { name: "Jain Fertility Hospital", src: "/clients/jain-fertility.png" },
-  { name: "VSD Misthi", src: "/clients/logo.png" },
-  { name: "Sun Shine Marble", src: "/clients/logo-normal.png" },
-  { name: "Saint Stephen School", src: "/clients/logo-png.png" },
-  { name: "Meraki", src: "/clients/meraki-logo.png" },
-  { name: "Presidency", src: "/clients/presidency-logo-png-1.png" },
-  { name: "Ranka Group", src: "/clients/ranka-jpg.png" },
-  { name: "Sanskriti School", src: "/clients/sts-only.png" },
-  { name: "Subham Hospital", src: "/clients/subham-hospital-logo.png" },
-  { name: "Surajmal", src: "/clients/surajmal-transparent-logo.png" },
-  { name: "Breton", src: "/clients/890037-c-adbanao-1.png" },
-  { name: "Bhagwan Chashma Ghar", src: "/clients/bhagwan-chashma.png", keepColor: true },
+/* Client logos — `active` clients get a warmer, brighter glow in the
+   marquee; `invert` renders black logos white. Shankar Piles and
+   Maheshwari Steel are missing logo files. */
+const CLIENT_LOGOS: { name: string; src: string; invert?: boolean; active?: boolean }[] = [
+  { name: "Ninety Degree", src: "/clients/ninety-degree-logo.png" },
+  { name: "Sunshine Marble", src: "/clients/logo-normal.png", active: true },
+  { name: "Ranka Ceramics", src: "/clients/ranka-jpg.png", active: true },
+  { name: "Breton", src: "/clients/890037-c-adbanao-1.png", active: true },
+  { name: "Stonescera", src: "/clients/img-7354.png", active: true },
+  { name: "Sanskriti", src: "/clients/sts-only.png", active: true },
+  { name: "Saint Stephen", src: "/clients/logo-png.png", active: true },
+  { name: "Presidency", src: "/clients/presidency-logo-png-1.png", active: true },
+  { name: "Ganga Narayan Hospital", src: "/clients/gnh-logo.png", active: true },
+  { name: "Shubham Hospital", src: "/clients/subham-hospital-logo.png", active: true },
+  { name: "Jain Fertility", src: "/clients/jain-fertility.png", active: true },
+  { name: "Shankar Piles", src: "/clients/shankar-piles.png" },
+  { name: "Helpline Hospital", src: "/clients/hhh-medical.png" },
+  { name: "Surajmal Tansukhrai", src: "/clients/surajmal-transparent-logo.png", active: true },
+  { name: "VSD Solar", src: "/clients/logo.png", active: true },
+  { name: "Meraki", src: "/clients/meraki-logo.png", active: true },
+  { name: "Amit Automobiles", src: "/clients/amit-automobiles-kishangarh.png", active: true },
+  { name: "Aaradhya Restaurant", src: "/clients/img-20251002-wa0016-jpg.png", active: true },
+  { name: "Bhagwan Chashma Ghar", src: "/clients/bhagwan-chashma.png" },
+  { name: "Ashoka Chashma Ghar", src: "/clients/ashoka-new-logo.png" },
+  { name: "Rathi Auto", src: "/clients/rathi-auto.png", invert: true },
 ];
 
 /* Portfolio — drop the real Instagram Reel URLs into `reels` for each
@@ -508,7 +512,7 @@ export default function Home() {
 
       {/* ══ 03 · Brands we've worked with ════════════════════════════ */}
       <section id="brands" className="relative">
-        <div className="mx-auto max-w-6xl px-6 py-24">
+        <div className="mx-auto max-w-6xl px-6 pt-24">
           <div className="max-w-2xl">
             <p className="section-label" style={{ color: ACCENT }}>Brands we&apos;ve worked with</p>
             <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
@@ -518,28 +522,60 @@ export default function Home() {
               A look at the businesses and brands we&apos;ve had the opportunity to work with.
             </p>
           </div>
-          <div className="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-6 sm:gap-x-12">
-            {CLIENT_LOGOS.map((logo) => (
-              <div
-                key={logo.name}
-                className="group flex h-20 w-36 items-center justify-center transition duration-300 hover:-translate-y-1 sm:h-24 sm:w-44"
-                title={logo.name}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={logo.src}
-                  alt={logo.name}
-                  className={
-                    "max-h-full max-w-full object-contain transition duration-300 " +
-                    (logo.keepColor
-                      ? "opacity-90 group-hover:opacity-100"
-                      : "opacity-80 grayscale invert-[75%] group-hover:opacity-100 group-hover:invert-0 group-hover:grayscale-0")
-                  }
-                />
-              </div>
-            ))}
+        </div>
+        {/* full-width glowing band — logos slide through on real colours
+            with a soft halo so dark marks stay readable */}
+        <div className="relative mt-14 overflow-hidden border-y border-white/10 py-10 sm:py-12">
+          {/* band glow — blue wash + coral centre */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              background: [
+                `radial-gradient(560px 220px at 50% 50%, ${ACCENT}18, transparent 70%)`,
+                `radial-gradient(420px 200px at 15% 50%, #2a4a9e30, transparent 70%)`,
+                `radial-gradient(420px 200px at 85% 50%, #2a4a9e30, transparent 70%)`,
+                `linear-gradient(180deg, #f4ebe018, #f4ebe00d 50%, #f4ebe018)`,
+                `linear-gradient(180deg, #16213f, #1d2c52 50%, #16213f)`,
+              ].join(", "),
+            }}
+          />
+          <div
+            className="relative overflow-hidden"
+            style={{
+              maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+              WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+            }}
+          >
+            <div className="marquee-track flex w-max items-center">
+              {[0, 1].map((copy) => (
+                <div key={copy} aria-hidden={copy === 1} className="flex items-center gap-20 px-10 sm:gap-28 sm:px-14">
+                  {CLIENT_LOGOS.map((logo) => (
+                    <span
+                      key={logo.name}
+                      className="flex h-20 w-44 shrink-0 items-center justify-center sm:h-24 sm:w-60"
+                      title={logo.name}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={logo.src}
+                        alt={logo.name}
+                        className={
+                      "max-h-full max-w-full object-contain transition duration-300 hover:scale-110 " +
+                      (logo.active
+                        ? "drop-shadow-[0_0_22px_rgba(255,150,120,0.65)] hover:drop-shadow-[0_0_34px_rgba(255,150,120,0.9)]"
+                        : "drop-shadow-[0_0_18px_rgba(255,255,255,0.3)] hover:drop-shadow-[0_0_26px_rgba(255,255,255,0.55)]") +
+                      (logo.invert ? " invert" : "")
+                    }
+                      />
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
+        <div className="pb-24" />
       </section>
 
       {/* ══ 04 · What we do ══════════════════════════════════════════ */}
