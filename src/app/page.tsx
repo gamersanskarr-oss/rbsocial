@@ -13,13 +13,10 @@ const NAVY = "#2a3a6e"; // glow/gradient tone on the #13203b canvas
 /* ── Fill these in when assets arrive ─────────────────────────────── */
 
 const SOCIAL = {
-  instagram: "https://instagram.com/rbsocialbranding",
-  facebook: "https://facebook.com/rbsocialbranding",
+  instagram: "https://www.instagram.com/rb.social.branding",
+  facebook: "https://www.facebook.com/share/1CewsxKjQB/",
   linkedin: "https://linkedin.com/company/rbsocialbranding",
 };
-
-const UNSPLASH = (id: string) =>
-  `https://images.unsplash.com/${id}?w=1200&q=80&auto=format&fit=max`;
 
 const WHATSAPP = "https://wa.me/919216426456";
 const EMAIL = "rbsocialbranding@gmail.com";
@@ -34,27 +31,28 @@ const MAPS_URL =
    marquee; `invert` renders black logos white. Shankar Piles and
    Maheshwari Steel are missing logo files. */
 const CLIENT_LOGOS: { name: string; src: string; invert?: boolean; active?: boolean }[] = [
-  { name: "Ninety Degree", src: "/clients/ninety-degree-logo.png" },
-  { name: "Sunshine Marble", src: "/clients/logo-normal.png", active: true },
-  { name: "Ranka Ceramics", src: "/clients/ranka-jpg.png", active: true },
-  { name: "Breton", src: "/clients/890037-c-adbanao-1.png", active: true },
-  { name: "Stonescera", src: "/clients/img-7354.png", active: true },
-  { name: "Sanskriti", src: "/clients/sts-only.png", active: true },
-  { name: "Saint Stephen", src: "/clients/logo-png.png", active: true },
-  { name: "Presidency", src: "/clients/presidency-logo-png-1.png", active: true },
-  { name: "Ganga Narayan Hospital", src: "/clients/gnh-logo.png", active: true },
-  { name: "Shubham Hospital", src: "/clients/subham-hospital-logo.png", active: true },
-  { name: "Jain Fertility", src: "/clients/jain-fertility.png", active: true },
-  { name: "Shankar Piles", src: "/clients/shankar-piles.png" },
-  { name: "Helpline Hospital", src: "/clients/hhh-medical.png" },
-  { name: "Surajmal Tansukhrai", src: "/clients/surajmal-transparent-logo.png", active: true },
-  { name: "VSD Solar", src: "/clients/logo.png", active: true },
-  { name: "Meraki", src: "/clients/meraki-logo.png", active: true },
-  { name: "Amit Automobiles", src: "/clients/amit-automobiles-kishangarh.png", active: true },
-  { name: "Aaradhya Restaurant", src: "/clients/img-20251002-wa0016-jpg.png", active: true },
-  { name: "Bhagwan Chashma Ghar", src: "/clients/bhagwan-chashma.png" },
-  { name: "Ashoka Chashma Ghar", src: "/clients/ashoka-new-logo.png" },
-  { name: "Rathi Auto", src: "/clients/rathi-auto.png", invert: true },
+  { name: "Sunshine Marble", src: "/clients/logo-normal.webp", active: true },
+  { name: "Ranka Ceramics", src: "/clients/ranka-jpg.webp", active: true },
+  { name: "Breton", src: "/clients/890037-c-adbanao-1.webp", active: true },
+  { name: "Stonescera", src: "/clients/img-7354.webp", active: true },
+  { name: "Stone", src: "/clients/stone-mark.webp" },
+  { name: "Sanskriti", src: "/clients/sts-only.webp", active: true },
+  { name: "Saint Stephen", src: "/clients/logo-png.webp", active: true },
+  { name: "Presidency", src: "/clients/presidency-logo-png-1.webp", active: true },
+  { name: "Ganga Narayan Hospital", src: "/clients/gnh-logo.webp", active: true },
+  { name: "Shubham Hospital", src: "/clients/subham-hospital-logo.webp", active: true },
+  { name: "Jain Fertility", src: "/clients/jain-fertility.webp", active: true },
+  { name: "Shankar Piles", src: "/clients/shankar-piles.webp" },
+  { name: "Helpline Hospital", src: "/clients/hhh-medical.webp" },
+  { name: "Surajmal Tansukhrai", src: "/clients/surajmal-transparent-logo.webp", active: true },
+  { name: "Maheshwari Steel", src: "/clients/maheshwari-steel.webp", active: true },
+  { name: "VSD Solar", src: "/clients/logo.webp", active: true },
+  { name: "Meraki", src: "/clients/meraki-logo.webp", active: true },
+  { name: "Amit Automobiles", src: "/clients/amit-automobiles-kishangarh.webp", active: true },
+  { name: "Aaradhya Restaurant", src: "/clients/img-20251002-wa0016-jpg.webp", active: true },
+  { name: "Bhagwan Chashma Ghar", src: "/clients/bhagwan-chashma.webp" },
+  { name: "Ashoka Chashma Ghar", src: "/clients/ashoka-new-logo.webp" },
+  { name: "Rathi Auto", src: "/clients/rathi-auto.webp", invert: true },
 ];
 
 /* Portfolio — drop the real Instagram Reel URLs into `reels` for each
@@ -67,8 +65,8 @@ const PORTFOLIO: { industry: string; thumb: string; reels: string[] }[] = [
   { industry: "Solar & Energy", thumb: "/reels/solar-energy.jpg", reels: ["https://www.instagram.com/reel/DeV_OhayqiS/"] },
   { industry: "Manufacturing", thumb: "/reels/manufacturing.jpg", reels: ["https://www.instagram.com/reel/Dd_GticNPX2/"] },
   { industry: "Automobiles", thumb: "/reels/automobiles.jpg", reels: ["https://www.instagram.com/reel/DeUDA6_Pxxs/"] },
-  { industry: "Retail & Lifestyle", thumb: UNSPLASH("photo-1441986300917-64674bd600d8"), reels: [SOCIAL.instagram] },
-  { industry: "More Industries", thumb: UNSPLASH("photo-1557804506-669a67965ba0"), reels: [SOCIAL.instagram] },
+  { industry: "Restaurant", thumb: "/reels/restaurant.jpg", reels: ["https://www.instagram.com/reel/DUz9RlvE-cf/"] },
+  { industry: "More Industries", thumb: "/reels/more-industries.jpg", reels: ["https://www.instagram.com/reel/DVP6QDZCHNi/"] },
 ];
 
 /* Testimonials — real reels; thumbs live in public/testimonials/. */
@@ -81,14 +79,14 @@ const TESTIMONIALS: { name: string; business: string; url: string; thumb: string
 
 /* Showcase carousel — real design work from public/showcase/. */
 const SHOWCASE_ITEMS = [
-  { src: "/showcase/jk-super-cement.png", title: "JK Super Cement", subtitle: "Brand creative", alt: "JK Super Cement poster design" },
-  { src: "/showcase/little-minds.png", title: "Little Minds", subtitle: "Education campaign", alt: "Little Minds, Big Possibilities poster" },
-  { src: "/showcase/marble-name-14.png", title: "Marble Campaign", subtitle: "Product creative", alt: "Marble brand poster design" },
-  { src: "/showcase/marble-name-16.png", title: "Marble Campaign", subtitle: "Product creative", alt: "Marble brand poster design" },
-  { src: "/showcase/meraki-a2.png", title: "Meraki", subtitle: "Social creative", alt: "Meraki social media post design" },
-  { src: "/showcase/sans-a1.png", title: "Sanskriti", subtitle: "School campaign", alt: "Sanskriti school poster design" },
-  { src: "/showcase/poster-3.png", title: "Poster Design", subtitle: "Print & digital", alt: "Agency poster design" },
-  { src: "/showcase/1-8.png", title: "Creative Series", subtitle: "Design work", alt: "Creative poster design" },
+  { src: "/showcase/jk-super-cement.webp", title: "JK Super Cement", subtitle: "Brand creative", alt: "JK Super Cement poster design" },
+  { src: "/showcase/little-minds.webp", title: "Little Minds", subtitle: "Education campaign", alt: "Little Minds, Big Possibilities poster" },
+  { src: "/showcase/marble-name-14.webp", title: "Marble Campaign", subtitle: "Product creative", alt: "Marble brand poster design" },
+  { src: "/showcase/marble-designs.webp", title: "Marble Designs", subtitle: "Product creative", alt: "Incredible marble designs poster" },
+  { src: "/showcase/meraki-a2.webp", title: "Meraki", subtitle: "Social creative", alt: "Meraki social media post design" },
+  { src: "/showcase/sans-a1.webp", title: "Sanskriti", subtitle: "School campaign", alt: "Sanskriti school poster design" },
+  { src: "/showcase/poster-3.webp", title: "Poster Design", subtitle: "Print & digital", alt: "Agency poster design" },
+  { src: "/showcase/1-8.webp", title: "Creative Series", subtitle: "Design work", alt: "Creative poster design" },
 ];
 
 /* ── Content ──────────────────────────────────────────────────────── */
@@ -352,7 +350,7 @@ export default function Home() {
               style={{ background: `linear-gradient(135deg, ${CREAM}, #dfd2bf)`, boxShadow: `0 12px 32px -12px ${CREAM}55` }}
             >
               <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
-                <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07a8.2 8.2 0 0 1-2.4-1.49 9 9 0 0 1-1.66-2.07c-.17-.3-.02-.46.13-.6.14-.15.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.61-.92-2.2-.24-.59-.49-.5-.67-.52h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.89.12.57-.09 1.76-.72 2-1.42.25-.7.25-1.3.18-1.42-.08-.13-.28-.2-.57-.35ZM12.05 21.79h-.01a9.77 9.77 0 0 1-5-1.37l-.35-.21-3.7.97.99-3.61-.23-.37a9.77 9.77 0 1 1 8.3 4.6Zm0-21.55a11.8 11.8 0 0 0-10.05 18.1L.24 24l5.79-1.52A11.77 11.77 0 0 0 12.05 24 11.8 11.8 0 0 0 12.05.24Z" />
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.617-2.39-1.47-.883-.784-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
               </svg>
               Let&apos;s Talk — WhatsApp
             </a>
@@ -408,7 +406,7 @@ export default function Home() {
         <div className="relative z-10 h-[max(6.5rem,18vw)] overflow-hidden bg-transparent md:h-[6.5vw]">
             <div className="absolute left-1/2 top-1/2 w-[160%] -translate-x-1/2 -translate-y-1/2 scale-125 md:w-full md:scale-100">
               <TextLoop
-                text={marqueeWords.join("  ✦  ")}
+                text={marqueeWords.join("  ✦  ") + "  ✦  "}
                 shape="wave"
                 curviness={18}
                 speed={42}
@@ -483,33 +481,6 @@ export default function Home() {
       </section>
 
       {/* ══ Showcase — WebGL carousel ════════════════════════════════ */}
-      <section id="showcase" className="relative overflow-hidden py-20">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <p className="section-label" style={{ color: ACCENT }}>Showcase</p>
-          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
-            Work in motion.
-          </ScrollReveal>
-          <p className="mx-auto mt-4 max-w-lg text-sm font-medium text-muted">
-            A moving glimpse of the kind of content we plan, shoot and ship — drag,
-            scroll or click a frame to zoom in.
-          </p>
-        </div>
-        <div className="mt-12 h-[52vh] min-h-[340px] w-full sm:h-[68vh] sm:min-h-[420px]">
-          <FlexCarousel
-            items={SHOWCASE_ITEMS}
-            preset="liquid"
-            intro="rise"
-            cardHeight={0.62}
-            gap={16}
-            fit="portrait"
-            captions
-            autoplay
-            interval={4.5}
-            captureWheel={false}
-          />
-        </div>
-      </section>
-
       {/* ══ 03 · Brands we've worked with ════════════════════════════ */}
       <section id="brands" className="relative">
         <div className="mx-auto max-w-6xl px-6 pt-24">
@@ -523,43 +494,29 @@ export default function Home() {
             </p>
           </div>
         </div>
-        {/* full-width glowing band — logos slide through on real colours
-            with a soft halo so dark marks stay readable */}
-        <div className="relative mt-14 overflow-hidden border-y border-white/10 py-10 sm:py-12">
-          {/* band glow — blue wash + coral centre */}
+        {/* logos float on the page canvas — just an ambient glow behind them */}
+        <div className="relative mt-14 py-4">
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-0"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[140%] w-[70rem] max-w-none -translate-x-1/2 -translate-y-1/2"
             style={{
-              background: [
-                `radial-gradient(560px 220px at 50% 50%, ${ACCENT}18, transparent 70%)`,
-                `radial-gradient(420px 200px at 15% 50%, #2a4a9e30, transparent 70%)`,
-                `radial-gradient(420px 200px at 85% 50%, #2a4a9e30, transparent 70%)`,
-                `linear-gradient(180deg, #f4ebe018, #f4ebe00d 50%, #f4ebe018)`,
-                `linear-gradient(180deg, #16213f, #1d2c52 50%, #16213f)`,
-              ].join(", "),
+              background: `radial-gradient(closest-side, ${NAVY}55, transparent 70%)`,
             }}
           />
-          <div
-            className="relative overflow-hidden"
-            style={{
-              maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-              WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-            }}
-          >
-            <div className="marquee-track flex w-max items-center">
-              {[0, 1].map((copy) => (
-                <div key={copy} aria-hidden={copy === 1} className="flex items-center gap-20 px-10 sm:gap-28 sm:px-14">
-                  {CLIENT_LOGOS.map((logo) => (
+          <div className="relative">
+            <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-4 gap-y-8 px-6 sm:gap-x-6 sm:gap-y-10">
+              {CLIENT_LOGOS.map((logo) => (
+                <div key={logo.name} className="flex w-[30%] items-center justify-center sm:w-[22%] lg:w-[13.5%]">
                     <span
-                      key={logo.name}
-                      className="flex h-20 w-44 shrink-0 items-center justify-center sm:h-24 sm:w-60"
+                      className="flex h-20 w-full items-center justify-center sm:h-24"
                       title={logo.name}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={logo.src}
                         alt={logo.name}
+                        loading="lazy"
+                        decoding="async"
                         className={
                       "max-h-full max-w-full object-contain transition duration-300 hover:scale-110 " +
                       (logo.active
@@ -569,49 +526,12 @@ export default function Home() {
                     }
                       />
                     </span>
-                  ))}
                 </div>
               ))}
             </div>
           </div>
         </div>
         <div className="pb-24" />
-      </section>
-
-      {/* ══ 04 · What we do ══════════════════════════════════════════ */}
-      <section id="services" className="relative scroll-mt-24">
-        <div className="mx-auto max-w-6xl px-6 py-28">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="section-label" style={{ color: ACCENT }}>What we do</p>
-          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
-            Everything your business needs to build, manage and grow its digital presence.
-          </ScrollReveal>
-        </div>
-
-        <div className="mt-14 flex flex-wrap justify-center gap-5">
-          {services.map((s) => (
-            <div
-              key={s.n}
-              className="group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-7 text-center transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)]"
-            >
-              <div
-                className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-0 blur-2xl transition duration-500 group-hover:opacity-30"
-                style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
-              />
-              <div className="flex items-center justify-center">
-                <span
-                  className="flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-extrabold"
-                  style={{ background: `${NAVY}33`, color: "#ffb1a4" }}
-                >
-                  {s.n}
-                </span>
-              </div>
-              <h3 className="mt-6 text-lg font-bold tracking-tight">{s.title}</h3>
-              <p className="mt-2.5 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
-            </div>
-          ))}
-        </div>
-        </div>
       </section>
 
       {/* ══ 05 · Our work ════════════════════════════════════════════ */}
@@ -654,6 +574,135 @@ export default function Home() {
               href: p.reels[0],
             }))}
           />
+        </div>
+        </div>
+      </section>
+
+      <section id="showcase" className="relative overflow-hidden py-20">
+        <div className="mx-auto max-w-6xl px-6 text-center">
+          <p className="section-label" style={{ color: ACCENT }}>Showcase</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Work in motion.
+          </ScrollReveal>
+          <p className="mx-auto mt-4 max-w-lg text-sm font-medium text-muted">
+            A moving glimpse of the kind of content we plan, shoot and ship — drag,
+            scroll or click a frame to zoom in.
+          </p>
+        </div>
+        <div className="mt-12 h-[52vh] min-h-[340px] w-full sm:h-[68vh] sm:min-h-[420px]">
+          <FlexCarousel
+            items={SHOWCASE_ITEMS}
+            preset="liquid"
+            intro="rise"
+            cardHeight={0.62}
+            gap={16}
+            fit="portrait"
+            captions
+            autoplay
+            interval={4.5}
+            captureWheel={false}
+          />
+        </div>
+      </section>
+
+      {/* ══ 09 · Testimonials ════════════════════════════════════════ */}
+      <section id="testimonials" className="relative">
+        <div className="mx-auto max-w-6xl px-6 py-28">
+          <div className="max-w-2xl">
+            <p className="section-label" style={{ color: ACCENT }}>Testimonials</p>
+            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+              What our clients say.
+            </ScrollReveal>
+            <p className="mt-4 text-sm font-medium text-muted">
+              Real experiences. Genuine partnerships.
+            </p>
+          </div>
+
+          {/* Featured + 3 supporting — replace the card bodies with the
+              real video embeds/links when they arrive. */}
+          <div className="mt-14 grid grid-cols-2 gap-5 lg:grid-cols-4">
+            {TESTIMONIALS.map((t, i) => (
+              <a
+                key={i}
+                href={t.url}
+                target="_blank"
+                rel="noreferrer"
+                className={`group relative aspect-[9/16] overflow-hidden rounded-3xl border bg-white/[0.03] transition duration-300 hover:-translate-y-1 hover:border-white/25 ${
+                  i === 0 ? "border-[#ff6a5a]/50 ring-1 ring-[#ff6a5a]/30" : "border-white/10"
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={t.thumb}
+                  alt={`${t.name} testimonial`}
+                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      i === 0
+                        ? `linear-gradient(140deg, ${ACCENT}33, #0d1526cc 75%)`
+                        : `linear-gradient(180deg, transparent 30%, #0d1526dd 85%)`,
+                  }}
+                />
+                <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/30 text-[#f4ebe0] backdrop-blur transition duration-300 group-hover:scale-110">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="ml-1 h-6 w-6" aria-hidden>
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </span>
+                <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-5">
+                  <span
+                    className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-extrabold text-[#13203b]"
+                    style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
+                  >
+                    {t.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
+                  </span>
+                  <div>
+                    <p className="text-sm font-bold text-[#f4ebe0]">{t.name}</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-[#f4ebe0]/60">
+                      {t.business}
+                    </p>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ 04 · What we do ══════════════════════════════════════════ */}
+      <section id="services" className="relative scroll-mt-24">
+        <div className="mx-auto max-w-6xl px-6 py-28">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="section-label" style={{ color: ACCENT }}>What we do</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Everything your business needs to build, manage and grow its digital presence.
+          </ScrollReveal>
+        </div>
+
+        <div className="mt-14 flex flex-wrap justify-center gap-5">
+          {services.map((s) => (
+            <div
+              key={s.n}
+              className="group relative w-full overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-7 text-center transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)]"
+            >
+              <div
+                className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full opacity-0 blur-2xl transition duration-500 group-hover:opacity-30"
+                style={{ background: `radial-gradient(closest-side, ${ACCENT}, transparent)` }}
+              />
+              <div className="flex items-center justify-center">
+                <span
+                  className="flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-extrabold"
+                  style={{ background: `${NAVY}33`, color: "#ffb1a4" }}
+                >
+                  {s.n}
+                </span>
+              </div>
+              <h3 className="mt-6 text-lg font-bold tracking-tight">{s.title}</h3>
+              <p className="mt-2.5 text-sm font-medium leading-relaxed text-muted">{s.desc}</p>
+            </div>
+          ))}
         </div>
         </div>
       </section>
@@ -768,72 +817,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══ 09 · Testimonials ════════════════════════════════════════ */}
-      <section id="testimonials" className="relative">
-        <div className="mx-auto max-w-6xl px-6 py-28">
-          <div className="max-w-2xl">
-            <p className="section-label" style={{ color: ACCENT }}>Testimonials</p>
-            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
-              What our clients say.
-            </ScrollReveal>
-            <p className="mt-4 text-sm font-medium text-muted">
-              Real experiences. Genuine partnerships.
-            </p>
-          </div>
-
-          {/* Featured + 3 supporting — replace the card bodies with the
-              real video embeds/links when they arrive. */}
-          <div className="mt-14 grid grid-cols-2 gap-5 lg:grid-cols-4">
-            {TESTIMONIALS.map((t, i) => (
-              <a
-                key={i}
-                href={t.url}
-                target="_blank"
-                rel="noreferrer"
-                className={`group relative aspect-[9/16] overflow-hidden rounded-3xl border bg-white/[0.03] transition duration-300 hover:-translate-y-1 hover:border-white/25 ${
-                  i === 0 ? "border-[#ff6a5a]/50 ring-1 ring-[#ff6a5a]/30" : "border-white/10"
-                }`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={t.thumb}
-                  alt={`${t.name} testimonial`}
-                  className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      i === 0
-                        ? `linear-gradient(140deg, ${ACCENT}33, #0d1526cc 75%)`
-                        : `linear-gradient(180deg, transparent 30%, #0d1526dd 85%)`,
-                  }}
-                />
-                <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/30 text-[#f4ebe0] backdrop-blur transition duration-300 group-hover:scale-110">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="ml-1 h-6 w-6" aria-hidden>
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </span>
-                <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 p-5">
-                  <span
-                    className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-extrabold text-[#13203b]"
-                    style={{ background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT_DARK})` }}
-                  >
-                    {t.name.split(" ").map((w) => w[0]).slice(0, 2).join("")}
-                  </span>
-                  <div>
-                    <p className="text-sm font-bold text-[#f4ebe0]">{t.name}</p>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-[#f4ebe0]/60">
-                      {t.business}
-                    </p>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ══ 10 · Roshan Bharat ═══════════════════════════════════════ */}
       <section id="roshan-bharat" className="relative overflow-hidden scroll-mt-24">
         <div
@@ -908,7 +891,7 @@ export default function Home() {
                   {/* WhatsApp */}
                   <a href={WHATSAPP} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp" className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-[#f4ebe0] transition hover:border-[#ff6a5a]/60 hover:bg-white/[0.12] hover:text-white">
                     <svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]" aria-label="WhatsApp">
-                      <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07a8.2 8.2 0 0 1-2.4-1.49 9 9 0 0 1-1.66-2.07c-.17-.3-.02-.46.13-.6.14-.15.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.38-.02-.53-.08-.15-.67-1.61-.92-2.2-.24-.59-.49-.5-.67-.52h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.5 0 1.47 1.07 2.9 1.22 3.1.15.2 2.1 3.2 5.1 4.49.71.3 1.27.49 1.7.63.72.23 1.37.2 1.89.12.57-.09 1.76-.72 2-1.42.25-.7.25-1.3.18-1.42-.08-.13-.28-.2-.57-.35ZM12.05 21.79h-.01a9.77 9.77 0 0 1-5-1.37l-.35-.21-3.7.97.99-3.61-.23-.37a9.77 9.77 0 1 1 8.3 4.6Zm0-21.55a11.8 11.8 0 0 0-10.05 18.1L.24 24l5.79-1.52A11.77 11.77 0 0 0 12.05.24 11.8 11.8 0 0 0 12.05.24Z" />
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.617-2.39-1.47-.883-.784-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413ZM12.05 21.79h-.01a9.77 9.77 0 0 1-5-1.37l-.35-.21-3.7.97.99-3.61-.23-.37a9.77 9.77 0 1 1 8.3 4.6Zm0-21.55a11.8 11.8 0 0 0-10.05 18.1L.24 24l5.79-1.52A11.77 11.77 0 0 0 12.05.24 11.8 11.8 0 0 0 12.05.24Z" />
                     </svg>
                   </a>
                 </div>
@@ -964,7 +947,7 @@ export default function Home() {
                 <div>
                   <p className="text-base font-bold tracking-tight">RB Social Branding</p>
                   <p className="text-xs font-medium text-faint">
-                    A division of Roshan Bharat
+                    Powered By Roshan Bharat
                   </p>
                 </div>
               </div>
@@ -1046,7 +1029,6 @@ export default function Home() {
                   {l.label}
                 </a>
               ))}
-              <Link href="/login" className="transition hover:text-ink">Team Login</Link>
             </div>
           </div>
         </div>

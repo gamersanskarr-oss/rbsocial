@@ -13,7 +13,7 @@ export default function ApplySection({ jobs }: { jobs: { id: string; title: stri
   const toggle = (id: string) =>
     setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
-  if (jobs.length === 0) return null;
+  const roles = [...jobs, { id: "GENERAL", title: "General Application" }];
 
   if (state.success) {
     return (
@@ -45,7 +45,7 @@ export default function ApplySection({ jobs }: { jobs: { id: string; title: stri
 
         {/* role picker */}
         <div className="flex flex-wrap gap-2">
-          {jobs.map((j) => {
+          {roles.map((j) => {
             const on = picked.includes(j.id);
             return (
               <label key={j.id} className="cursor-pointer">

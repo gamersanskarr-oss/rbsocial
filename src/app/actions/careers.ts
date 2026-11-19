@@ -34,11 +34,14 @@ export async function applyForJob(_prev: ApplyState, formData: FormData): Promis
     return { error: "Please enter a valid email address." };
   }
 
-  // Resolve roles — only live jobs count
+  // Resolve roles — only live jobs count; "GENERAL" is an open application.
   const jobsSnap = await adminDb.collection("jobs").get();
   const picked = jobsSnap.docs
     .filter((d) => jobIds.includes(d.id) && d.data().active === true)
     .map((d) => ({ id: d.id, title: String(d.data().title ?? "Role") }));
+  if (jobIds.includes("GENERAL")) {
+    picked.push({ id: "GENERAL", title: "General Application" });
+  }
   if (picked.length === 0) {
     return { error: "Those roles are no longer accepting applications." };
   }
