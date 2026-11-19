@@ -94,10 +94,22 @@ function AssignModal({
 
         <form action={formAction} className="space-y-4">
           {state.error && <p className="banner-error">{state.error}</p>}
-          <input type="hidden" name="deadline" value={`${date.y}-${pad(date.m + 1)}-${pad(date.d)}T18:00`} />
           <div>
             <label className="mb-1 block text-sm font-medium text-muted">Topic</label>
             <input name="topic" required className="input" placeholder="Diwali sale Instagram post" />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-muted">Deadline date &amp; time</label>
+            <input
+              name="deadline"
+              type="datetime-local"
+              required
+              className="input"
+              defaultValue={`${date.y}-${pad(date.m + 1)}-${pad(date.d)}T18:00`}
+            />
+            <p className="mt-1 text-[11px] font-medium text-faint">
+              {dateLabel} is prefilled — change the date or time as needed.
+            </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -189,9 +201,6 @@ function AssignModal({
             </label>
             <input name="referenceLink" type="url" className="input" placeholder="https://canva.com/…" />
           </div>
-          <p className="text-xs font-medium text-faint">
-            The deadline will be set to {dateLabel} at 6:00 PM.
-          </p>
           <div className="flex justify-end gap-3 pt-1">
             <button type="button" onClick={onClose} className="btn-secondary">
               Cancel

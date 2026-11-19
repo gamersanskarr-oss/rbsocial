@@ -75,6 +75,14 @@ export default async function TaskDetailPage({
               <p className="mt-0.5 text-sm font-medium text-muted">
                 Client: <span className="font-semibold text-ink">{task.client.name}</span>
               </p>
+              {defaultAmount != null && (
+                <p className="mt-1 text-xs font-semibold text-ok">
+                  💰 Pays ₹{defaultAmount.toLocaleString("en-IN")}
+                  {task.payAmount == null && fresh?.perPostPay != null && task.payAmount !== fresh.perPostPay
+                    ? " (your base rate)"
+                    : ""}
+                </p>
+              )}
             </div>
           </div>
           <StatusBadge status={task.status} />

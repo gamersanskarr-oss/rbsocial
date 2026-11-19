@@ -23,6 +23,7 @@ export default async function ManagerLayout({ children }: { children: React.Reac
       label: "More",
       items: [
         { href: "/manager/team", label: "My Team", icon: "employees" as const },
+        { href: "/manager/reports", label: "Reports", icon: "reports" as const },
       ],
     },
   ];

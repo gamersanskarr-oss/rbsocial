@@ -113,8 +113,8 @@ export default async function TaskDetailView({
                 >
                   {task.submissionLink} ↗
                 </a>
-                {/* Pending price quote — approve or decline right here */}
-                {task.payStatus === "PENDING" && (
+                {/* Pending price quote — approve or decline right here (admin only) */}
+                {isAdmin && task.payStatus === "PENDING" && (
                   <div className="mt-3 rounded-2xl border border-warn-line bg-warn-soft/60 p-4">
                     <p className="text-sm font-bold text-warn">
                       💰 ₹{(task.payAmount ?? 0).toLocaleString("en-IN")} quoted by{" "}

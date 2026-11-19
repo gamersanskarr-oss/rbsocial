@@ -26,23 +26,43 @@ export async function addEmployee(_prev: ActionState, formData: FormData): Promi
     return { error: "All fields are required (team must be Design or IT)." };
   }
 
+  if (password.length < 6) {
+    return { error: "Password must be at least 6 characters." };
+  }
+
   let uid: string;
   try {
     const record = await adminAuth.createUser({ email, password, displayName: name });
     uid = record.uid;
-  } catch {
-    return { error: "Could not create login (email may already exist)." };
+  } catch (err) {
+    const code = (err as { code?: string })?.code ?? "";
+    if (code === "auth/email-already-exists")
+      return { error: `${email} already has an account — remove that user first or use a different email.` };
+    if (code === "auth/invalid-email")
+      return { error: "That does not look like a valid email address." };
+    if (code === "auth/weak-password" || code === "auth/invalid-password")
+      return { error: "Password is too weak — use at least 6 characters." };
+    console.error("addEmployee createUser failed:", err);
+    return { error: "Could not create the login — please try again." };
   }
 
-  await adminDb.collection("users").doc(uid).set({
-    name,
-    email,
-    role,
-    team: noTeam ? null : team,
-    missedDeadlines: 0,
-    perPostPay: null,
-    createdAt: FieldValue.serverTimestamp(),
-  });
+  try {
+    await adminDb.collection("users").doc(uid).set({
+      name,
+      email,
+      role,
+      team: noTeam ? null : team,
+      missedDeadlines: 0,
+      perPostPay: null,
+      createdAt: FieldValue.serverTimestamp(),
+    });
+  } catch (err) {
+    // Roll back the Auth user so the email isn't stuck as "already exists"
+    // with no profile to show for it.
+    console.error("addEmployee profile write failed:", err);
+    await adminAuth.deleteUser(uid).catch(() => {});
+    return { error: "Login created but the profile could not be saved — please try again." };
+  }
 
   revalidatePath("/admin/employees");
   const label = role === "MANAGER" ? "Manager" : role === "ACCOUNTANT" ? "Accountant" : "Employee";
@@ -50,7 +70,7 @@ export async function addEmployee(_prev: ActionState, formData: FormData): Promi
 }
 
 export async function addClient(_prev: ActionState, formData: FormData): Promise<ActionState> {
-  await requireAdmin();
+  await requireAdminOrManager();
   const name = String(formData.get("name") ?? "").trim();
   const contact = String(formData.get("contact") ?? "").trim() || null;
   const assignedToIds = formData.getAll("assignedToIds").map(String).filter(Boolean);
@@ -71,15 +91,17 @@ export async function addClient(_prev: ActionState, formData: FormData): Promise
       assignedToIds,
       createdAt: FieldValue.serverTimestamp(),
     });
-  } catch {
-    return { error: "Could not create client." };
+  } catch (err) {
+    console.error("addClient failed:", err);
+    return { error: "Could not create client — please try again." };
   }
   revalidatePath("/admin/clients");
+  revalidatePath("/manager/clients");
   return { success: `Client ${name} added.` };
 }
 
 export async function assignClient(formData: FormData) {
-  await requireAdmin();
+  await requireAdminOrManager();
   const clientId = String(formData.get("clientId") ?? "");
   const assignedToIds = formData.getAll("assignedToIds").map(String).filter(Boolean);
   if (clientId) {
@@ -181,8 +203,9 @@ export async function createTask(_prev: ActionState, formData: FormData): Promis
       completedAt: null,
       createdAt: FieldValue.serverTimestamp(),
     });
-  } catch {
-    return { error: "Could not create task." };
+  } catch (err) {
+    console.error("createTask failed:", err);
+    return { error: "Could not create the task — please try again." };
   }
   revalidatePath("/admin/tasks");
   revalidatePath("/admin/calendar");
@@ -227,8 +250,9 @@ export async function addJob(_prev: ActionState, formData: FormData): Promise<Ac
       active: true,
       createdAt: FieldValue.serverTimestamp(),
     });
-  } catch {
-    return { error: "Could not publish the job." };
+  } catch (err) {
+    console.error("addJob failed:", err);
+    return { error: "Could not publish the job — please try again." };
   }
   revalidatePath("/admin/jobs");
   revalidatePath("/careers");
@@ -259,9 +283,9 @@ export async function deleteJob(formData: FormData) {
   revalidatePath("/careers");
 }
 
-/** Admin + manager: approve (optionally adjust) or decline an employee's pay quote. */
+/** Admin only: approve (optionally adjust) or decline an employee's pay quote. */
 export async function reviewTaskPay(formData: FormData) {
-  await requireAdminOrManager();
+  await requireAdmin();
   const taskId = String(formData.get("taskId") ?? "");
   const mode = String(formData.get("mode") ?? "");
   if (!taskId) return;

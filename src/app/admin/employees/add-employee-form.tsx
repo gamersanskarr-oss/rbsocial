@@ -26,7 +26,14 @@ export default function AddEmployeeForm() {
         </div>
         <div>
           <label className="mb-1 block text-sm text-muted">Temporary password</label>
-          <input name="password" type="text" required className="input" />
+          <input
+            name="password"
+            type="text"
+            required
+            minLength={6}
+            className="input"
+            placeholder="Min. 6 characters"
+          />
         </div>
         <div>
           <label className="mb-1 block text-sm text-muted">Role</label>

@@ -59,8 +59,9 @@ export async function updateClientDetails(
         requirements,
         ...(logoUrl ? { logoUrl } : {}),
       });
-  } catch {
-    return { error: "Could not update client." };
+  } catch (err) {
+    console.error("updateClientDetails failed:", err);
+    return { error: "Could not update the client — please try again." };
   }
   revalidatePath(`/admin/clients/${clientId}`);
   revalidatePath("/admin/clients");

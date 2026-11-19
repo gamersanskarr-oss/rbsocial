@@ -8,6 +8,8 @@ import TaskTypesPanel from "./task-types-panel";
 export default async function TasksView({ basePath }: { basePath: string }) {
   await checkMissedDeadlines();
 
+  const canSeePay = basePath === "/admin"; // quotes & pay stay admin-only
+
   const [tasks, clients, employees, taskTypes] = await Promise.all([
     listTasksWithRefs(),
     listClientOptions(),
@@ -92,7 +94,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
                           👁 review
                         </Link>
                       )}
-                      {t.payStatus === "PENDING" && (
+                      {canSeePay && t.payStatus === "PENDING" && (
                         <Link
                           href={`${basePath}/tasks/${t.id}`}
                           className="ml-1.5 inline-block whitespace-nowrap rounded-full bg-warn-soft px-2 py-0.5 text-[10px] font-bold text-warn ring-1 ring-inset ring-warn-line hover:bg-warn-soft/60"

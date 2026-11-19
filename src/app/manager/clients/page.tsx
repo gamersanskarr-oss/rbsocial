@@ -1,14 +1,15 @@
 import Link from "next/link";
-import { clientAssignees, listClients, taskCountsByClient, userNameMap, safeHref } from "@/lib/data";
+import { clientAssignees, listClients, listDesigners, taskCountsByClient, safeHref } from "@/lib/data";
 import { requireManager } from "@/lib/auth";
 import { PageHeader } from "@/components/ui";
+import AssignSelect from "@/app/admin/clients/assign-select";
 
 export default async function ManagerClientsPage() {
   await requireManager();
-  const [clients, taskCounts, users] = await Promise.all([
+  const [clients, taskCounts, designers] = await Promise.all([
     listClients(),
     taskCountsByClient(),
-    userNameMap(),
+    listDesigners(),
   ]);
 
   return (
@@ -75,10 +76,8 @@ export default async function ManagerClientsPage() {
                     </div>
                   </td>
                   <td className="td font-medium text-ink">{taskCounts.get(c.id) ?? 0}</td>
-                  <td className="td text-muted">
-                    {clientAssignees(c).length
-                      ? clientAssignees(c).map((uid) => users.get(uid) ?? "?").join(", ")
-                      : "Unassigned"}
+                  <td className="td">
+                    <AssignSelect clientId={c.id} currentIds={clientAssignees(c)} designers={designers} />
                   </td>
                   <td className="td text-right">
                     <Link
