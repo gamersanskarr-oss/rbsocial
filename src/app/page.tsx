@@ -483,7 +483,7 @@ export default function Home() {
 
       {/* ══ Showcase — WebGL carousel ════════════════════════════════ */}
       {/* ══ 03 · Brands we've worked with ════════════════════════════ */}
-      <section id="brands" className="relative">
+      <section id="brands" className="relative overflow-hidden">
         <div className="mx-auto max-w-6xl px-6 pt-24">
           <div className="max-w-2xl">
             <p className="section-label" style={{ color: ACCENT }}>Brands we&apos;ve worked with</p>

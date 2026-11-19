@@ -114,6 +114,9 @@
 body {
   background: var(--t-background);
   color: var(--t-foreground);
+  /* clip (not hidden) — kills stray horizontal overflow without creating
+     a scroll container, so mobile never zooms out to a wide document. */
+  overflow-x: clip;
 }
 
 ::selection {
