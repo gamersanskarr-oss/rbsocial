@@ -48,3 +48,8 @@ next-env.d.ts
 public/uploads
 dev-server.log
 *.log
+
+# QA / E2E artifacts
+e2e/.auth/
+test-results/
+e2e-report/

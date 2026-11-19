@@ -17,6 +17,9 @@ export class FakeTimestamp {
   static fromDate(d: Date) {
     return new FakeTimestamp(d);
   }
+  static fromMillis(ms: number) {
+    return new FakeTimestamp(new Date(ms));
+  }
   static now() {
     return new FakeTimestamp(new Date());
   }
@@ -103,13 +106,20 @@ const collection = (name: string): any => ({
 export const fakeDb = {
   collection,
   batch: () => {
-    const ops: { ref: { update: (u: Data) => Promise<void> }; u: Data }[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sets: { ref: any; d: Data }[] = [];
+    const updates: { ref: { update: (u: Data) => Promise<void> }; u: Data }[] = [];
     return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      set(ref: any, d: Data) {
+        sets.push({ ref, d });
+      },
       update(ref: { update: (u: Data) => Promise<void> }, u: Data) {
-        ops.push({ ref, u });
+        updates.push({ ref, u });
       },
       async commit() {
-        for (const { ref, u } of ops) await ref.update(u);
+        for (const { ref, d } of sets) await ref.set(d);
+        for (const { ref, u } of updates) await ref.update(u);
       },
     };
   },
