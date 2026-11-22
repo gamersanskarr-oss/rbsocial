@@ -453,10 +453,9 @@ export function TaskCalendar({
                         </svg>
                       </span>
                     )}
-                    <div
-                      className="max-h-[64px] space-y-1 overflow-y-auto pr-0.5 [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-line [&::-webkit-scrollbar-track]:bg-transparent"
-                      onClick={(e) => e.stopPropagation()}
-                    >
+                    {/* No max-height/scroll: the cell (and its row) grows with
+                        the task count, and hover tooltips stay unclipped. */}
+                    <div className="space-y-1" onClick={(e) => e.stopPropagation()}>
                       {dayTasks.map((t) => {
                         // Optimistic status after a drag: past deadline = missed, future = pending
                         const movedDate = moved[t.id];
