@@ -9,6 +9,7 @@ import {
   safeHref,
 } from "@/lib/data";
 import { StatusBadge, TeamBadge } from "@/components/ui";
+import { DueTime } from "@/components/due-time";
 import { reviewTaskPay } from "@/app/actions/admin";
 import { ToastForm } from "@/components/toast";
 import EditTaskForm from "./edit-task-form";
@@ -65,8 +66,7 @@ export default async function TaskDetailView({
                 task.client.name
               )}
               {" · "}
-              due {task.deadline.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}{" "}
-              {task.deadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+              due <DueTime iso={task.deadline.toISOString()} />
               {overdue && <span className="font-bold text-bad"> — overdue</span>}
             </p>
           </div>
@@ -98,12 +98,7 @@ export default async function TaskDetailView({
               <>
                 <p className="text-sm font-medium text-muted">
                   Submitted{" "}
-                  {task.completedAt?.toLocaleDateString("en-IN", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}{" "}
-                  {task.completedAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {task.completedAt && <DueTime iso={task.completedAt.toISOString()} />}
                 </p>
                 <a
                   href={safeHref(task.submissionLink)}
@@ -195,7 +190,7 @@ export default async function TaskDetailView({
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-ink">{r.message}</p>
                     <p className="mt-0.5 text-xs font-medium text-faint">
-                      {r.createdAt?.toLocaleDateString()}
+                      {r.createdAt && <DueTime iso={r.createdAt.toISOString()} dateOnly />}
                     </p>
                   </div>
                   <span

@@ -98,10 +98,7 @@ export async function submitMissReason(
 }
 
 /** Admin/manager reviews a submission: approve, send back for changes, or reject. */
-export async function reviewTask(
-  _prev: SubmitState,
-  formData: FormData
-): Promise<SubmitState> {
+export async function reviewTaskAction(formData: FormData): Promise<SubmitState> {
   await requireAdminOrManager();
   const taskId = String(formData.get("taskId") ?? "");
   const decision = String(formData.get("decision") ?? "");
@@ -141,6 +138,7 @@ export async function reviewTask(
     "/admin/tasks", "/manager/tasks", "/dashboard",
     `/admin/tasks/${taskId}`, `/manager/tasks/${taskId}`, `/dashboard/tasks/${taskId}`,
     "/admin/calendar", "/manager/calendar", "/dashboard/calendar", "/admin",
+    "/admin/payouts",
   ]) revalidatePath(p);
 
   return {
@@ -151,6 +149,14 @@ export async function reviewTask(
           ? "Sent back for changes — the employee can resubmit."
           : "Submission rejected — the employee can resubmit.",
   };
+}
+
+/** useActionState wrapper — the task-detail review form uses this signature. */
+export async function reviewTask(
+  _prev: SubmitState,
+  formData: FormData
+): Promise<SubmitState> {
+  return reviewTaskAction(formData);
 }
 
 /** Full task edit — admin & manager. Pay field is admin-only. */

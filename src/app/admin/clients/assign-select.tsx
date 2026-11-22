@@ -10,11 +10,11 @@ const WIDTH = 192; // w-48
 export default function AssignSelect({
   clientId,
   currentIds,
-  designers,
+  employees,
 }: {
   clientId: string;
   currentIds: string[];
-  designers: { id: string; name: string }[];
+  employees: { id: string; name: string; team?: string | null }[];
 }) {
   const router = useRouter();
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -69,7 +69,9 @@ export default function AssignSelect({
     });
   };
 
-  const names = designers.filter((d) => checked.has(d.id)).map((d) => d.name);
+  const names = employees
+    .filter((e) => checked.has(e.id))
+    .map((e) => (e.team ? `${e.name} (${e.team === "DESIGN" ? "Design" : e.team === "IT" ? "IT" : e.team})` : e.name));
 
   return (
     <div className="relative">
@@ -103,22 +105,27 @@ export default function AssignSelect({
             className="fixed z-50 w-48 space-y-1 rounded-xl border border-line bg-elevated p-2 shadow-lift"
             style={{ top: pos.top, left: pos.left }}
           >
-            {designers.map((d) => (
+            {employees.map((e) => (
               <label
-                key={d.id}
+                key={e.id}
                 className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-ink transition hover:bg-panel"
               >
                 <input
                   type="checkbox"
-                  checked={checked.has(d.id)}
-                  onChange={() => toggleId(d.id)}
+                  checked={checked.has(e.id)}
+                  onChange={() => toggleId(e.id)}
                   className="h-3.5 w-3.5 accent-brand"
                 />
-                {d.name}
+                {e.name}
+                {e.team && (
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-faint">
+                    {e.team === "DESIGN" ? "Design" : e.team === "IT" ? "IT" : e.team}
+                  </span>
+                )}
               </label>
             ))}
-            {designers.length === 0 && (
-              <p className="px-2 py-1.5 text-xs text-faint">No designers yet.</p>
+            {employees.length === 0 && (
+              <p className="px-2 py-1.5 text-xs text-faint">No employees yet.</p>
             )}
             {pending && (
               <p className="px-2 pb-1 text-[11px] font-medium text-faint">Saving…</p>

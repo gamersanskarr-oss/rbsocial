@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listRequestsWithRefs } from "@/lib/data";
 import { PageHeader } from "@/components/ui";
+import { DueTime } from "@/components/due-time";
 import { resolveRequest } from "@/app/actions/requests";
 import { ToastForm } from "@/components/toast";
 
@@ -44,8 +45,7 @@ export default async function RequestsView({ basePath }: { basePath: string }) {
                 </div>
                 <p className="mt-2.5 text-sm font-medium leading-relaxed text-ink">{r.message}</p>
                 <p className="mt-1.5 text-xs font-medium text-faint">
-                  {r.createdAt?.toLocaleDateString()}{" "}
-                  {r.createdAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {r.createdAt && <DueTime iso={r.createdAt.toISOString()} />}
                 </p>
               </div>
               <ToastForm action={resolveRequest} success="Request resolved.">
@@ -72,7 +72,7 @@ export default async function RequestsView({ basePath }: { basePath: string }) {
               </div>
               {r.resolvedAt && (
                 <span className="text-xs font-medium text-faint">
-                  resolved {r.resolvedAt.toLocaleDateString()}
+                  resolved <DueTime iso={r.resolvedAt.toISOString()} dateOnly />
                 </span>
               )}
             </div>

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { clientAssignees, getClient, tasksByClient, userNameMap, safeHref } from "@/lib/data";
 import { requireManager } from "@/lib/auth";
 import { PageHeader, StatusBadge } from "@/components/ui";
+import { DueTime } from "@/components/due-time";
 
 export default async function ManagerClientDetailPage({
   params,
@@ -143,7 +144,7 @@ export default async function ManagerClientDetailPage({
                     </td>
                     <td className="td text-muted">{t.assignedTo.name || "—"}</td>
                     <td className="td whitespace-nowrap text-muted">
-                      {t.deadline.toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                      <DueTime iso={t.deadline.toISOString()} dateOnly />
                     </td>
                     <td className="td"><StatusBadge status={t.status} /></td>
                   </tr>

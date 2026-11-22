@@ -68,7 +68,7 @@ export default async function ClientsPage() {
                   <td className="td text-muted">{c.contact ?? "—"}</td>
                   <td className="td font-medium text-ink">{taskCounts.get(c.id) ?? 0}</td>
                   <td className="td">
-                    <AssignSelect clientId={c.id} currentIds={clientAssignees(c)} designers={designers} />
+                    <AssignSelect clientId={c.id} currentIds={clientAssignees(c)} employees={designers} />
                   </td>
                   <td className="td text-right">
                     <Link href={`/admin/clients/${c.id}`} className="text-sm font-semibold text-muted transition hover:text-ink">

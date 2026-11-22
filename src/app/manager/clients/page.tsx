@@ -1,16 +1,67 @@
-import Link from "next/link";
-import { clientAssignees, listClients, listDesigners, taskCountsByClient, safeHref } from "@/lib/data";
+import {
+  clientAssignees,
+  listClients,
+  listEmployeeOptions,
+  listTaskTypes,
+  listTasksWithRefs,
+  safeHref,
+  type ClientRecord,
+  type TaskWithRefs,
+} from "@/lib/data";
 import { requireManager } from "@/lib/auth";
 import { PageHeader } from "@/components/ui";
-import AssignSelect from "@/app/admin/clients/assign-select";
+import ClientsTable, { type ClientRow } from "@/components/workspace/clients-table";
 
 export default async function ManagerClientsPage() {
   await requireManager();
-  const [clients, taskCounts, designers] = await Promise.all([
+  const [clients, employees, taskTypes, tasks] = await Promise.all([
     listClients(),
-    taskCountsByClient(),
-    listDesigners(),
+    listEmployeeOptions(),
+    listTaskTypes(),
+    listTasksWithRefs(),
   ]);
+
+  // id -> display name: employees first (complete list), tasks fill legacy
+  // assignees who have since left or changed role.
+  const nameById = new Map(employees.map((e) => [e.id, e.name] as const));
+  for (const t of tasks) {
+    if (t.assignedTo.name && !nameById.has(t.assignedToId)) {
+      nameById.set(t.assignedToId, t.assignedTo.name);
+    }
+  }
+
+  const byClient = new Map<string, TaskWithRefs[]>();
+  for (const t of tasks) {
+    const list = byClient.get(t.clientId) ?? [];
+    list.push(t);
+    byClient.set(t.clientId, list);
+  }
+
+  const rows: ClientRow[] = clients.map((c: ClientRecord) => {
+    const ct = byClient.get(c.id) ?? [];
+    const assigneeIds = clientAssignees(c);
+    const assigneeNames = [...new Set(assigneeIds.map((id) => nameById.get(id) ?? "").filter(Boolean))].sort((a, b) =>
+      a.localeCompare(b),
+    );
+    const socials: { label: string; url: string }[] = [];
+    if (c.instagram) socials.push({ label: "IG", url: safeHref(c.instagram) });
+    if (c.facebook) socials.push({ label: "FB", url: safeHref(c.facebook) });
+    if (c.website) socials.push({ label: "Web", url: safeHref(c.website) });
+    return {
+      id: c.id,
+      name: c.name,
+      archived: c.status === "ARCHIVED",
+      contact: c.contact ?? c.phone,
+      socials,
+      assigneeIds,
+      assigneeNames,
+      taskTotal: ct.length,
+      pending: ct.filter((t) => t.status === "PENDING").length,
+      completed: ct.filter((t) => t.status === "COMPLETED").length,
+      missed: ct.filter((t) => t.status === "MISSED").length,
+      types: [...new Set(ct.map((t) => t.type).filter(Boolean) as string[])].sort((a, b) => a.localeCompare(b)),
+    };
+  });
 
   return (
     <div className="space-y-8">
@@ -18,81 +69,7 @@ export default async function ManagerClientsPage() {
         title="Clients"
         subtitle="Every client's creative profile — who's working on what. Billing stays admin-only."
       />
-
-      <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="border-b border-line bg-panel/70">
-              <tr>
-                <th className="th">Client</th>
-                <th className="th">Contact</th>
-                <th className="th">Socials</th>
-                <th className="th">Tasks</th>
-                <th className="th">Designer</th>
-                <th className="th"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {clients.length === 0 && (
-                <tr>
-                  <td className="td py-10 text-center text-faint" colSpan={6}>
-                    No clients yet.
-                  </td>
-                </tr>
-              )}
-              {clients.map((c) => (
-                <tr key={c.id} className="transition hover:bg-panel/60">
-                  <td className="td font-semibold text-ink">
-                    <Link href={`/manager/clients/${c.id}`} className="hover:underline">
-                      {c.name}
-                    </Link>
-                    {c.status === "ARCHIVED" && (
-                      <span className="ml-2 rounded-full bg-panel px-2 py-0.5 text-[11px] font-semibold text-muted ring-1 ring-inset ring-line">
-                        Archived
-                      </span>
-                    )}
-                  </td>
-                  <td className="td text-muted">{c.contact ?? c.phone ?? "—"}</td>
-                  <td className="td">
-                    <div className="flex gap-2 text-xs font-semibold">
-                      {c.instagram && (
-                        <a href={safeHref(c.instagram)} target="_blank" rel="noreferrer" className="link">
-                          IG
-                        </a>
-                      )}
-                      {c.facebook && (
-                        <a href={safeHref(c.facebook)} target="_blank" rel="noreferrer" className="link">
-                          FB
-                        </a>
-                      )}
-                      {c.website && (
-                        <a href={safeHref(c.website)} target="_blank" rel="noreferrer" className="link">
-                          Web
-                        </a>
-                      )}
-                      {!c.instagram && !c.facebook && !c.website && (
-                        <span className="text-faint">—</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="td font-medium text-ink">{taskCounts.get(c.id) ?? 0}</td>
-                  <td className="td">
-                    <AssignSelect clientId={c.id} currentIds={clientAssignees(c)} designers={designers} />
-                  </td>
-                  <td className="td text-right">
-                    <Link
-                      href={`/manager/clients/${c.id}`}
-                      className="text-sm font-semibold text-muted transition hover:text-ink"
-                    >
-                      Details →
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ClientsTable basePath="/manager" rows={rows} employees={employees} taskTypes={taskTypes} />
     </div>
   );
 }

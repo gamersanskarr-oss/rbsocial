@@ -22,7 +22,7 @@ export function DueTime({
     minute: "2-digit",
   });
   return (
-    <span className={className}>
+    <span className={className} suppressHydrationWarning>
       {dateOnly ? date : `${date} · ${time}`}
     </span>
   );

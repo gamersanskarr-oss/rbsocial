@@ -50,7 +50,7 @@ export default function SubmitTaskForm({
             : "No rate set — quote what this task should pay. It counts after approval."}
         </p>
       </div>
-      <button type="submit" disabled={pending} className="btn-primary">
+      <button type="submit" disabled={pending} className="btn-primary w-full text-center">
         {pending ? "Submitting…" : "Submit & Mark Completed"}
       </button>
     </form>

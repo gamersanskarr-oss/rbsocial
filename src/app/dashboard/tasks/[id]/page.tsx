@@ -170,7 +170,7 @@ export default async function TaskDetailPage({
                 </h2>
               </div>
               <p className={`mt-3 text-sm font-medium ${task.lateSubmission ? "text-warn" : "text-ok"}`}>
-                Submitted on {task.completedAt?.toLocaleDateString()}
+                Submitted on {task.completedAt && <DueTime iso={task.completedAt.toISOString()} dateOnly />}
                 {task.lateSubmission && " — after the deadline"}
               </p>
               {task.approval === "APPROVED" ? (
@@ -261,8 +261,7 @@ export default async function TaskDetailPage({
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-ink">{r.message}</p>
                     <p className="mt-0.5 text-xs font-medium text-faint">
-                      {r.createdAt?.toLocaleDateString()}{" "}
-                      {r.createdAt?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      {r.createdAt && <DueTime iso={r.createdAt.toISOString()} />}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">

@@ -16,7 +16,9 @@ import {
   payoutStatus,
 } from "@/lib/deadlines";
 import { setPerPostPay } from "@/app/actions/admin";
+import { reviewTaskAction } from "@/app/actions/tasks";
 import { Card, PageHeader, TeamBadge } from "@/components/ui";
+import { DueTime } from "@/components/due-time";
 import { ToastForm } from "@/components/toast";
 
 const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;
@@ -288,12 +290,13 @@ export default async function PayoutsPage({
                 <th className="th">Client</th>
                 <th className="th">Completed</th>
                 <th className="th">Price</th>
+                <th className="th">Review</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {monthTasks.length === 0 && (
                 <tr>
-                  <td className="td py-10 text-center text-faint" colSpan={5}>
+                  <td className="td py-10 text-center text-faint" colSpan={6}>
                     No completed tasks in {monthLabel}.
                   </td>
                 </tr>
@@ -306,7 +309,12 @@ export default async function PayoutsPage({
                       {empName.get(t.assignedToId) ?? "—"}
                     </td>
                     <td className="td max-w-56">
-                      <p className="truncate font-medium text-ink">{t.topic}</p>
+                      <Link
+                        href={`/admin/tasks/${t.id}`}
+                        className="block truncate font-medium text-ink transition hover:text-brand"
+                      >
+                        {t.topic}
+                      </Link>
                       {t.type && (
                         <p className="text-xs text-faint">
                           {t.type}{t.slideCount ? ` · ${t.slideCount} slides` : ""}
@@ -315,10 +323,11 @@ export default async function PayoutsPage({
                     </td>
                     <td className="td text-muted">{clientName.get(t.clientId) ?? "—"}</td>
                     <td className="td whitespace-nowrap text-muted">
-                      {t.completedAt?.toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                      }) ?? "—"}
+                      {t.completedAt ? (
+                        <DueTime iso={t.completedAt.toISOString()} dateOnly />
+                      ) : (
+                        "—"
+                      )}
                     </td>
                     <td className="td whitespace-nowrap">
                       <span className="font-bold text-ink">{inr(taskPay(t, rate))}</span>
@@ -326,6 +335,24 @@ export default async function PayoutsPage({
                         <span className="ml-1.5 rounded-full bg-warn-soft px-2 py-0.5 text-[10px] font-bold text-warn ring-1 ring-inset ring-warn-line">
                           quoted {inr(t.payAmount ?? 0)} ⏳
                         </span>
+                      )}
+                    </td>
+                    <td className="td whitespace-nowrap">
+                      {t.approval === "PENDING" ? (
+                        <ToastForm action={reviewTaskAction} success="Submission approved." className="inline-flex">
+                          <input type="hidden" name="taskId" value={t.id} />
+                          <input type="hidden" name="decision" value="approve" />
+                          <button
+                            title="Approve this submission"
+                            className="rounded-lg bg-ok-soft px-2.5 py-1.5 text-xs font-bold text-ok ring-1 ring-inset ring-ok-line transition hover:bg-ok-soft/60"
+                          >
+                            Approve ✓
+                          </button>
+                        </ToastForm>
+                      ) : t.approval === "APPROVED" ? (
+                        <span className="text-xs font-bold text-ok">✓ Approved</span>
+                      ) : (
+                        <span className="text-xs text-faint">—</span>
                       )}
                     </td>
                   </tr>

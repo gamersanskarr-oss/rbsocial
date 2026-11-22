@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listClientOptions, listEmployeeOptions, listTasksWithRefs, listTaskTypes, safeHref } from "@/lib/data";
 import { checkMissedDeadlines } from "@/lib/deadlines";
 import { PageHeader, StatusBadge } from "@/components/ui";
+import { DueTime } from "@/components/due-time";
 import CreateTaskForm from "./create-task-form";
 import TaskTypesPanel from "./task-types-panel";
 
@@ -80,8 +81,7 @@ export default async function TasksView({ basePath }: { basePath: string }) {
                     <td className="td font-medium text-ink">{t.client.name}</td>
                     <td className="td text-muted">{t.assignedTo.name}</td>
                     <td className={`td ${overdue ? "font-bold text-bad" : "text-muted"}`}>
-                      {t.deadline.toLocaleDateString()}{" "}
-                      {t.deadline.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      <DueTime iso={t.deadline.toISOString()} />
                     </td>
                     <td className="td">
                       <StatusBadge status={t.status} />

@@ -21,6 +21,7 @@ import {
 } from "@/lib/deadlines";
 import { requireAdmin } from "@/lib/auth";
 import { Card, PageHeader, StatusBadge, TeamBadge } from "@/components/ui";
+import { DueTime } from "@/components/due-time";
 
 const inr = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
@@ -229,7 +230,8 @@ export default async function AdminOverview() {
                     )}
                   </p>
                   <p className="mt-0.5 text-xs font-medium text-muted">
-                    {t.client.name} → {t.assignedTo.name} · due {t.deadline.toLocaleDateString()}
+                    {t.client.name} → {t.assignedTo.name} · due{" "}
+                    <DueTime iso={t.deadline.toISOString()} dateOnly />
                   </p>
                 </div>
                 <StatusBadge status={t.status} />

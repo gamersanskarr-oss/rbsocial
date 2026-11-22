@@ -220,7 +220,10 @@ export function DashboardShell({
               : "font-medium text-muted hover:bg-hover hover:text-ink"
           }`}
         >
-          <Icon name={item.icon} className="h-4 w-4 shrink-0" />
+          <Icon
+            name={item.icon}
+            className={`h-4 w-4 shrink-0 ${item.icon === "calendar" ? "text-white" : ""}`}
+          />
           {item.label}
           {!!item.badge && item.badge > 0 && (
             <span className="ml-auto rounded-full bg-rose-500 px-1.5 py-0.5 text-[10px] font-bold leading-none text-white">

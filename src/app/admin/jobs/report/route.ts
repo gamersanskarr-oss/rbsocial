@@ -6,6 +6,9 @@ const csv = (v: string | number | null | undefined) => {
   return `"${s.replace(/"/g, '""')}"`;
 };
 
+// CSV has no viewer timezone — always print IST (the team's clock).
+const IST = { timeZone: "Asia/Kolkata" };
+
 export async function GET(req: Request) {
   await requireAdmin();
 
@@ -33,7 +36,7 @@ export async function GET(req: Request) {
         csv(a.message),
         csv(
           a.createdAt
-            ? `${a.createdAt.toLocaleDateString("en-IN")} ${a.createdAt.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`
+            ? `${a.createdAt.toLocaleDateString("en-IN", IST)} ${a.createdAt.toLocaleTimeString("en-IN", { ...IST, hour: "2-digit", minute: "2-digit" })}`
             : ""
         ),
         csv(a.status === "NEW" ? "New" : "Reviewed"),
@@ -41,7 +44,7 @@ export async function GET(req: Request) {
     ),
     "",
     [csv("Total applications"), csv(apps.length)].join(","),
-    [csv("Generated"), csv(new Date().toLocaleString("en-IN"))].join(","),
+    [csv("Generated"), csv(new Date().toLocaleString("en-IN", IST))].join(","),
   ];
 
   const file = `applications-${label.replace(/\s+/g, "-").toLowerCase()}-${new Date().toISOString().slice(0, 10)}.csv`;

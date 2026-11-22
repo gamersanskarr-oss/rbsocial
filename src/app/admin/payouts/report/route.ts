@@ -13,9 +13,12 @@ const csv = (v: string | number | null | undefined) => {
   return `"${s.replace(/"/g, '""')}"`;
 };
 
+// CSV has no viewer timezone — always print IST (the team's clock).
+const IST = { timeZone: "Asia/Kolkata" };
+
 const dt = (d: Date | null) =>
   d
-    ? `${d.toLocaleDateString("en-IN")} ${d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`
+    ? `${d.toLocaleDateString("en-IN", IST)} ${d.toLocaleTimeString("en-IN", { ...IST, hour: "2-digit", minute: "2-digit" })}`
     : "";
 
 export async function GET(req: Request) {

@@ -382,7 +382,7 @@ export async function clientCountsByAssignee(): Promise<Map<string, number>> {
 const TASK_DATES = ["deadline", "completedAt", "createdAt"];
 const REQUEST_DATES = ["createdAt", "resolvedAt"];
 
-type TaskWithRefs = TaskRecord & {
+export type TaskWithRefs = TaskRecord & {
   client: { name: string };
   assignedTo: { name: string };
   requests: RequestRecord[]; // OPEN requests only
