@@ -66,7 +66,7 @@ import { submitTask, submitMissReason, reviewTask, updateTask, moveTaskDeadline 
 import { addTaskRequest, resolveRequest, deleteRequest } from "@/app/actions/requests";
 import {
   updateClientBilling, recordPayment, markPaymentReceived, logFollowUp,
-  addExpense, addSubscription, processSubscriptions, addDisbursement,
+  addExpense, addSubscription, addDisbursement,
   updateFinanceSettings, createShareLink, deletePayment,
 } from "@/app/actions/finance";
 import { applyForJob } from "@/app/actions/careers";
@@ -74,7 +74,7 @@ import { seed, doc, resetDb, fakeDb } from "./fake-db";
 
 const allDocs = async (name: string) =>
   ((await fakeDb.collection(name).get()).docs as { id: string; data(): Record<string, unknown> }[]).map(
-    (d) => ({ id: d.id, ...d.data() })
+    (d) => ({ id: d.id, ...d.data() }) as { id: string } & Record<string, unknown>
   );
 import { authState, EMPLOYEE, ADMIN, MANAGER } from "./state";
 
