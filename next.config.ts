@@ -40,6 +40,10 @@ const nextConfig: NextConfig = {
     serverActions: {
       allowedOrigins: ["127.0.0.1:60631", "localhost:60631", "127.0.0.1", "localhost"],
     },
+    // Keep visited dashboard tabs in the client router cache for 30s — tab
+    // switches render instantly instead of re-fetching from the server.
+    // Server actions call revalidatePath, so data stays fresh after writes.
+    staleTimes: { dynamic: 30, static: 180 },
   },
 };
 

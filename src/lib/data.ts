@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { Timestamp, FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "./firebase-admin";
 import { DEFAULT_TASK_TYPES } from "./constants";
@@ -275,26 +276,26 @@ const newest = (a: { createdAt: Date | null }, b: { createdAt: Date | null }) =>
 
 const USER_DATES = ["createdAt"];
 
-export async function getUser(id: string): Promise<UserRecord | null> {
+export const getUser = cache(async (id: string): Promise<UserRecord | null> => {
   const doc = await adminDb.collection("users").doc(id).get();
   return doc.exists ? withDates<UserRecord>(doc, USER_DATES) : null;
-}
+});
 
-export async function listEmployees(): Promise<UserRecord[]> {
+export const listEmployees = cache(async (): Promise<UserRecord[]> => {
   const snap = await adminDb.collection("users").where("role", "==", "EMPLOYEE").get();
   return snap.docs.map((d) => withDates<UserRecord>(d, USER_DATES)).sort(byName);
-}
+});
 
 export async function listAllUsers(): Promise<UserRecord[]> {
   const snap = await adminDb.collection("users").get();
   return snap.docs.map((d) => withDates<UserRecord>(d, USER_DATES)).sort(byName);
 }
 
-export async function listDesigners(): Promise<{ id: string; name: string }[]> {
+export const listDesigners = cache(async (): Promise<{ id: string; name: string }[]> => {
   return (await listEmployees())
     .filter((u) => u.team === "DESIGN")
     .map((u) => ({ id: u.id, name: u.name }));
-}
+});
 
 export async function listEmployeeOptions(): Promise<
   { id: string; name: string; team: string | null; perPostPay: number | null }[]
@@ -318,14 +319,14 @@ export async function userNameMap(): Promise<Map<string, string>> {
 
 const CLIENT_DATES = ["createdAt", "feeEffectiveFrom"];
 
-export async function listClients(): Promise<ClientRecord[]> {
+export const listClients = cache(async (): Promise<ClientRecord[]> => {
   const snap = await adminDb.collection("clients").get();
   return snap.docs.map((d) => withDates<ClientRecord>(d, CLIENT_DATES)).sort(newest);
-}
+});
 
-export async function listClientOptions(): Promise<{ id: string; name: string }[]> {
+export const listClientOptions = cache(async (): Promise<{ id: string; name: string }[]> => {
   return (await listClients()).sort(byName).map((c) => ({ id: c.id, name: c.name }));
-}
+});
 
 export async function getClient(id: string): Promise<ClientRecord | null> {
   const doc = await adminDb.collection("clients").doc(id).get();
@@ -410,13 +411,13 @@ async function attachTaskRefs(tasks: TaskRecord[]): Promise<TaskWithRefs[]> {
   }));
 }
 
-export async function listTasksWithRefs(): Promise<TaskWithRefs[]> {
+export const listTasksWithRefs = cache(async (): Promise<TaskWithRefs[]> => {
   const snap = await adminDb.collection("tasks").get();
   const tasks = snap.docs.map((d) => withDates<TaskRecord>(d, TASK_DATES)).sort(newest);
   return attachTaskRefs(tasks);
-}
+});
 
-export async function listTasksForUser(userId: string): Promise<TaskWithRefs[]> {
+export const listTasksForUser = cache(async (userId: string): Promise<TaskWithRefs[]> => {
   const snap = await adminDb.collection("tasks").where("assignedToId", "==", userId).get();
   const tasks = snap.docs
     .map((d) => withDates<TaskRecord>(d, TASK_DATES))
@@ -425,7 +426,7 @@ export async function listTasksForUser(userId: string): Promise<TaskWithRefs[]> 
       return a.deadline.getTime() - b.deadline.getTime();
     });
   return attachTaskRefs(tasks);
-}
+});
 
 export async function getTaskDetail(
   id: string
@@ -524,11 +525,11 @@ export async function countCompletedTasks(userId: string): Promise<number> {
 }
 
 /** Built-in task types merged with any custom ones saved in settings/taskTypes. */
-export async function listTaskTypes(): Promise<string[]> {
+export const listTaskTypes = cache(async (): Promise<string[]> => {
   const doc = await adminDb.collection("settings").doc("taskTypes").get();
   const custom = Array.isArray(doc.data()?.options) ? (doc.data()!.options as string[]) : [];
   return [...new Set([...DEFAULT_TASK_TYPES, ...custom])];
-}
+});
 
 // ---------------------------------------------------------------------------
 // Jobs / careers
@@ -590,16 +591,16 @@ export async function listRequestsWithRefs(): Promise<
   });
 }
 
-export async function countOpenRequests(): Promise<number> {
+export const countOpenRequests = cache(async (): Promise<number> => {
   const snap = await adminDb.collection("taskRequests").where("status", "==", "OPEN").get();
   return snap.size;
-}
+});
 
 /** Submitted tasks waiting on an admin/manager review decision. */
-export async function countPendingReviews(): Promise<number> {
+export const countPendingReviews = cache(async (): Promise<number> => {
   const snap = await adminDb.collection("tasks").where("approval", "==", "PENDING").get();
   return snap.size;
-}
+});
 
 /** Employee price quotes waiting for approval. */
 export async function countPendingQuotes(): Promise<number> {
