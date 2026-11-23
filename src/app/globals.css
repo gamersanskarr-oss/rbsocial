@@ -342,14 +342,20 @@ html {
 }
 .animate-toast-in { animation: toast-in 0.22s ease-out; }
 
-/* Native date/time controls inside the dark dashboards — makes the
-   calendar-picker icon (and the popup) render light instead of black. */
+/* Native date/time controls inside the dark dashboards. color-scheme: dark
+   paints the calendar glyph light, and a plain invert() flips that light
+   glyph back to black — so force pure white from either starting color.
+   Covers date, time, datetime-local, month, and week inputs.
+   The invert amount goes through var() on purpose: the CSS minifier rewrites
+   a literal invert(1) to invert(), which Chromium rejects as invalid and
+   drops the whole filter — leaving the glyph dark. var() is opaque to the
+   minifier, so the value survives to the browser. */
 .theme-dark {
   color-scheme: dark;
 }
 .theme-dark input::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-  opacity: 0.65;
+  filter: brightness(0) invert(var(--cal-invert, 1));
+  opacity: 1;
   cursor: pointer;
 }
 .theme-dark input::-webkit-calendar-picker-indicator:hover {
