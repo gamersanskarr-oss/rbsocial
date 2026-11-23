@@ -14,7 +14,7 @@ export function StatusBadge({ status }: { status: string }) {
   const s = styles[status] ?? { cls: "bg-panel text-muted ring-line", dot: "bg-faint" };
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${s.cls}`}
+      className={`inline-flex items-center gap-1 rounded-full pl-1.5 pr-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${s.cls}`}
     >
       <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
       {label[status] ?? status}

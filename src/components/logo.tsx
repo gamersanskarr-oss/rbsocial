@@ -11,7 +11,7 @@ export function Logo({
 }) {
   return (
     <Image
-      src="/logo.png"
+      src="/logo.webp"
       alt="RB Social Branding"
       width={size}
       height={size}

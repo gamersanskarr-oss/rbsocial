@@ -3,6 +3,7 @@ import { Logo } from "@/components/logo";
 import { TextLoop, SideRays, FlexCarousel, ScrollReveal, LightTunnel, ScrollExpand } from "@/components/lazy-fx";
 import { SiteMenu } from "@/components/site-menu";
 import { WorkCarousel } from "@/components/work-carousel";
+import { siteUrl } from "@/lib/site-url";
 
 /* ── Brand tokens ─────────────────────────────────────────────────── */
 const ACCENT = "#ff6a5a"; // coral accent
@@ -213,8 +214,38 @@ const navLinks = [
 ];
 
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    name: "RB Social Branding",
+    description:
+      "Social media management, content creation, performance marketing, web development and design — a digital marketing agency powered by Roshan Bharat.",
+    url: siteUrl,
+    telephone: "+91 92164 26456",
+    email: "rbsocialbranding@gmail.com",
+    image: `${siteUrl}/og.jpg`,
+    logo: `${siteUrl}/rb-logo-prev.png`,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Patrakar Colony, Near RK Girls College, Madanganj",
+      addressLocality: "Kishangarh",
+      addressRegion: "Rajasthan",
+      addressCountry: "IN",
+    },
+    sameAs: [
+      "https://www.instagram.com/rb.social.branding",
+      "https://www.facebook.com/share/1CewsxKjQB/",
+      "https://linkedin.com/company/rbsocialbranding",
+    ],
+    parentOrganization: { "@type": "Organization", name: "Roshan Bharat" },
+  };
+
   return (
     <div id="top" className="theme-dark theme-site min-h-screen scroll-smooth bg-[#070d1c] text-ink">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Sticky backdrop — near-black canvas with faded blue circle glows.
           Fixed to the viewport; all sections scroll above it. */}
       <div
@@ -259,7 +290,15 @@ export default function Home() {
             Let&apos;s Talk
           </a>
           <span className="lg:hidden">
-            <SiteMenu links={navLinks} whatsapp={WHATSAPP} />
+            <SiteMenu
+              links={navLinks}
+              whatsapp={WHATSAPP}
+              socials={[
+                { label: "Instagram", href: "https://www.instagram.com/roshan.bharat__/" },
+                { label: "Facebook", href: "https://www.facebook.com/share/1K3h1Z2uAi/" },
+                { label: "WhatsApp", href: WHATSAPP },
+              ]}
+            />
           </span>
         </nav>
       </header>
@@ -636,6 +675,8 @@ export default function Home() {
                 <img
                   src={t.thumb}
                   alt={`${t.name} testimonial`}
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                 />
                 <div
@@ -942,8 +983,10 @@ export default function Home() {
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/contact.jpg"
+                src="/contact.webp"
                 alt="A team collaborating on a project"
+                loading="lazy"
+                decoding="async"
                 className="absolute inset-0 h-full w-full object-cover"
                 draggable={false}
               />

@@ -62,6 +62,7 @@ export function WorkCarousel({ items }: { items: WorkItem[] }) {
               src={p.thumb}
               alt={`${p.industry} work`}
               loading="lazy"
+              decoding="async"
               className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]"
               draggable={false}
             />
