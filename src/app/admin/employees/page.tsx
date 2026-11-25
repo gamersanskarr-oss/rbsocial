@@ -8,6 +8,7 @@ import { requireAdmin } from "@/lib/auth";
 import { setPerPostPay, waiveMiss } from "@/app/actions/admin";
 import { PageHeader, TeamBadge } from "@/components/ui";
 import { ToastForm } from "@/components/toast";
+import DeleteUserButton from "@/components/workspace/delete-user-button";
 import AddEmployeeForm from "./add-employee-form";
 
 const ROLE_BADGE: Record<string, { label: string; cls: string }> = {
@@ -57,12 +58,13 @@ export default async function EmployeesPage() {
                 <th className="th">Missed deadlines</th>
                 <th className="th">Payout status</th>
                 <th className="th">Waive</th>
+                <th className="th"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {users.length === 0 && (
                 <tr>
-                  <td className="td py-10 text-center text-faint" colSpan={10}>
+                  <td className="td py-10 text-center text-faint" colSpan={11}>
                     No users yet — add your first team member above.
                   </td>
                 </tr>
@@ -166,6 +168,9 @@ export default async function EmployeesPage() {
                             <span className="text-xs text-faint">—</span>
                           )}
                         </td>
+                        <td className="td">
+                          <DeleteUserButton userId={u.id} userName={u.name} />
+                        </td>
                       </>
                     ) : (
                       <>
@@ -175,6 +180,7 @@ export default async function EmployeesPage() {
                         <td className="td text-xs text-faint">—</td>
                         <td className="td text-xs text-faint">—</td>
                         <td className="td text-xs text-faint">—</td>
+                        <td className="td"></td>
                       </>
                     )}
                   </tr>

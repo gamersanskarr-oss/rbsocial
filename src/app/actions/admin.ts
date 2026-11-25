@@ -157,6 +157,63 @@ export async function waiveMiss(formData: FormData) {
   revalidatePath("/dashboard");
 }
 
+/** Delete an EMPLOYEE account — login + profile + client assignments.
+    Safety rails: admins/managers/accountant are not deletable here, the
+    actor cannot delete themselves, and unfinished (PENDING) work blocks the
+    deletion until it is reassigned or completed. */
+export async function deleteUser(formData: FormData): Promise<{ error?: string }> {
+  const actor = await requireAdminOrManager();
+  const userId = String(formData.get("userId") ?? "");
+  if (!userId) return { error: "Missing user." };
+  if (userId === actor.id) return { error: "You cannot delete your own account." };
+
+  const doc = await adminDb.collection("users").doc(userId).get();
+  if (!doc.exists) return { error: "User not found." };
+  const profile = doc.data()!;
+  if (profile.role !== "EMPLOYEE") {
+    return {
+      error:
+        "Only employee accounts can be deleted here — admin, manager and accountant logins are managed separately.",
+    };
+  }
+
+  const pending = await adminDb
+    .collection("tasks")
+    .where("assignedToId", "==", userId)
+    .where("status", "==", "PENDING")
+    .get();
+  if (pending.size > 0) {
+    return {
+      error: `${profile.name} still has ${pending.size} pending task${pending.size === 1 ? "" : "s"} — reassign or complete them first.`,
+    };
+  }
+
+  // Detach from every client (multi-assignee list + legacy single field).
+  const [multi, legacy] = await Promise.all([
+    adminDb.collection("clients").where("assignedToIds", "array-contains", userId).get(),
+    adminDb.collection("clients").where("assignedToId", "==", userId).get(),
+  ]);
+  const batch = adminDb.batch();
+  const seen = new Set<string>();
+  for (const c of [...multi.docs, ...legacy.docs]) {
+    if (seen.has(c.id)) continue;
+    seen.add(c.id);
+    const ids = ((c.data().assignedToIds as string[]) ?? []).filter((id) => id !== userId);
+    batch.update(c.ref, { assignedToIds: ids, assignedToId: ids[0] ?? null });
+  }
+  batch.delete(doc.ref);
+  await batch.commit();
+
+  await adminAuth.deleteUser(userId).catch(() => {});
+  await logActivity("admin", `${actor.name} deleted employee ${profile.name} (${profile.email}).`);
+
+  revalidatePath("/admin/employees");
+  revalidatePath("/manager/team");
+  revalidatePath("/admin/clients");
+  revalidatePath("/manager/clients");
+  return {};
+}
+
 export async function createTask(_prev: ActionState, formData: FormData): Promise<ActionState> {
   const actor = await requireAdminOrManager();
   const topic = String(formData.get("topic") ?? "").trim();

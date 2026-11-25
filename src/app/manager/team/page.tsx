@@ -4,6 +4,7 @@ import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT } from "@/lib/deadlines";
 import { waiveMiss } from "@/app/actions/admin";
 import { PageHeader, StatusBadge, TeamBadge } from "@/components/ui";
 import { ToastForm } from "@/components/toast";
+import DeleteUserButton from "@/components/workspace/delete-user-button";
 
 const fmtDate = (d: Date) =>
   d.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
@@ -97,12 +98,13 @@ export default async function ManagerTeamPage({
                 <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Missed</th>
                 <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Strikes</th>
                 <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint">Latest task</th>
+                <th className="px-4 py-2 text-left text-[11px] font-bold uppercase tracking-wider text-faint"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {visible.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-10 text-center text-sm text-faint">
+                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-faint">
                     {filtering ? "No employees match these filters." : "No employees yet."}
                   </td>
                 </tr>
@@ -194,6 +196,9 @@ export default async function ManagerTeamPage({
                       ) : (
                         <span className="text-xs font-medium text-faint">No tasks yet</span>
                       )}
+                    </td>
+                    <td className="px-4 py-2.5 text-right">
+                      <DeleteUserButton userId={u.id} userName={u.name} />
                     </td>
                   </tr>
                 );
