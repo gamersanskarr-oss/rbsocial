@@ -1,9 +1,9 @@
 import { listClientOptions, listEmployeeOptions, listTasksWithRefs, listTaskTypes, safeHref } from "@/lib/data";
 import { checkMissedDeadlines } from "@/lib/deadlines";
 import { PageHeader } from "@/components/ui";
-import CreateTaskForm from "./create-task-form";
 import TaskTypesPanel from "./task-types-panel";
 import TasksTable, { type TaskRow } from "./tasks-table";
+import CreateTaskDialog from "./create-task-dialog";
 
 export default async function TasksView({ basePath }: { basePath: string }) {
   await checkMissedDeadlines();
@@ -38,18 +38,15 @@ export default async function TasksView({ basePath }: { basePath: string }) {
 
   return (
     <div className="space-y-8">
-      <PageHeader
-        title="Tasks"
-        subtitle="Assign new work and monitor progress across the whole team."
-      />
-
-      <div className="grid items-start gap-6 lg:grid-cols-[1fr_300px]">
-        <div className="card p-6">
-          <h2 className="mb-4 text-sm font-bold text-ink">Assign a task</h2>
-          <CreateTaskForm clients={clients} employees={employees} taskTypes={taskTypes} basePath={basePath} />
-        </div>
-        <TaskTypesPanel taskTypes={taskTypes} />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <PageHeader
+          title="Tasks"
+          subtitle="Assign new work and monitor progress across the whole team."
+        />
+        <CreateTaskDialog clients={clients} employees={employees} taskTypes={taskTypes} basePath={basePath} />
       </div>
+
+      <TaskTypesPanel taskTypes={taskTypes} />
 
       <TasksTable
         basePath={basePath}

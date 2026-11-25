@@ -13,11 +13,13 @@ export default function CreateTaskForm({
   employees,
   taskTypes,
   basePath = "/admin",
+  onSuccess,
 }: {
   clients: { id: string; name: string }[];
   employees: { id: string; name: string; team: string | null; perPostPay: number | null }[];
   taskTypes: string[];
   basePath?: string;
+  onSuccess?: () => void;
 }) {
   const [state, formAction, pending] = useActionState(createTask, initial);
   useActionToast(state);
@@ -27,8 +29,11 @@ export default function CreateTaskForm({
   const [selType, setSelType] = useState("");
 
   useEffect(() => {
-    if (state.success) router.push(`${basePath}/tasks`);
-  }, [state, router, basePath]);
+    if (state.success) {
+      router.push(`${basePath}/tasks`);
+      onSuccess?.();
+    }
+  }, [state, router, basePath, onSuccess]);
 
   return (
     <form action={formAction} className="space-y-4">
