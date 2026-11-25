@@ -1,9 +1,12 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { StatusBadge } from "@/components/ui";
 import { DueTime } from "@/components/due-time";
+import { useToast } from "@/components/toast";
+import { deleteTask } from "@/app/actions/tasks";
 
 export type TaskRow = {
   id: string;
@@ -65,6 +68,80 @@ function SortTh({
         </svg>
       </button>
     </th>
+  );
+}
+
+/** Two-step delete: trash icon -> inline Confirm/Cancel. The server action
+    blocks nothing here (admin/manager only) but surfaces errors as toasts. */
+function DeleteTaskButton({ taskId }: { taskId: string }) {
+  const [confirming, setConfirming] = useState(false);
+  const [pending, startTransition] = useTransition();
+  const toast = useToast();
+  const router = useRouter();
+
+  if (!confirming) {
+    return (
+      <button
+        type="button"
+        onClick={() => setConfirming(true)}
+        title="Delete task"
+        className="rounded-lg p-1.5 text-faint transition hover:bg-bad-soft hover:text-bad"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-3.5 w-3.5"
+          aria-hidden
+        >
+          <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+        </svg>
+      </button>
+    );
+  }
+
+  const confirm = () => {
+    const fd = new FormData();
+    fd.set("taskId", taskId);
+    startTransition(async () => {
+      try {
+        const res = await deleteTask(fd);
+        if (res?.error) {
+          toast("error", res.error);
+          setConfirming(false);
+          return;
+        }
+        toast("success", "Task deleted.");
+        router.refresh();
+      } catch {
+        toast("error", "Could not delete the task — try again.");
+      }
+    });
+  };
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <button
+        type="button"
+        onClick={confirm}
+        disabled={pending}
+        title="Confirm deletion"
+        className="whitespace-nowrap rounded-lg bg-bad-soft px-2 py-1 text-[10px] font-bold text-bad ring-1 ring-inset ring-bad-line transition hover:bg-bad-soft/60 disabled:opacity-50"
+      >
+        {pending ? "…" : "Confirm?"}
+      </button>
+      <button
+        type="button"
+        onClick={() => setConfirming(false)}
+        disabled={pending}
+        className="rounded-lg px-1.5 py-1 text-[10px] font-semibold text-muted transition hover:bg-hover hover:text-ink"
+      >
+        ✕
+      </button>
+    </span>
   );
 }
 
@@ -389,6 +466,7 @@ export default function TasksTable({
                           <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
                         </svg>
                       </Link>
+                      <DeleteTaskButton taskId={t.id} />
                     </div>
                   </td>
                 </tr>

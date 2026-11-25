@@ -245,6 +245,46 @@ export async function updateTask(_prev: SubmitState, formData: FormData): Promis
   return { success: "Task updated." };
 }
 
+/** Admin/manager deletes a task outright. A MISSED task's strike is returned
+    to the assignee (the miss record disappears with the task), and open
+    requests on the task are removed too. */
+export async function deleteTask(formData: FormData): Promise<{ error?: string }> {
+  await requireAdminOrManager();
+  const taskId = String(formData.get("taskId") ?? "");
+  if (!taskId) return { error: "Missing task." };
+
+  const doc = await adminDb.collection("tasks").doc(taskId).get();
+  if (!doc.exists) return { error: "Task not found." };
+  const task = doc.data()!;
+
+  const batch = adminDb.batch();
+  batch.delete(doc.ref);
+  const reqs = await adminDb.collection("taskRequests").where("taskId", "==", taskId).get();
+  reqs.docs.forEach((d) => batch.delete(d.ref));
+
+  if (task.status === "MISSED") {
+    const assigneeId = String(task.assignedToId ?? "");
+    if (assigneeId) {
+      const userRef = adminDb.collection("users").doc(assigneeId);
+      const u = await userRef.get();
+      if (u.exists) {
+        batch.update(userRef, {
+          missedDeadlines: Math.max(0, Number(u.data()?.missedDeadlines ?? 0) - 1),
+        });
+      }
+    }
+  }
+  await batch.commit();
+
+  for (const p of [
+    "/admin/tasks", "/manager/tasks", "/dashboard",
+    `/admin/tasks/${taskId}`, `/manager/tasks/${taskId}`, `/dashboard/tasks/${taskId}`,
+    "/admin/calendar", "/manager/calendar", "/dashboard/calendar", "/admin",
+    "/admin/payouts",
+  ]) revalidatePath(p);
+  return { error: undefined };
+}
+
 /** Drag-reschedule: keep the deadline's IST time-of-day, move it to `isoDay`
     ("YYYY-MM-DD"). Returns an error string on failure so the calendar can
     revert the optimistic chip move. */
