@@ -3,6 +3,10 @@ import { getUser, listTasksForUser, taskPay } from "@/lib/data";
 import { BONUS_GRACE_MISSES, PAYOUT_BONUS, payoutStatus, checkMissedDeadlines } from "@/lib/deadlines";
 import { DashboardShell } from "@/components/dashboard-shell";
 
+// Auth-gated workspace — never prerender-probe at build time (the probe would
+// otherwise run Firestore queries against a possibly-slow connection).
+export const dynamic = "force-dynamic";
+
 const buildNav = (openTasks: number) => [
   {
     label: "My work",

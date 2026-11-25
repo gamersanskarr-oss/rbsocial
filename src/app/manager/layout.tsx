@@ -2,6 +2,10 @@ import { countOpenRequests, countPendingReviews } from "@/lib/data";
 import { requireManager } from "@/lib/auth";
 import { DashboardShell } from "@/components/dashboard-shell";
 
+// Auth-gated workspace — never prerender-probe at build time (the probe would
+// otherwise run Firestore queries against a possibly-slow connection).
+export const dynamic = "force-dynamic";
+
 export default async function ManagerLayout({ children }: { children: React.ReactNode }) {
   const user = await requireManager();
   const [openRequests, pendingReviews] = await Promise.all([
