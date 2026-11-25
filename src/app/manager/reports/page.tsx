@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { listTasksWithRefs } from "@/lib/data";
+import { listClientOptions, listEmployeeOptions, listTaskTypes, listTasksWithRefs } from "@/lib/data";
 import { requireManager } from "@/lib/auth";
 import { checkMissedDeadlines } from "@/lib/deadlines";
 import { PageHeader } from "@/components/ui";
+import ReportsTable, { type ReportRow } from "@/components/workspace/reports-table";
 
 const monthKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 
@@ -17,7 +18,12 @@ export default async function ManagerReportsPage({
   const { month } = await searchParams;
   const selected = /^\d{4}-\d{2}$/.test(month ?? "") ? month! : monthKey(new Date());
 
-  const tasks = await listTasksWithRefs();
+  const [tasks, clients, employees, taskTypes] = await Promise.all([
+    listTasksWithRefs(),
+    listClientOptions(),
+    listEmployeeOptions(),
+    listTaskTypes(),
+  ]);
 
   const [selY, selM] = selected.split("-").map(Number);
   const monthTasks = tasks
@@ -29,11 +35,22 @@ export default async function ManagerReportsPage({
     year: "numeric",
   });
 
+  const rows: ReportRow[] = monthTasks.map((t) => ({
+    id: t.id,
+    topic: t.topic,
+    type: t.type,
+    slideCount: t.slideCount,
+    clientName: t.client.name,
+    assigneeName: t.assignedTo.name,
+    deadlineISO: t.deadline.toISOString(),
+    status: t.status,
+  }));
+
   return (
     <div className="space-y-8">
       <PageHeader
         title="Team reports"
-        subtitle={`Deliverables due in ${monthLabel} — client and assignee.`}
+        subtitle={`Deliverables due in ${monthLabel} — filter, sort and download.`}
       />
 
       <div className="card p-4">
@@ -57,46 +74,11 @@ export default async function ManagerReportsPage({
         </form>
       </div>
 
-      <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="border-b border-line bg-panel/70">
-              <tr>
-                <th className="th">Deliverable</th>
-                <th className="th">Client</th>
-                <th className="th">Assigned to</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-line">
-              {monthTasks.length === 0 && (
-                <tr>
-                  <td className="td py-10 text-center text-faint" colSpan={3}>
-                    No tasks due in {monthLabel}.
-                  </td>
-                </tr>
-              )}
-              {monthTasks.map((t) => (
-                <tr key={t.id} className="transition hover:bg-panel/60">
-                  <td className="td">
-                    {t.type ? (
-                      <span className="inline-block whitespace-nowrap rounded-full bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand ring-1 ring-inset ring-brand-line">
-                        {t.type}{t.slideCount ? ` · ${t.slideCount} slides` : ""}
-                      </span>
-                    ) : (
-                      <span className="text-xs text-faint">—</span>
-                    )}
-                  </td>
-                  <td className="td font-medium text-ink">{t.client.name}</td>
-                  <td className="td text-muted">{t.assignedTo.name || "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ReportsTable rows={rows} monthLabel={monthLabel} clients={clients} employees={employees} taskTypes={taskTypes} />
 
       <p className="text-xs font-medium text-faint">
-        Tasks due in {monthLabel}, listed by deadline. Pay and finance numbers stay admin-only.
+        Tasks due in {monthLabel}. Excel download follows the current filters — filter to one member
+        for their individual report. Pay and finance numbers stay admin-only.
       </p>
     </div>
   );
