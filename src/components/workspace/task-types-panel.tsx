@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { addTaskType, type ActionState } from "@/app/actions/admin";
+import { addTaskType, deleteTaskType, type ActionState } from "@/app/actions/admin";
+import { DEFAULT_TASK_TYPES } from "@/lib/constants";
 import { useToast } from "@/components/toast";
 
 export default function TaskTypesPanel({ taskTypes }: { taskTypes: string[] }) {
@@ -10,6 +11,7 @@ export default function TaskTypesPanel({ taskTypes }: { taskTypes: string[] }) {
   const [newType, setNewType] = useState("");
   const [msg, setMsg] = useState<ActionState>({});
   const [adding, startAdding] = useTransition();
+  const [removing, startRemoving] = useTransition();
   const toast = useToast();
 
   const save = () => {
@@ -25,24 +27,51 @@ export default function TaskTypesPanel({ taskTypes }: { taskTypes: string[] }) {
     });
   };
 
+  const remove = (t: string) => {
+    if (removing) return;
+    startRemoving(async () => {
+      const res = await deleteTaskType(t);
+      setMsg(res);
+      if (res.error) toast("error", res.error);
+      else if (res.success) toast("success", res.success);
+      router.refresh();
+    });
+  };
+
   return (
     <div className="card h-fit space-y-4 p-6">
       <div>
         <h2 className="text-sm font-bold text-ink">Task categories</h2>
         <p className="mt-0.5 text-xs text-muted">
-          These appear in the Task type dropdown. Add your own if something is missing.
+          These appear in the Task type dropdown. Add your own if something is missing — custom
+          categories can be removed with the ✕.
         </p>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {taskTypes.map((t) => (
-          <span
-            key={t}
-            className="rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand ring-1 ring-inset ring-brand-line"
-          >
-            {t}
-          </span>
-        ))}
+        {taskTypes.map((t) => {
+          const custom = !DEFAULT_TASK_TYPES.includes(t);
+          return (
+            <span
+              key={t}
+              className="inline-flex items-center gap-1 rounded-full bg-brand-soft px-2.5 py-1 text-[11px] font-bold text-brand ring-1 ring-inset ring-brand-line"
+            >
+              {t}
+              {custom && (
+                <button
+                  type="button"
+                  onClick={() => remove(t)}
+                  disabled={removing}
+                  title={`Delete "${t}"`}
+                  className="ml-0.5 text-brand/50 transition hover:text-bad disabled:opacity-40"
+                  aria-label={`Delete category ${t}`}
+                >
+                  ✕
+                </button>
+              )}
+            </span>
+          );
+        })}
       </div>
 
       <div className="space-y-1.5">

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { adminDb, Timestamp, FieldValue, parseClientRequirements, parseISTDateTime, logActivity } from "@/lib/data";
+import { DEFAULT_TASK_TYPES } from "@/lib/constants";
 import { adminAuth } from "@/lib/firebase-admin";
 import { requireAdmin, requireAdminOrManager } from "@/lib/auth";
 
@@ -385,4 +386,31 @@ export async function addTaskType(name: string): Promise<ActionState> {
   revalidatePath("/admin/tasks");
   revalidatePath("/manager/tasks");
   return { success: `"${label}" added to task types.` };
+}
+
+/** Admin + manager: remove a CUSTOM task category. Built-in categories are
+    hardcoded and can't be removed. Existing tasks keep their label — it just
+    stops appearing in the dropdowns. */
+export async function deleteTaskType(name: string): Promise<ActionState> {
+  await requireAdminOrManager();
+  const label = name.trim().slice(0, 40);
+  if (!label) return { error: "Type name is required." };
+  if (DEFAULT_TASK_TYPES.includes(label)) {
+    return { error: `"${label}" is a built-in category and can't be removed.` };
+  }
+
+  await adminDb
+    .collection("settings")
+    .doc("taskTypes")
+    .set({ options: FieldValue.arrayRemove(label) }, { merge: true });
+
+  const using = await adminDb.collection("tasks").where("type", "==", label).get();
+  revalidatePath("/admin/tasks");
+  revalidatePath("/manager/tasks");
+  return {
+    success:
+      using.size > 0
+        ? `"${label}" removed — ${using.size} existing task${using.size === 1 ? "" : "s"} still carry this label.`
+        : `"${label}" removed from task types.`,
+  };
 }
