@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { assignClient } from "@/app/actions/admin";
 import { useToast } from "@/components/toast";
@@ -18,8 +19,9 @@ export default function AssignSelect({
 }) {
   const router = useRouter();
   const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const [pos, setPos] = useState<{ top: number; left: number; maxHeight: number; up: boolean } | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set(currentIds));
   const [pending, startTransition] = useTransition();
   const toast = useToast();
@@ -27,10 +29,15 @@ export default function AssignSelect({
   // Keep local state in sync when the server data refreshes
   useEffect(() => setChecked(new Set(currentIds)), [currentIds]);
 
-  // Close the popover on scroll — its fixed position would go stale
+  // Close the popover on scroll — its fixed position would go stale.
+  // Scrolling inside the menu itself should not dismiss it.
   useEffect(() => {
     if (!open) return;
-    const close = () => setOpen(false);
+    const close = (e: Event) => {
+      const target = e.target;
+      if (target instanceof Node && menuRef.current?.contains(target)) return;
+      setOpen(false);
+    };
     window.addEventListener("scroll", close, true);
     window.addEventListener("resize", close);
     return () => {
@@ -42,9 +49,15 @@ export default function AssignSelect({
   const toggle = () => {
     if (!open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
+      const estimated = Math.min(320, employees.length * 40 + 24);
+      const spaceBelow = window.innerHeight - r.bottom - 12;
+      const spaceAbove = r.top - 12;
+      const up = spaceBelow < estimated && spaceAbove > spaceBelow;
       setPos({
-        top: r.bottom + 6,
-        left: Math.max(8, r.right - WIDTH),
+        top: up ? r.top - 6 : r.bottom + 6,
+        left: Math.min(Math.max(8, r.right - WIDTH), window.innerWidth - WIDTH - 8),
+        maxHeight: Math.max(120, up ? spaceAbove : spaceBelow),
+        up,
       });
     }
     setOpen((o) => !o);
@@ -97,13 +110,19 @@ export default function AssignSelect({
         </svg>
       </button>
 
-      {open && pos && (
+      {open && pos && createPortal(
         <>
-          {/* click-outside + scroll-block layer */}
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          {/* Above the table card (overflow clips in-flow menus) and the sidebar. */}
+          <div className="fixed inset-0 z-[200]" onClick={() => setOpen(false)} />
           <div
-            className="fixed z-50 w-48 space-y-1 rounded-xl border border-line bg-elevated p-2 shadow-lift"
-            style={{ top: pos.top, left: pos.left }}
+            ref={menuRef}
+            className="fixed z-[210] w-48 space-y-1 overflow-y-auto rounded-xl border border-line bg-elevated p-2 shadow-lift"
+            style={{
+              top: pos.top,
+              left: pos.left,
+              maxHeight: pos.maxHeight,
+              transform: pos.up ? "translateY(-100%)" : undefined,
+            }}
           >
             {employees.map((e) => (
               <label
@@ -131,7 +150,8 @@ export default function AssignSelect({
               <p className="px-2 pb-1 text-[11px] font-medium text-faint">Saving…</p>
             )}
           </div>
-        </>
+        </>,
+        document.body,
       )}
     </div>
   );

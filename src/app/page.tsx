@@ -593,14 +593,12 @@ export default function Home() {
           }}
         />
         <div className="relative mx-auto max-w-6xl px-6 py-28">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-2xl">
-            <p className="section-label" style={{ color: ACCENT }}>Our work</p>
-            <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
-              Different industries. Different stories.
-            </ScrollReveal>
-          </div>
-          <p className="max-w-sm text-sm font-medium text-muted">
+        <div className="max-w-2xl">
+          <p className="section-label" style={{ color: ACCENT }}>Our work</p>
+          <ScrollReveal containerClassName="mt-3" textClassName="text-4xl font-extrabold tracking-tight md:text-5xl" effect="rise" mode="enter" duration={0.9} baseRotation={2}>
+            Recent work from our clients.
+          </ScrollReveal>
+          <p className="mt-4 max-w-xl text-sm font-medium leading-relaxed text-muted">
             A glimpse of the content and creative work we&apos;ve produced — tap a reel
             to watch it on Instagram.
           </p>
@@ -983,17 +981,17 @@ export default function Home() {
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/contact.webp"
-                alt="A team collaborating on a project"
+                src="/cta-contact.png"
+                alt="A hand reaching toward a screen, with icons for messages, calls and people"
                 loading="lazy"
                 decoding="async"
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover object-[center_42%]"
                 draggable={false}
               />
-              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.75),rgba(0,0,0,0.45)_50%,rgba(0,0,0,0.55))]" />
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.78),rgba(0,0,0,0.58)_48%,rgba(0,0,0,0.66))]" />
             </>
           }
-          title="Your brand, upgraded"
+          title="Let's talk about the work."
           scrollHint="Scroll to expand"
           startWidth={38}
           startHeight={54}
@@ -1010,17 +1008,17 @@ export default function Home() {
               Start a project
             </p>
             <h2 className="mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl">
-              Ready to hand off{" "}
+              Tell us what you{" "}
               <span
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: `linear-gradient(100deg, #ff7a6d, ${ACCENT} 60%, #ffc4bd)` }}
               >
-                design work?
+                need done.
               </span>
             </h2>
             <p className="mx-auto mt-5 max-w-lg text-base font-medium leading-relaxed text-white/65">
-              Tell us about your business — we will match you with a dedicated
-              designer within 24 hours.
+              Content, a shoot, ads, a website, or a place in Roshan Bharat.
+              WhatsApp us what the business does and we&apos;ll say where we&apos;d start.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-5">
               <a
