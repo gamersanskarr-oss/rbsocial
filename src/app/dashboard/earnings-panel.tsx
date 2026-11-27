@@ -17,6 +17,9 @@ export type EarningsRow = {
 
 const csvCell = (v: string | number | null | undefined) => `"${String(v ?? "").replace(/"/g, '""')}"`;
 
+const isApprovedRow = (r: { status: string; approval?: string | null }) =>
+  r.status === "COMPLETED" && (!r.approval || r.approval === "NONE" || r.approval === "APPROVED");
+
 export default function EarningsPanel({
   name,
   totalEarned,
@@ -32,12 +35,37 @@ export default function EarningsPanel({
 }) {
   // Defaults to the most recent month.
   const [monthKey, setMonthKey] = useState(monthly[0]?.key ?? "");
+  const [fClient, setFClient] = useState("");
+  const [fStatus, setFStatus] = useState("");
   const selected = monthly.find((m) => m.key === monthKey) ?? monthly[0];
-  const monthRows = useMemo(
-    () => rows.filter((r) => r.monthKey === selected?.key),
-    [rows, selected],
+
+  const clients = useMemo(
+    () => [...new Set(rows.map((r) => r.client).filter(Boolean))].sort(),
+    [rows],
   );
-  const monthTotal = useMemo(() => monthRows.reduce((s, r) => s + r.pay, 0), [monthRows]);
+
+  // Month + client + status filters — the tiles, table and Excel all follow.
+  const filtered = useMemo(() => {
+    const monthRows = rows.filter((r) => r.monthKey === selected?.key);
+    return monthRows.filter((r) => {
+      if (fClient && r.client !== fClient) return false;
+      if (fStatus === "APPROVED" && !isApprovedRow(r)) return false;
+      if (fStatus === "REVIEW" && !(r.status === "COMPLETED" && r.approval === "PENDING")) return false;
+      if (fStatus === "PENDING" && r.status !== "PENDING") return false;
+      if (fStatus === "MISSED" && r.status !== "MISSED") return false;
+      return true;
+    });
+  }, [rows, selected, fClient, fStatus]);
+
+  const amounts = useMemo(() => {
+    const approved = filtered.filter(isApprovedRow).reduce((s, r) => s + r.pay, 0);
+    const pending = filtered
+      .filter((r) => r.status === "COMPLETED" && r.approval === "PENDING")
+      .reduce((s, r) => s + r.pay, 0);
+    return { approved, pending, total: filtered.reduce((s, r) => s + r.pay, 0) };
+  }, [filtered]);
+
+  const filtering = Boolean(fClient || fStatus);
 
   const downloadCsv = () => {
     if (!selected) return;
@@ -47,7 +75,7 @@ export default function EarningsPanel({
       [csvCell("Month"), csvCell(selected.label)],
       [""],
       ["Topic", "Deliverable", "Client", "Deadline", "Status", "Pay (₹)"].map(csvCell).join(","),
-      ...monthRows.map((r) =>
+      ...filtered.map((r) =>
         [
           csvCell(r.topic),
           csvCell(r.type ? `${r.type}${r.slideCount ? ` · ${r.slideCount} slides` : ""}` : ""),
@@ -63,7 +91,7 @@ export default function EarningsPanel({
           csvCell(r.pay),
         ].join(","),
       ),
-      [["Total", "", "", "", "", csvCell(monthTotal)].join(",")],
+      [["Total", "", "", "", "", csvCell(amounts.total)].join(",")],
     ];
     const csv = "\uFEFF" + lines.join("\r\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
@@ -75,9 +103,11 @@ export default function EarningsPanel({
     URL.revokeObjectURL(url);
   };
 
+  const selectCls = "input w-auto min-w-32 px-3 py-1.5 text-xs font-semibold";
+
   return (
     <div className="space-y-6">
-      {/* Summary card */}
+      {/* Summary card — all-time figures */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-elevated to-elevated p-[1px] shadow-lift">
         <div className="rounded-2xl bg-elevated/90 px-6 py-5 backdrop-blur">
           <div className="flex flex-wrap items-center gap-6">
@@ -104,41 +134,9 @@ export default function EarningsPanel({
                 ₹{totalEarned.toLocaleString("en-IN")}
               </p>
             </div>
-            {selected && (
-              <div className="ml-auto border-l border-line pl-6 text-right">
-                <div className="flex items-center justify-end gap-2">
-                  <select
-                    value={selected.key}
-                    onChange={(e) => setMonthKey(e.target.value)}
-                    aria-label="Earnings month"
-                    className="max-w-32 cursor-pointer truncate bg-transparent text-[10px] font-bold uppercase tracking-[0.14em] text-faint outline-none"
-                  >
-                    {monthly.map((m) => (
-                      <option key={m.key} value={m.key} className="bg-elevated text-ink">
-                        {m.label}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={downloadCsv}
-                    title="Download this month's work as Excel (CSV)"
-                    className="whitespace-nowrap rounded-lg border border-line bg-elevated px-2.5 py-1 text-[10px] font-semibold text-ink shadow-sm transition hover:bg-panel"
-                  >
-                    Excel ↓
-                  </button>
-                </div>
-                <p className="text-lg font-bold text-ink">
-                  ₹{selected.earned.toLocaleString("en-IN")}
-                  {selected.bonus ? (
-                    <span className="text-ok"> +₹{selected.bonus.toLocaleString("en-IN")} 🎁</span>
-                  ) : null}
-                </p>
-              </div>
-            )}
-            <div className="border-l border-line pl-6 text-right">
+            <div className="ml-auto border-l border-line pl-6 text-right">
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-faint">Pending</p>
-              <p className={`text-lg font-bold ${pendingAmount > 0 ? "text-warn" : "text-ink"}`}>
+              <p className={`text-2xl font-extrabold leading-tight tracking-tight ${pendingAmount > 0 ? "text-warn" : "text-ink"}`}>
                 ₹{pendingAmount.toLocaleString("en-IN")}
               </p>
             </div>
@@ -146,17 +144,84 @@ export default function EarningsPanel({
         </div>
       </div>
 
-      {/* Selected month's work log */}
+      {/* Work log — month + client + status filters */}
       <div className="card overflow-hidden">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-panel/70 px-5 py-3.5">
-          <h2 className="text-sm font-bold text-ink">Work log — {selected?.label ?? ""}</h2>
-          <span className="text-xs font-semibold text-muted">
-            {monthRows.length} task{monthRows.length === 1 ? "" : "s"} · ₹{monthTotal.toLocaleString("en-IN")}
+        <div className="flex flex-wrap items-center gap-2 border-b border-line p-4">
+          <select
+            value={selected?.key ?? ""}
+            onChange={(e) => setMonthKey(e.target.value)}
+            aria-label="Earnings month"
+            className={selectCls}
+          >
+            {monthly.map((m) => (
+              <option key={m.key} value={m.key}>
+                {m.label}
+              </option>
+            ))}
+          </select>
+          <select value={fClient} onChange={(e) => setFClient(e.target.value)} className={selectCls}>
+            <option value="">All clients</option>
+            {clients.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+          <select value={fStatus} onChange={(e) => setFStatus(e.target.value)} className={selectCls}>
+            <option value="">All statuses</option>
+            <option value="APPROVED">Approved</option>
+            <option value="REVIEW">In review</option>
+            <option value="PENDING">Pending</option>
+            <option value="MISSED">Missed</option>
+          </select>
+          {filtering && (
+            <button
+              type="button"
+              onClick={() => {
+                setFClient("");
+                setFStatus("");
+              }}
+              className="rounded-lg px-2.5 py-1.5 text-xs font-bold text-muted transition hover:bg-hover hover:text-ink"
+            >
+              Clear
+            </button>
+          )}
+          <span className="ml-auto text-xs font-medium text-faint">
+            {filtered.length} of {rows.filter((r) => r.monthKey === selected?.key).length} tasks
           </span>
+          <button
+            type="button"
+            onClick={downloadCsv}
+            disabled={filtered.length === 0}
+            title="Download the filtered work log as Excel (CSV)"
+            className="whitespace-nowrap rounded-lg border border-line bg-elevated px-2.5 py-1.5 text-xs font-semibold text-ink shadow-sm transition hover:bg-panel disabled:opacity-50"
+          >
+            Excel ↓
+          </button>
         </div>
+
+        {/* Amount tiles — follow the filters */}
+        <div className="grid grid-cols-3 gap-3 border-b border-line p-4">
+          {[
+            { label: "Approved amount", value: amounts.approved, dot: "bg-emerald-500" },
+            { label: "Pending amount", value: amounts.pending, dot: "bg-sky-400" },
+            { label: "Total amount", value: amounts.total, dot: "bg-faint" },
+          ].map((s) => (
+            <div key={s.label} className="rounded-2xl border border-line bg-panel p-3.5">
+              <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-faint">
+                <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+                {s.label}
+              </p>
+              <p className="mt-1.5 text-xl font-bold tracking-tight text-ink">
+                ₹{s.value.toLocaleString("en-IN")}
+              </p>
+            </div>
+          ))}
+        </div>
+
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="border-b border-line">
+            <thead className="border-b border-line bg-panel/70">
               <tr>
                 <th className="th">Topic</th>
                 <th className="th">Deliverable</th>
@@ -167,14 +232,14 @@ export default function EarningsPanel({
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
-              {monthRows.length === 0 && (
+              {filtered.length === 0 && (
                 <tr>
                   <td className="td py-10 text-center text-faint" colSpan={6}>
-                    No work logged in {selected?.label ?? "this month"}.
+                    No work matches the current filters.
                   </td>
                 </tr>
               )}
-              {monthRows.map((r) => (
+              {filtered.map((r) => (
                 <tr key={r.topic + r.deadlineISO} className="transition hover:bg-panel/60">
                   <td className="td max-w-56 font-semibold text-ink">{r.topic}</td>
                   <td className="td">
@@ -201,13 +266,13 @@ export default function EarningsPanel({
                 </tr>
               ))}
             </tbody>
-            {monthRows.length > 0 && (
+            {filtered.length > 0 && (
               <tfoot>
                 <tr className="border-t-2 border-line bg-panel/60">
                   <td className="td font-bold text-ink" colSpan={5}>
                     Total
                   </td>
-                  <td className="td font-bold text-ok">₹{monthTotal.toLocaleString("en-IN")}</td>
+                  <td className="td font-bold text-ok">₹{amounts.total.toLocaleString("en-IN")}</td>
                 </tr>
               </tfoot>
             )}
