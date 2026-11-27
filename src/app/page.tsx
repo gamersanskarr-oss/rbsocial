@@ -991,7 +991,7 @@ export default function Home() {
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.78),rgba(0,0,0,0.58)_48%,rgba(0,0,0,0.66))]" />
             </>
           }
-          title="Let's talk about the work."
+          title="Trusted by local brands."
           scrollHint="Scroll to expand"
           startWidth={38}
           startHeight={54}
@@ -1005,20 +1005,21 @@ export default function Home() {
           <div className="relative max-w-2xl">
             <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.22em] text-white/80 backdrop-blur">
               <span className="h-1.5 w-1.5 rounded-full" style={{ background: ACCENT }} />
-              Start a project
+              Work with us
             </p>
             <h2 className="mt-6 text-4xl font-extrabold leading-[1.05] tracking-tight text-white md:text-6xl">
-              Tell us what you{" "}
+              The brands you see every day —{" "}
               <span
                 className="bg-clip-text text-transparent"
                 style={{ backgroundImage: `linear-gradient(100deg, #ff7a6d, ${ACCENT} 60%, #ffc4bd)` }}
               >
-                need done.
+                we run their pages.
               </span>
             </h2>
             <p className="mx-auto mt-5 max-w-lg text-base font-medium leading-relaxed text-white/65">
-              Content, a shoot, ads, a website, or a place in Roshan Bharat.
-              WhatsApp us what the business does and we&apos;ll say where we&apos;d start.
+              Schools, hospitals, marble houses, dealerships — RB Social Branding handles social
+              media for businesses across Kishangarh and Ajmer. Yours could be next. WhatsApp us to
+              start.
             </p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-5">
               <a
