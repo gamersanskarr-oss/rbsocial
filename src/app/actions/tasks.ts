@@ -55,7 +55,7 @@ export async function createSelfTask(formData: FormData): Promise<SubmitState> {
     assignedToId: user.id,
     deadline: Timestamp.fromDate(now),
     status: "COMPLETED",
-    type: null,
+    type: "Manual task",
     slideCount: null,
     payAmount,
     quotedAmount: payAmount,

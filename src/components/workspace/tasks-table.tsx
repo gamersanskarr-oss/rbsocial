@@ -459,9 +459,9 @@ export default function TasksTable({
                     {t.lateSubmission && (
                       <span
                         className="ml-1.5 inline-block whitespace-nowrap rounded-full bg-warn-soft px-2 py-0.5 text-[10px] font-bold text-warn ring-1 ring-inset ring-warn-line"
-                        title="Submitted after the deadline"
+                        title="Submitted after the deadline — counted as a missed deadline"
                       >
-                        late
+                        missed
                       </span>
                     )}
                     {t.missReason && (

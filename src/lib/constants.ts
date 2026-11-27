@@ -20,6 +20,7 @@ export const DEFAULT_TASK_TYPES = [
   "Video Edit",
   "Videography",
   "Shoot + Edit",
+  "Manual task",
 ];
 
 export const BILLING_MODELS = [
