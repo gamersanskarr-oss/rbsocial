@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createSelfTask } from "@/app/actions/tasks";
 import { useToast } from "@/components/toast";
 
-/** "Log urgent task" — employees can log work nobody assigned in the system.
+/** "Manual task" — employees can log work nobody assigned in the system.
     It lands straight in the review queue with their pay quote. */
 export default function SelfTaskDialog({ clients }: { clients: { id: string; name: string }[] }) {
   const [open, setOpen] = useState(false);
@@ -50,7 +50,7 @@ export default function SelfTaskDialog({ clients }: { clients: { id: string; nam
         >
           <path d="M12 5v14M5 12h14" />
         </svg>
-        Log urgent task
+        Manual task
       </button>
 
       {open && (
@@ -59,7 +59,7 @@ export default function SelfTaskDialog({ clients }: { clients: { id: string; nam
           <div className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-line bg-elevated p-7 shadow-lift">
             <div className="mb-6 flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-bold tracking-tight text-ink">Log urgent task</h2>
+                <h2 className="text-lg font-bold tracking-tight text-ink">Log a manual task</h2>
                 <p className="mt-0.5 text-sm font-medium text-muted">
                   Work nobody assigned in the system — it goes to your manager for approval.
                 </p>

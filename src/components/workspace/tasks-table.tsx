@@ -154,6 +154,7 @@ export default function TasksTable({
   employees,
   taskTypes,
   canSeePay = false,
+  canManage = true,
 }: {
   basePath: string;
   rows: TaskRow[];
@@ -161,6 +162,8 @@ export default function TasksTable({
   employees: { id: string; name: string; team?: string | null }[];
   taskTypes: string[];
   canSeePay?: boolean;
+  /** Edit + delete actions — employees view their own tasks, they don't manage them. */
+  canManage?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [fClient, setFClient] = useState("");
@@ -304,14 +307,16 @@ export default function TasksTable({
             </option>
           ))}
         </select>
-        <select value={fAssignee} onChange={(e) => setFAssignee(e.target.value)} className={selectCls}>
-          <option value="">All members</option>
-          {employees.map((e) => (
-            <option key={e.id} value={e.name}>
-              {e.name}
-            </option>
-          ))}
-        </select>
+        {employees.length > 0 && (
+          <select value={fAssignee} onChange={(e) => setFAssignee(e.target.value)} className={selectCls}>
+            <option value="">All members</option>
+            {employees.map((e) => (
+              <option key={e.id} value={e.name}>
+                {e.name}
+              </option>
+            ))}
+          </select>
+        )}
         <select value={fStatus} onChange={(e) => setFStatus(e.target.value)} className={selectCls}>
           <option value="">All statuses</option>
           <option value="PENDING">Pending</option>
@@ -478,25 +483,27 @@ export default function TasksTable({
                       ) : (
                         <span className="text-faint">—</span>
                       )}
-                      <Link
-                        href={`${basePath}/tasks/${t.id}`}
-                        title="Edit task"
-                        className="rounded-lg p-1.5 text-faint transition hover:bg-hover hover:text-ink"
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.8"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="h-3.5 w-3.5"
-                          aria-hidden
+                      {canManage && (
+                        <Link
+                          href={`${basePath}/tasks/${t.id}`}
+                          title="Edit task"
+                          className="rounded-lg p-1.5 text-faint transition hover:bg-hover hover:text-ink"
                         >
-                          <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                        </svg>
-                      </Link>
-                      <DeleteTaskButton taskId={t.id} />
+                          <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="h-3.5 w-3.5"
+                            aria-hidden
+                          >
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+                          </svg>
+                        </Link>
+                      )}
+                      {canManage && <DeleteTaskButton taskId={t.id} />}
                     </div>
                   </td>
                 </tr>

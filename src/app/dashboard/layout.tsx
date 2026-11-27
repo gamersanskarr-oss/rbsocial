@@ -11,8 +11,9 @@ const buildNav = (openTasks: number) => [
   {
     label: "My work",
     items: [
+      { href: "/dashboard", label: "Overview", icon: "overview" as const },
       {
-        href: "/dashboard",
+        href: "/dashboard/tasks",
         label: "My Tasks",
         icon: "my-tasks" as const,
         badge: openTasks,

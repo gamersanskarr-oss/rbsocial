@@ -196,9 +196,23 @@ export function DashboardShell({
     .join("")
     .toUpperCase();
 
+  // Active = exact match, or a prefix match that no longer nav href extends
+  // further. Without the longer-match check, "/dashboard" would light up on
+  // every subpage too.
+  const allHrefs = nav.flatMap((s) => s.items.map((i) => i.href));
+  const hasLongerMatch = (href: string) =>
+    allHrefs.some(
+      (other) =>
+        other !== href &&
+        other.startsWith(href + "/") &&
+        (pathname === other || pathname.startsWith(other + "/")),
+    );
+
   const renderItems = (items: NavItem[]) =>
     items.map((item) => {
-      const active = pathname === item.href || pathname.startsWith(item.href + "/");
+      const active =
+        pathname === item.href ||
+        (pathname.startsWith(item.href + "/") && !hasLongerMatch(item.href));
       return (
         <Link
           key={item.href}
