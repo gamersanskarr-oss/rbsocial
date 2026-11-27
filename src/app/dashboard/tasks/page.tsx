@@ -33,9 +33,15 @@ export default async function EmployeeTasksPage() {
     requestsCount: t.requests.length,
     payStatus: t.payStatus,
     payAmount: t.payAmount,
-    // The employee's own money: their quote while in review, the approved
-    // amount once decided. Unsubmitted tasks have nothing fixed yet.
-    pay: t.status === "COMPLETED" ? taskPay(t, rate ?? 0) : null,
+    // The employee's own money: their QUOTE while in review (taskPay would
+    // fall back to the base rate), the approved amount once decided.
+    // Unsubmitted tasks have nothing fixed yet.
+    pay:
+      t.status === "COMPLETED"
+        ? t.payStatus === "PENDING"
+          ? (t.payAmount ?? 0)
+          : taskPay(t, rate ?? 0)
+        : null,
     quotedAmount: t.quotedAmount ?? null,
     selfAssigned: !!t.selfAssigned,
     selfAssignedBy: t.selfAssignedBy,

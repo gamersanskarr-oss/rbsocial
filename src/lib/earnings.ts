@@ -37,9 +37,13 @@ export function computeEarnings(
   const isApproved = (t: { payStatus?: string | null }) =>
     !t.payStatus || t.payStatus === "NONE" || t.payStatus === "APPROVED";
   const done = tasks.filter((t) => t.status === "COMPLETED" && isApproved(t));
+  // Pending rows show the employee's QUOTED amount — taskPay falls back to
+  // the base rate for unapproved quotes, which is the payout figure, not
+  // what the employee asked for.
+  const pendingPay = (t: TaskWithRefs) => t.payAmount ?? 0;
   const pendingAmount = tasks
     .filter((t) => t.status === "COMPLETED" && t.payStatus === "PENDING")
-    .reduce((s, t) => s + pay(t), 0);
+    .reduce((s, t) => s + pendingPay(t), 0);
   const totalEarned = done.reduce((s, t) => s + pay(t), 0);
 
   const missesByMonth = new Map<string, number>();
@@ -86,7 +90,7 @@ export function computeEarnings(
       status: t.status,
       approval: t.approval,
       monthKey: `${ref.getFullYear()}-${ref.getMonth()}`,
-      pay: pay(t),
+      pay: t.status === "COMPLETED" && t.payStatus === "PENDING" ? pendingPay(t) : pay(t),
     };
   });
 
