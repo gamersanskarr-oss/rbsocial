@@ -25,6 +25,9 @@ export type TaskRow = {
   requestsCount: number;
   payStatus: string | null;
   payAmount: number | null;
+  /** Employee's own pay for this task (quote or approved) — null when nothing
+      is fixed yet (task not submitted). */
+  pay?: number | null;
   selfAssigned?: boolean | null;
   selfAssignedBy?: string | null;
 };
@@ -155,6 +158,7 @@ export default function TasksTable({
   taskTypes,
   canSeePay = false,
   canManage = true,
+  showPay = false,
 }: {
   basePath: string;
   rows: TaskRow[];
@@ -164,6 +168,8 @@ export default function TasksTable({
   canSeePay?: boolean;
   /** Edit + delete actions — employees view their own tasks, they don't manage them. */
   canManage?: boolean;
+  /** Per-task pay column (employee's own quoted/approved amounts). */
+  showPay?: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [fClient, setFClient] = useState("");
@@ -269,6 +275,7 @@ export default function TasksTable({
   };
 
   const selectCls = "input w-auto min-w-32 px-3 py-1.5 text-xs font-semibold";
+  const colCount = 8 + (showPay ? 1 : 0);
 
   return (
     <div className="card overflow-hidden">
@@ -370,6 +377,7 @@ export default function TasksTable({
               <SortTh label="Assigned to" k="assignee" sort={sort} onSort={onSort} />
               <SortTh label="Deadline" k="deadline" sort={sort} onSort={onSort} />
               <SortTh label="Status" k="status" sort={sort} onSort={onSort} />
+              {showPay && <th className="th">Pay (₹)</th>}
               <th className="th">Requests</th>
               <th className="th">Submission</th>
             </tr>
@@ -377,14 +385,14 @@ export default function TasksTable({
           <tbody className="divide-y divide-line">
             {rows.length === 0 && (
               <tr>
-                <td className="td py-10 text-center text-faint" colSpan={8}>
+                <td className="td py-10 text-center text-faint" colSpan={colCount}>
                   No tasks yet — assign the first one above.
                 </td>
               </tr>
             )}
             {rows.length > 0 && filtered.length === 0 && (
               <tr>
-                <td className="td py-10 text-center text-faint" colSpan={8}>
+                <td className="td py-10 text-center text-faint" colSpan={colCount}>
                   No tasks match the current filters.
                 </td>
               </tr>
@@ -462,6 +470,28 @@ export default function TasksTable({
                       </span>
                     )}
                   </td>
+                  {showPay && (
+                    <td className="td whitespace-nowrap">
+                      {t.pay != null ? (
+                        <span
+                          className={`font-bold ${
+                            t.status === "COMPLETED" && (!t.approval || t.approval === "APPROVED")
+                              ? "text-ok"
+                              : "text-warn"
+                          }`}
+                          title={
+                            t.status === "COMPLETED" && (!t.approval || t.approval === "APPROVED")
+                              ? "Approved amount"
+                              : "Your quoted amount — awaiting approval"
+                          }
+                        >
+                          ₹{t.pay.toLocaleString("en-IN")}
+                        </span>
+                      ) : (
+                        <span className="text-faint">—</span>
+                      )}
+                    </td>
+                  )}
                   <td className="td">
                     {t.requestsCount > 0 ? (
                       <Link

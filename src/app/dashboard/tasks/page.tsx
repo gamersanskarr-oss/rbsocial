@@ -1,5 +1,5 @@
 import { requireEmployee } from "@/lib/auth";
-import { listClientsByAssignee, listTaskTypes, listTasksForUser } from "@/lib/data";
+import { getUser, listClientsByAssignee, listTaskTypes, listTasksForUser, taskPay } from "@/lib/data";
 import { PageHeader } from "@/components/ui";
 import SelfTaskDialog from "../self-task-dialog";
 import TasksTable, { type TaskRow } from "@/components/workspace/tasks-table";
@@ -8,11 +8,13 @@ export const dynamic = "force-dynamic";
 
 export default async function EmployeeTasksPage() {
   const user = await requireEmployee();
-  const [tasks, taskTypes, myClients] = await Promise.all([
+  const [fresh, tasks, taskTypes, myClients] = await Promise.all([
+    getUser(user.id),
     listTasksForUser(user.id),
     listTaskTypes(),
     listClientsByAssignee(user.id),
   ]);
+  const rate = fresh?.perPostPay ?? null;
 
   const rows: TaskRow[] = tasks.map((t) => ({
     id: t.id,
@@ -31,6 +33,9 @@ export default async function EmployeeTasksPage() {
     requestsCount: t.requests.length,
     payStatus: t.payStatus,
     payAmount: t.payAmount,
+    // The employee's own money: their quote while in review, the approved
+    // amount once decided. Unsubmitted tasks have nothing fixed yet.
+    pay: t.status === "COMPLETED" ? taskPay(t, rate ?? 0) : null,
     selfAssigned: !!t.selfAssigned,
     selfAssignedBy: t.selfAssignedBy,
   }));
@@ -57,6 +62,7 @@ export default async function EmployeeTasksPage() {
         employees={[]}
         taskTypes={taskTypes}
         canManage={false}
+        showPay
       />
     </div>
   );
