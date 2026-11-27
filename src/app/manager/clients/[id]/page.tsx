@@ -146,7 +146,7 @@ export default async function ManagerClientDetailPage({
                     <td className="td whitespace-nowrap text-muted">
                       <DueTime iso={t.deadline.toISOString()} dateOnly />
                     </td>
-                    <td className="td"><StatusBadge status={t.status} /></td>
+                    <td className="td"><StatusBadge status={t.status} approval={t.approval} /></td>
                   </tr>
                 ))}
               </tbody>

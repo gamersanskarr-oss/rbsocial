@@ -225,7 +225,7 @@ export default async function AdminClientDetailPage({
                     <p className="text-sm font-semibold text-ink">{t.topic}</p>
                     <p className="text-xs font-medium text-faint">{t.assignedTo.name}</p>
                   </div>
-                  <StatusBadge status={t.status} />
+                  <StatusBadge status={t.status} approval={t.approval} />
                 </li>
               ))}
             </ul>

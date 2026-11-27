@@ -85,7 +85,7 @@ export default async function TaskDetailPage({
               )}
             </div>
           </div>
-          <StatusBadge status={task.status} />
+          <StatusBadge status={task.status} approval={task.approval} />
         </div>
       </div>
 
@@ -163,10 +163,10 @@ export default async function TaskDetailPage({
                     <path d="M20 6L9 17l-5-5" />
                   </svg>
                 </span>
-                <h2 className={`text-sm font-bold ${task.lateSubmission ? "text-warn" : "text-ok"}`}>
+                <h2 className={`text-sm font-bold ${task.lateSubmission ? "text-warn" : "text-info"}`}>
                   {task.lateSubmission
-                    ? "Task completed — submitted late ⚠"
-                    : "Task completed"}
+                    ? "Task submitted late ⚠ — waiting for review"
+                    : "Task submitted — waiting for review"}
                 </h2>
               </div>
               <p className={`mt-3 text-sm font-medium ${task.lateSubmission ? "text-warn" : "text-ok"}`}>

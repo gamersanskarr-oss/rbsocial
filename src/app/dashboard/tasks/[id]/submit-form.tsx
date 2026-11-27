@@ -23,14 +23,14 @@ export default function SubmitTaskForm({
       <input type="hidden" name="taskId" value={taskId} />
       <div>
         <label className="mb-1 block text-sm text-muted">
-          Final design link (Canva, Drive, etc.)
+          Google Drive link
         </label>
         <input
           name="submissionLink"
           type="url"
           required
           className="input"
-          placeholder="https://canva.com/design/…"
+          placeholder="https://drive.google.com/…"
         />
       </div>
       <div>

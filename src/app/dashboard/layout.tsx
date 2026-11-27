@@ -29,29 +29,73 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // earnings box and bonus math below never see stale numbers.
   await checkMissedDeadlines();
 
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
-  const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1);
-
   const [fresh, myTasks] = await Promise.all([getUser(user.id), listTasksForUser(user.id)]);
   const nav = buildNav(myTasks.filter((t) => t.status !== "COMPLETED").length);
 
   const rate = fresh?.perPostPay ?? null;
-  const done = myTasks.filter((t) => t.status === "COMPLETED");
-  const earned = (t: (typeof done)[number]) => taskPay(t, rate ?? 0);
+  const pay = (t: (typeof myTasks)[number]) => taskPay(t, rate ?? 0);
+  // "Earnings" counts APPROVED work only — submitted-but-unreviewed money is
+  // shown separately as "Pending" until the manager decides.
+  const isApproved = (t: { approval?: string | null }) =>
+    !t.approval || t.approval === "NONE" || t.approval === "APPROVED";
+  const done = myTasks.filter((t) => t.status === "COMPLETED" && isApproved(t));
+  const pendingAmount = myTasks
+    .filter((t) => t.status === "COMPLETED" && t.approval === "PENDING")
+    .reduce((s, t) => s + pay(t), 0);
 
-  const totalEarned = done.reduce((s, t) => s + earned(t), 0);
-  const monthEarned = done
-    .filter((t) => t.completedAt && t.completedAt >= monthStart && t.completedAt < monthEnd)
-    .reduce((s, t) => s + earned(t), 0);
-  const monthMisses = myTasks.filter(
-    (t) => t.status === "MISSED" && t.deadline >= monthStart && t.deadline < monthEnd
-  ).length;
-  const monthBonus =
-    monthMisses <= BONUS_GRACE_MISSES && !payoutStatus(fresh?.missedDeadlines ?? 0).reduced
-      ? monthEarned * PAYOUT_BONUS
-      : 0;
+  const totalEarned = done.reduce((s, t) => s + pay(t), 0);
+
+  // Monthly breakdown for the earnings-box month filter: approved earnings
+  // grouped by completion month, with that month's on-time bonus.
+  const missesByMonth = new Map<string, number>();
+  for (const t of myTasks) {
+    if (t.status !== "MISSED") continue;
+    const key = `${t.deadline.getFullYear()}-${t.deadline.getMonth()}`;
+    missesByMonth.set(key, (missesByMonth.get(key) ?? 0) + 1);
+  }
+  const earnedByMonth = new Map<string, number>();
+  for (const t of done) {
+    if (!t.completedAt) continue;
+    const key = `${t.completedAt.getFullYear()}-${t.completedAt.getMonth()}`;
+    earnedByMonth.set(key, (earnedByMonth.get(key) ?? 0) + pay(t));
+  }
+  const now = new Date();
+  const currentKey = `${now.getFullYear()}-${now.getMonth()}`;
+  if (!earnedByMonth.has(currentKey)) earnedByMonth.set(currentKey, 0);
+
+  const monthly = [...earnedByMonth.entries()]
+    .map(([key, earned]) => {
+      const [y, m] = key.split("-").map(Number);
+      const misses = missesByMonth.get(key) ?? 0;
+      const bonus =
+        !payoutStatus(fresh?.missedDeadlines ?? 0).reduced && misses <= BONUS_GRACE_MISSES
+          ? earned * PAYOUT_BONUS
+          : 0;
+      return {
+        key,
+        label: new Date(y, m, 1).toLocaleDateString("en-IN", { month: "short", year: "numeric" }),
+        earned,
+        bonus,
+      };
+    })
+    .sort((a, b) => (a.key < b.key ? 1 : -1));
+
+  // One row per task for the employee's month-wise Excel download. Finished
+  // work belongs to its completion month; open/missed work to its deadline.
+  const exportRows = myTasks.map((t) => {
+    const ref = t.completedAt ?? t.deadline;
+    return {
+      topic: t.topic,
+      client: t.client.name,
+      type: t.type,
+      slideCount: t.slideCount,
+      deadlineISO: t.deadline.toISOString(),
+      status: t.status,
+      approval: t.approval,
+      monthKey: `${ref.getFullYear()}-${ref.getMonth()}`,
+      pay: pay(t),
+    };
+  });
 
   return (
     <DashboardShell
@@ -61,8 +105,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
         perPostPay: rate,
         completedCount: done.length,
         totalEarned,
-        monthEarned,
-        monthBonus,
+        pendingAmount,
+        monthly,
+        exportRows,
       }}
     >
       {children}

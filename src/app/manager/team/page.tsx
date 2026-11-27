@@ -191,7 +191,7 @@ export default async function ManagerTeamPage({
                               {latest.client.name} · due {fmtDate(latest.deadline)}
                             </p>
                           </div>
-                          <StatusBadge status={latest.status} />
+                          <StatusBadge status={latest.status} approval={latest.approval} />
                         </div>
                       ) : (
                         <span className="text-xs font-medium text-faint">No tasks yet</span>

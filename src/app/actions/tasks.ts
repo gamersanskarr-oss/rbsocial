@@ -1,11 +1,81 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { adminDb, Timestamp, FieldValue, parseISTDateTime, shiftISTDay } from "@/lib/data";
+import { adminDb, Timestamp, FieldValue, parseISTDateTime, shiftISTDay, clientAssignees } from "@/lib/data";
 import { requireAdminOrManager, requireUser } from "@/lib/auth";
 import { rateLimit } from "@/lib/rate-limit";
 
 export type SubmitState = { error?: string; success?: string };
+
+/** Employee logs urgent work nobody assigned in the system. The task lands
+    directly in the review queue ("Pending review") with the employee's pay
+    quote — the admin/manager approves or declines it like any submission. */
+export async function createSelfTask(formData: FormData): Promise<SubmitState> {
+  const user = await requireUser();
+  if (!rateLimit(`selftask:${user.id}`, 10, 60 * 60 * 1000)) {
+    return { error: "Too many submissions — wait a bit and try again." };
+  }
+  const topic = String(formData.get("topic") ?? "").trim();
+  const clientId = String(formData.get("clientId") ?? "");
+  const givenBy = String(formData.get("givenBy") ?? "").trim().slice(0, 60);
+  const link = String(formData.get("submissionLink") ?? "").trim();
+  const details = String(formData.get("description") ?? "").trim().slice(0, 1000);
+  const payRaw = String(formData.get("payAmount") ?? "").trim();
+  const payAmount = payRaw === "" ? null : Number(payRaw);
+
+  if (!topic || !clientId || !givenBy || !link) {
+    return { error: "Topic, client, given-by and work link are required." };
+  }
+  if (payAmount === null || isNaN(payAmount) || payAmount < 0) {
+    return { error: "Enter your quoted amount for this task." };
+  }
+  try {
+    const u = new URL(link);
+    if (u.protocol !== "https:" && u.protocol !== "http:") throw new Error();
+  } catch {
+    return { error: "That does not look like a valid work link." };
+  }
+
+  // The client must be one of the employee's own assigned clients.
+  const clientDoc = await adminDb.collection("clients").doc(clientId).get();
+  if (!clientDoc.exists) return { error: "Client not found." };
+  if (!clientAssignees(clientDoc.data()!).includes(user.id)) {
+    return { error: "That client is not assigned to you." };
+  }
+
+  const now = new Date();
+  await adminDb.collection("tasks").add({
+    topic,
+    description: details,
+    clientId,
+    assignedToId: user.id,
+    deadline: Timestamp.fromDate(now),
+    status: "COMPLETED",
+    type: null,
+    slideCount: null,
+    payAmount,
+    payStatus: "PENDING",
+    missReason: null,
+    lateSubmission: false,
+    approval: "PENDING",
+    reviewNote: null,
+    referenceLink: null,
+    submissionLink: link,
+    completedAt: Timestamp.fromDate(now),
+    createdAt: Timestamp.fromDate(now),
+    selfAssigned: true,
+    selfAssignedBy: givenBy,
+  });
+
+  for (const p of [
+    "/dashboard",
+    "/admin/tasks",
+    "/manager/tasks",
+    "/admin",
+    "/admin/payouts",
+  ]) revalidatePath(p);
+  return { success: "Task logged — waiting for manager review." };
+}
 
 export async function submitTask(_prev: SubmitState, formData: FormData): Promise<SubmitState> {
   const user = await requireUser();
@@ -24,6 +94,11 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
   try {
     const u = new URL(submissionLink);
     if (u.protocol !== "https:" && u.protocol !== "http:") throw new Error();
+    // Drive-only policy: final designs live in Google Drive so review and
+    // archiving stay consistent.
+    if (u.hostname !== "drive.google.com") {
+      return { error: "Only Google Drive links are accepted — upload the design to Drive and share the link." };
+    }
   } catch {
     return { error: "That does not look like a valid URL." };
   }
@@ -67,7 +142,7 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
   revalidatePath(`/admin/tasks/${taskId}`);
   revalidatePath(`/manager/tasks/${taskId}`);
   revalidatePath("/admin");
-  return { success: "Task marked as completed." };
+  return { success: "Task submitted — waiting for manager review." };
 }
 
 /** Employee explains why a task is late/missed — visible to admin & manager. */

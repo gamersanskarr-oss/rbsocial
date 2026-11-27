@@ -72,6 +72,8 @@ export type TaskRecord = {
   submissionLink: string | null;
   completedAt: Date | null;
   createdAt: Date | null;
+  selfAssigned?: boolean | null; // employee-initiated — nobody assigned it in the system
+  selfAssignedBy?: string | null; // who the employee says gave/requested the work
 };
 
 export type RequestRecord = {

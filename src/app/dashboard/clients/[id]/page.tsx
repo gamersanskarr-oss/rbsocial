@@ -159,7 +159,7 @@ export default async function MyClientDetailPage({
                     </span>
                   )}
                 </Link>
-                <StatusBadge status={t.status} />
+                <StatusBadge status={t.status} approval={t.approval} />
               </li>
             ))}
           </ul>

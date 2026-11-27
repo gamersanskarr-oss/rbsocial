@@ -25,6 +25,8 @@ export type TaskRow = {
   requestsCount: number;
   payStatus: string | null;
   payAmount: number | null;
+  selfAssigned?: boolean | null;
+  selfAssignedBy?: string | null;
 };
 
 type SortKey = "topic" | "client" | "assignee" | "deadline" | "status";
@@ -186,7 +188,19 @@ export default function TasksTable({
       if (q && !`${r.topic} ${r.description}`.toLowerCase().includes(q)) return false;
       if (fClient && r.clientName !== fClient) return false;
       if (fAssignee && r.assigneeName !== fAssignee) return false;
-      if (fStatus && r.status !== fStatus) return false;
+      if (fStatus) {
+        if (fStatus === "REVIEW") {
+          if (!(r.status === "COMPLETED" && r.approval === "PENDING")) return false;
+        } else if (fStatus === "APPROVED") {
+          if (
+            !(
+              r.status === "COMPLETED" &&
+              (!r.approval || r.approval === "NONE" || r.approval === "APPROVED")
+            )
+          )
+            return false;
+        } else if (r.status !== fStatus) return false;
+      }
       if (fType && r.type !== fType) return false;
       if (fApproval && (r.approval ?? "NONE") !== fApproval) return false;
       if (fDeadline) {
@@ -227,10 +241,16 @@ export default function TasksTable({
         (s, r) => ({
           total: s.total + 1,
           pending: s.pending + (r.status === "PENDING" ? 1 : 0),
-          completed: s.completed + (r.status === "COMPLETED" ? 1 : 0),
+          review:
+            s.review + (r.status === "COMPLETED" && r.approval === "PENDING" ? 1 : 0),
+          approved:
+            s.approved +
+            (r.status === "COMPLETED" && (!r.approval || r.approval === "NONE" || r.approval === "APPROVED")
+              ? 1
+              : 0),
           missed: s.missed + (r.status === "MISSED" ? 1 : 0),
         }),
-        { total: 0, pending: 0, completed: 0, missed: 0 },
+        { total: 0, pending: 0, review: 0, approved: 0, missed: 0 },
       ),
     [filtered],
   );
@@ -250,11 +270,12 @@ export default function TasksTable({
   return (
     <div className="card overflow-hidden">
       {/* Counters — reflect the current filters */}
-      <div className="grid grid-cols-2 gap-3 border-b border-line p-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 border-b border-line p-4 sm:grid-cols-3 lg:grid-cols-5">
         {[
           { label: "Total tasks", value: stats.total },
           { label: "Pending", value: stats.pending, dot: "bg-amber-400" },
-          { label: "Completed", value: stats.completed, dot: "bg-emerald-500" },
+          { label: "In review", value: stats.review, dot: "bg-sky-400" },
+          { label: "Approved", value: stats.approved, dot: "bg-emerald-500" },
           { label: "Missed", value: stats.missed, dot: "bg-rose-500" },
         ].map((s) => (
           <div key={s.label} className="rounded-2xl border border-line bg-panel p-3.5">
@@ -294,7 +315,8 @@ export default function TasksTable({
         <select value={fStatus} onChange={(e) => setFStatus(e.target.value)} className={selectCls}>
           <option value="">All statuses</option>
           <option value="PENDING">Pending</option>
-          <option value="COMPLETED">Completed</option>
+          <option value="REVIEW">In review</option>
+          <option value="APPROVED">Approved</option>
           <option value="MISSED">Missed</option>
         </select>
         <select value={fType} onChange={(e) => setFType(e.target.value)} className={selectCls}>
@@ -374,6 +396,14 @@ export default function TasksTable({
                       {t.topic}
                     </Link>
                     <p className="truncate text-xs text-faint">{t.description}</p>
+                    {t.selfAssigned && (
+                      <span
+                        title={t.selfAssignedBy ? `Logged by employee · given by: ${t.selfAssignedBy}` : "Logged by the employee"}
+                        className="mt-1 inline-block whitespace-nowrap rounded-full bg-info-soft px-2 py-0.5 text-[10px] font-bold text-info ring-1 ring-inset ring-info-line"
+                      >
+                        self{t.selfAssignedBy ? ` · ${t.selfAssignedBy}` : ""}
+                      </span>
+                    )}
                   </td>
                   <td className="td">
                     {t.type ? (
@@ -391,7 +421,7 @@ export default function TasksTable({
                     <DueTime iso={t.deadlineISO} />
                   </td>
                   <td className="td">
-                    <StatusBadge status={t.status} />
+                    <StatusBadge status={t.status} approval={t.approval} />
                     {t.status === "COMPLETED" && t.approval === "PENDING" && (
                       <Link
                         href={`${basePath}/tasks/${t.id}`}

@@ -44,6 +44,7 @@ export default async function ManagerReportsPage({
     assigneeName: t.assignedTo.name,
     deadlineISO: t.deadline.toISOString(),
     status: t.status,
+    approval: t.approval,
   }));
 
   return (

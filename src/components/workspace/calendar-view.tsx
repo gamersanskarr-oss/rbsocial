@@ -30,6 +30,7 @@ export default async function CalendarView({ basePath }: { basePath: string }) {
           id: t.id,
           topic: `${t.topic} · ${t.assignedTo.name}`,
           status: t.status,
+          approval: t.approval,
           deadline: t.deadline.toISOString(),
           clientName: t.client.name,
           assignee: t.assignedTo.name,

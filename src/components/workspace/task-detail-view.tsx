@@ -71,7 +71,7 @@ export default async function TaskDetailView({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <StatusBadge status={task.status} />
+            <StatusBadge status={task.status} approval={task.approval} />
             {task.lateSubmission && (
               <span className="rounded-full bg-warn-soft px-2.5 py-1 text-xs font-bold text-warn ring-1 ring-inset ring-warn-line">
                 Late submission
@@ -86,6 +86,13 @@ export default async function TaskDetailView({
           {/* Brief */}
           <div className="card p-6">
             <h2 className="section-label mb-3">Brief</h2>
+            {task.selfAssignedBy && (
+              <p className="mb-3">
+                <span className="inline-block rounded-full bg-info-soft px-2.5 py-1 text-[11px] font-semibold text-info ring-1 ring-inset ring-info-line">
+                  Self-initiated · Given by: {task.selfAssignedBy}
+                </span>
+              </p>
+            )}
             <p className="whitespace-pre-line text-[15px] leading-relaxed text-ink">
               {task.description}
             </p>

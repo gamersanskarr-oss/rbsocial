@@ -234,7 +234,7 @@ export default async function AdminOverview() {
                     <DueTime iso={t.deadline.toISOString()} dateOnly />
                   </p>
                 </div>
-                <StatusBadge status={t.status} />
+                <StatusBadge status={t.status} approval={t.approval} />
               </li>
             ))}
           </ul>

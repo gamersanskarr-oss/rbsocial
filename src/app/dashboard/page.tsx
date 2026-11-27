@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { requireEmployee } from "@/lib/auth";
-import { getUser, listTasksForUser } from "@/lib/data";
+import { getUser, listClientsByAssignee, listTasksForUser } from "@/lib/data";
 import { checkMissedDeadlines, MISSED_DEADLINE_LIMIT, payoutStatus } from "@/lib/deadlines";
 import { StatusBadge } from "@/components/ui";
 import { TimeGreeting } from "@/components/time-greeting";
 import { DueTime } from "@/components/due-time";
+import SelfTaskDialog from "./self-task-dialog";
 
 const firstName = (name: string) => name.split(" ")[0];
 
@@ -59,6 +60,7 @@ export default async function DashboardPage({
   const missedCount = (await getUser(user.id))?.missedDeadlines ?? user.missedDeadlines;
 
   const allTasks = await listTasksForUser(user.id);
+  const myClients = (await listClientsByAssignee(user.id)).map((c) => ({ id: c.id, name: c.name }));
 
   // Filters — client-wise and status-wise
   const sp = await searchParams;
@@ -73,11 +75,13 @@ export default async function DashboardPage({
   const payout = payoutStatus(missedCount);
   // Missed tasks stay actionable — the employee can still submit them late
   const pending = tasks.filter((t) => t.status !== "COMPLETED");
+  // Server component: "now" at render time is the point — per-request freshness.
+  const nowMs = Date.now(); // eslint-disable-line react-hooks/purity
   const urgent = pending.filter(
-    (t) => t.status === "MISSED" || t.deadline.getTime() - Date.now() < 48 * 36e5
+    (t) => t.status === "MISSED" || t.deadline.getTime() - nowMs < 48 * 36e5
   );
   const rest = pending.filter(
-    (t) => t.status !== "MISSED" && t.deadline.getTime() - Date.now() >= 48 * 36e5
+    (t) => t.status !== "MISSED" && t.deadline.getTime() - nowMs >= 48 * 36e5
   );
   const done = tasks.filter((t) => t.status === "COMPLETED");
   const completed = done.length;
@@ -87,7 +91,10 @@ export default async function DashboardPage({
 
   return (
     <div className="space-y-8">
-      <TimeGreeting name={firstName(user.name)} pending={pending.length} />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <TimeGreeting name={firstName(user.name)} pending={pending.length} />
+        <SelfTaskDialog clients={myClients} />
+      </div>
 
       {/* vibe stats */}
       <div className="grid grid-cols-3 gap-3">
@@ -252,7 +259,7 @@ export default async function DashboardPage({
               >
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="text-sm font-bold text-ink">{t.topic}</h3>
-                  <StatusBadge status={t.status} />
+                  <StatusBadge status={t.status} approval={t.approval} />
                 </div>
                 {t.type && (
                   <p className="mt-1.5">
@@ -331,7 +338,7 @@ export default async function DashboardPage({
                     <td className="td text-muted">
                       <DueTime iso={t.deadline.toISOString()} dateOnly />
                     </td>
-                    <td className="td"><StatusBadge status={t.status} /></td>
+                    <td className="td"><StatusBadge status={t.status} approval={t.approval} /></td>
                   </tr>
                 ))}
               </tbody>

@@ -34,6 +34,8 @@ export default async function TasksView({ basePath }: { basePath: string }) {
     requestsCount: t.requests.length,
     payStatus: t.payStatus,
     payAmount: t.payAmount,
+    selfAssigned: !!t.selfAssigned,
+    selfAssignedBy: t.selfAssignedBy,
   }));
 
   return (

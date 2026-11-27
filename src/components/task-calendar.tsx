@@ -12,6 +12,7 @@ export type CalendarTask = {
   id: string;
   topic: string;
   status: string;
+  approval?: string | null;
   deadline: string; // ISO
   clientName: string;
   assignee?: string | null;
@@ -31,12 +32,26 @@ const chipStyles: Record<string, string> = {
   PENDING: "bg-warn-soft text-warn ring-warn-line hover:bg-warn-soft/60",
   COMPLETED: "bg-ok-soft text-ok ring-ok-line hover:bg-ok-soft/60",
   MISSED: "bg-bad-soft text-bad ring-bad-line hover:bg-bad-soft/60",
+  REVIEW: "bg-info-soft text-info ring-info-line hover:bg-info-soft/60",
 };
 
 const dotStyles: Record<string, string> = {
   PENDING: "bg-amber-400",
   COMPLETED: "bg-emerald-500",
   MISSED: "bg-rose-500",
+  REVIEW: "bg-sky-400",
+};
+
+/** Display state: a submitted task awaiting review is its own colour — it
+    does not read as "Completed". */
+const displayState = (t: { status: string; approval?: string | null }) =>
+  t.status === "COMPLETED" && t.approval === "PENDING" ? "REVIEW" : t.status;
+
+const stateLabel: Record<string, string> = {
+  PENDING: "Pending",
+  COMPLETED: "Approved",
+  MISSED: "Missed",
+  REVIEW: "Pending review",
 };
 
 function AssignModal({
@@ -395,7 +410,8 @@ export function TaskCalendar({
           )}
           <div className="hidden items-center gap-4 text-xs font-medium text-muted lg:flex">
             <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-amber-400" />Pending</span>
-            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" />Completed</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-sky-400" />In review</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-emerald-500" />Approved</span>
             <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-rose-500" />Missed</span>
           </div>
         </div>
@@ -466,18 +482,19 @@ export function TaskCalendar({
                               ? "PENDING"
                               : t.status
                           : t.status;
+                        const ds = displayState({ status: st, approval: t.approval });
                         const label = t.type
                           ? `${t.type}${t.slideCount ? ` · ${t.slideCount}` : ""}`
                           : "Task";
                         const dl = new Date(movedDate ?? t.deadline);
                         const chip = (
                           <>
-                            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotStyles[st] ?? "bg-faint"}`} />
+                            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dotStyles[ds] ?? "bg-faint"}`} />
                             <span className="truncate">{label}</span>
                           </>
                         );
                         const cls = `flex w-full items-center gap-1.5 rounded-lg px-1.5 py-1 text-[11px] font-semibold ring-1 ring-inset transition ${
-                          chipStyles[st] ?? "bg-panel text-muted ring-line"
+                          chipStyles[ds] ?? "bg-panel text-muted ring-line"
                         } ${canCreate ? "cursor-grab active:cursor-grabbing" : ""} ${dragId === t.id ? "opacity-40" : ""}`;
                         const dragProps = canCreate
                           ? {
@@ -509,7 +526,7 @@ export function TaskCalendar({
                             <span className="mt-1 block text-[10px] font-medium text-faint">
                               {dl.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                               {t.type ? ` · ${t.type}${t.slideCount ? ` · ${t.slideCount} slides` : ""}` : ""}
-                              {` · ${st.charAt(0)}${st.slice(1).toLowerCase()}`}
+                              {` · ${stateLabel[ds] ?? ds}`}
                             </span>
                           </span>
                         );

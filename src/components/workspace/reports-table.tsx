@@ -11,6 +11,7 @@ export type ReportRow = {
   assigneeName: string;
   deadlineISO: string;
   status: string;
+  approval?: string | null;
 };
 
 type SortKey = "type" | "client" | "assignee";
@@ -109,10 +110,16 @@ export default function ReportsTable({
         (s, r) => ({
           total: s.total + 1,
           pending: s.pending + (r.status === "PENDING" ? 1 : 0),
-          completed: s.completed + (r.status === "COMPLETED" ? 1 : 0),
+          review:
+            s.review + (r.status === "COMPLETED" && r.approval === "PENDING" ? 1 : 0),
+          approved:
+            s.approved +
+            (r.status === "COMPLETED" && (!r.approval || r.approval === "NONE" || r.approval === "APPROVED")
+              ? 1
+              : 0),
           missed: s.missed + (r.status === "MISSED" ? 1 : 0),
         }),
-        { total: 0, pending: 0, completed: 0, missed: 0 },
+        { total: 0, pending: 0, review: 0, approved: 0, missed: 0 },
       ),
     [filtered],
   );
@@ -156,11 +163,12 @@ export default function ReportsTable({
   return (
     <div className="card overflow-hidden">
       {/* Counters — reflect the current filters */}
-      <div className="grid grid-cols-2 gap-3 border-b border-line p-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 border-b border-line p-4 sm:grid-cols-3 lg:grid-cols-5">
         {[
           { label: "Total tasks", value: stats.total },
           { label: "Pending", value: stats.pending, dot: "bg-amber-400" },
-          { label: "Completed", value: stats.completed, dot: "bg-emerald-500" },
+          { label: "In review", value: stats.review, dot: "bg-sky-400" },
+          { label: "Approved", value: stats.approved, dot: "bg-emerald-500" },
           { label: "Missed", value: stats.missed, dot: "bg-rose-500" },
         ].map((s) => (
           <div key={s.label} className="rounded-2xl border border-line bg-panel p-3.5">
