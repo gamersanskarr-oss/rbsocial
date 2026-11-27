@@ -31,11 +31,14 @@ export function computeEarnings(
   missedDeadlines: number,
 ): EarningsSummary {
   const pay = (t: TaskWithRefs) => taskPay(t, rate ?? 0);
-  const isApproved = (t: { approval?: string | null }) =>
-    !t.approval || t.approval === "NONE" || t.approval === "APPROVED";
+  // Price approval is ADMIN-only (payStatus) — a manager approving the task
+  // does not approve the money. Base-rate work (no quote involved) needs no
+  // approval.
+  const isApproved = (t: { payStatus?: string | null }) =>
+    !t.payStatus || t.payStatus === "NONE" || t.payStatus === "APPROVED";
   const done = tasks.filter((t) => t.status === "COMPLETED" && isApproved(t));
   const pendingAmount = tasks
-    .filter((t) => t.status === "COMPLETED" && t.approval === "PENDING")
+    .filter((t) => t.status === "COMPLETED" && t.payStatus === "PENDING")
     .reduce((s, t) => s + pay(t), 0);
   const totalEarned = done.reduce((s, t) => s + pay(t), 0);
 

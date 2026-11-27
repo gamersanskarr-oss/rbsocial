@@ -120,15 +120,16 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
   const dl = task.deadline;
   const deadlineDate =
     dl && typeof dl.toDate === "function" ? dl.toDate() : new Date(dl);
+  const isLate =
+    task.status === "MISSED" ||
+    (deadlineDate instanceof Date &&
+      !isNaN(deadlineDate.getTime()) &&
+      deadlineDate.getTime() < Date.now());
   const update: Record<string, unknown> = {
     status: "COMPLETED",
     submissionLink,
     completedAt: Timestamp.now(),
-    lateSubmission:
-      task.status === "MISSED" ||
-      (deadlineDate instanceof Date &&
-        !isNaN(deadlineDate.getTime()) &&
-        deadlineDate.getTime() < Date.now()),
+    lateSubmission: isLate,
     approval: "PENDING", // waits for admin/manager review
     reviewNote: null,
   };
@@ -142,6 +143,20 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
 
   await doc.ref.update(update);
 
+  // A late submission ALWAYS costs a strike. If the deadline scan had already
+  // flipped the task to MISSED, the strike was counted there — count it here
+  // only when the task was still PENDING (nobody loaded a dashboard since the
+  // deadline expired).
+  if (isLate && task.status !== "MISSED") {
+    try {
+      await adminDb.collection("users").doc(user.id).update({
+        missedDeadlines: FieldValue.increment(1),
+      });
+    } catch (err) {
+      console.error("late-submission strike increment failed:", err);
+    }
+  }
+
   revalidatePath("/dashboard");
   revalidatePath(`/dashboard/tasks/${taskId}`);
   revalidatePath("/admin/tasks");
@@ -149,7 +164,11 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
   revalidatePath(`/admin/tasks/${taskId}`);
   revalidatePath(`/manager/tasks/${taskId}`);
   revalidatePath("/admin");
-  return { success: "Task submitted — waiting for manager review." };
+  return {
+    success: isLate
+      ? "Task submitted late — counted as a missed deadline. Waiting for manager review."
+      : "Task submitted — waiting for manager review.",
+  };
 }
 
 /** Employee explains why a task is late/missed — visible to admin & manager. */

@@ -479,28 +479,33 @@ export default function TasksTable({
                         <div className="leading-tight">
                           <span
                             className={`block font-bold ${
-                              t.status === "COMPLETED" && (!t.approval || t.approval === "APPROVED")
+                              t.payStatus === "APPROVED"
                                 ? "text-ok"
-                                : "text-warn"
+                                : t.payStatus === "PENDING"
+                                  ? "text-warn"
+                                  : "text-ink"
                             }`}
                             title={
-                              t.status === "COMPLETED" && (!t.approval || t.approval === "APPROVED")
+                              t.payStatus === "APPROVED"
                                 ? "Approved amount"
-                                : "Your quoted amount — awaiting approval"
+                                : t.payStatus === "PENDING"
+                                  ? "Your quoted amount — awaiting admin approval"
+                                  : "Base rate"
                             }
                           >
                             ₹{t.pay.toLocaleString("en-IN")}
                           </span>
                           {/* Manager approved a different figure than the quote → show both */}
-                          {t.status === "COMPLETED" &&
-                          t.approval === "APPROVED" &&
+                          {t.payStatus === "APPROVED" &&
                           t.quotedAmount != null &&
                           t.quotedAmount !== t.pay ? (
                             <span className="block text-[10px] font-medium text-faint">
                               quoted ₹{t.quotedAmount.toLocaleString("en-IN")}
                             </span>
-                          ) : t.status === "COMPLETED" && t.approval === "PENDING" ? (
-                            <span className="block text-[10px] font-medium text-faint">your quote</span>
+                          ) : t.payStatus === "PENDING" ? (
+                            <span className="block text-[10px] font-medium text-faint">
+                              awaiting admin approval
+                            </span>
                           ) : null}
                         </div>
                       ) : (
