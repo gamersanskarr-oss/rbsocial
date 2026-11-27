@@ -36,6 +36,7 @@ export default async function EmployeeTasksPage() {
     // The employee's own money: their quote while in review, the approved
     // amount once decided. Unsubmitted tasks have nothing fixed yet.
     pay: t.status === "COMPLETED" ? taskPay(t, rate ?? 0) : null,
+    quotedAmount: t.quotedAmount ?? null,
     selfAssigned: !!t.selfAssigned,
     selfAssignedBy: t.selfAssignedBy,
   }));

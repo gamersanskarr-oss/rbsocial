@@ -28,6 +28,9 @@ export type TaskRow = {
   /** Employee's own pay for this task (quote or approved) — null when nothing
       is fixed yet (task not submitted). */
   pay?: number | null;
+  /** The employee's original quote, preserved when the manager approves a
+      different amount. */
+  quotedAmount?: number | null;
   selfAssigned?: boolean | null;
   selfAssignedBy?: string | null;
 };
@@ -473,20 +476,33 @@ export default function TasksTable({
                   {showPay && (
                     <td className="td whitespace-nowrap">
                       {t.pay != null ? (
-                        <span
-                          className={`font-bold ${
-                            t.status === "COMPLETED" && (!t.approval || t.approval === "APPROVED")
-                              ? "text-ok"
-                              : "text-warn"
-                          }`}
-                          title={
-                            t.status === "COMPLETED" && (!t.approval || t.approval === "APPROVED")
-                              ? "Approved amount"
-                              : "Your quoted amount — awaiting approval"
-                          }
-                        >
-                          ₹{t.pay.toLocaleString("en-IN")}
-                        </span>
+                        <div className="leading-tight">
+                          <span
+                            className={`block font-bold ${
+                              t.status === "COMPLETED" && (!t.approval || t.approval === "APPROVED")
+                                ? "text-ok"
+                                : "text-warn"
+                            }`}
+                            title={
+                              t.status === "COMPLETED" && (!t.approval || t.approval === "APPROVED")
+                                ? "Approved amount"
+                                : "Your quoted amount — awaiting approval"
+                            }
+                          >
+                            ₹{t.pay.toLocaleString("en-IN")}
+                          </span>
+                          {/* Manager approved a different figure than the quote → show both */}
+                          {t.status === "COMPLETED" &&
+                          t.approval === "APPROVED" &&
+                          t.quotedAmount != null &&
+                          t.quotedAmount !== t.pay ? (
+                            <span className="block text-[10px] font-medium text-faint">
+                              quoted ₹{t.quotedAmount.toLocaleString("en-IN")}
+                            </span>
+                          ) : t.status === "COMPLETED" && t.approval === "PENDING" ? (
+                            <span className="block text-[10px] font-medium text-faint">your quote</span>
+                          ) : null}
+                        </div>
                       ) : (
                         <span className="text-faint">—</span>
                       )}

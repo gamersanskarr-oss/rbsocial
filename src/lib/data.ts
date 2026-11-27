@@ -63,6 +63,7 @@ export type TaskRecord = {
   type: string | null; // e.g. "Static Post" | "Carousel" | custom category
   slideCount: number | null; // e.g. 8 for a Carousel task
   payAmount: number | null; // per-task amount (falls back to assignee's perPostPay)
+  quotedAmount?: number | null; // employee's original quote — kept when the manager approves a different amount
   payStatus: "NONE" | "PENDING" | "APPROVED" | null; // employee quotes start PENDING
   missReason: string | null; // why the task was late/missed — set by the assignee
   lateSubmission: boolean | null; // true when a MISSED task was submitted late

@@ -58,6 +58,7 @@ export async function createSelfTask(formData: FormData): Promise<SubmitState> {
     type: null,
     slideCount: null,
     payAmount,
+    quotedAmount: payAmount,
     payStatus: "PENDING",
     missReason: null,
     lateSubmission: false,
@@ -131,9 +132,11 @@ export async function submitTask(_prev: SubmitState, formData: FormData): Promis
     approval: "PENDING", // waits for admin/manager review
     reviewNote: null,
   };
-  // Employee quoting a different amount → pending until admin/manager approves
+  // Employee quoting a different amount → pending until admin/manager approves.
+  // quotedAmount preserves their original figure for the pay display.
   if (payAmount !== null && payAmount !== (task.payAmount ?? null)) {
     update.payAmount = payAmount;
+    update.quotedAmount = payAmount;
     update.payStatus = "PENDING";
   }
 
