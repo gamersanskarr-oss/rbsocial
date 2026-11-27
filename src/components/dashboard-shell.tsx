@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { logout } from "@/app/actions/auth";
 import { Logo } from "@/components/logo";
 import { ToastProvider } from "@/components/toast";
-import { taskStatusText } from "@/components/ui";
 
 export type NavIcon =
   | "overview"
@@ -166,30 +165,6 @@ export type ShellUser = {
   role: string;
 };
 
-export type PayBox = {
-  perPostPay: number | null;
-  completedCount: number;
-  totalEarned?: number;
-  /** Submitted work awaiting manager approval. */
-  pendingAmount?: number;
-  /** Approved earnings per month (most recent first) for the month filter. */
-  monthly?: { key: string; label: string; earned: number; bonus: number }[];
-  /** One row per task for the month-wise Excel download. monthKey is the
-      month the row belongs to (completion month for finished work, deadline
-      month otherwise). */
-  exportRows?: {
-    topic: string;
-    client: string;
-    type: string | null;
-    slideCount: number | null;
-    deadlineISO: string;
-    status: string;
-    approval?: string | null;
-    monthKey: string;
-    pay: number;
-  }[];
-};
-
 export type NavItem = {
   href: string;
   label: string;
@@ -205,53 +180,14 @@ export type NavSection = {
 export function DashboardShell({
   user,
   nav,
-  payBox,
   children,
 }: {
   user: ShellUser;
   nav: NavSection[];
-  payBox?: PayBox;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  // Earnings box month filter — defaults to the most recent month.
-  const [payMonth, setPayMonth] = useState("");
-  const monthly = payBox?.monthly ?? [];
-  const selectedMonth = monthly.find((m) => m.key === payMonth) ?? monthly[0];
-
-  const csvCell = (v: string | number | null | undefined) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-
-  const downloadMonthCsv = (month: { key: string; label: string }) => {
-    const rows = (payBox?.exportRows ?? []).filter((r) => r.monthKey === month.key);
-    const total = rows.reduce((s, r) => s + r.pay, 0);
-    const lines = [
-      [csvCell("RB Social Branding — work report")],
-      [csvCell("Employee"), csvCell(user.name)],
-      [csvCell("Month"), csvCell(month.label)],
-      [""],
-      ["Topic", "Deliverable", "Client", "Deadline", "Status", "Pay (₹)"].map(csvCell).join(","),
-      ...rows.map((r) =>
-        [
-          csvCell(r.topic),
-          csvCell(r.type ? `${r.type}${r.slideCount ? ` · ${r.slideCount} slides` : ""}` : ""),
-          csvCell(r.client),
-          csvCell(new Date(r.deadlineISO).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })),
-          csvCell(taskStatusText(r.status, r.approval)),
-          csvCell(r.pay),
-        ].join(","),
-      ),
-      [["Total", "", "", "", "", csvCell(total)].join(",")],
-    ];
-    const csv = "\uFEFF" + lines.join("\r\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `rb-work-${user.name.split(" ")[0].toLowerCase()}-${month.label.replace(" ", "-").toLowerCase()}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const initials = user.name
     .split(" ")
@@ -318,35 +254,6 @@ export function DashboardShell({
           </div>
         ))}
       </nav>
-
-      {payBox && (
-        <div className="mx-3 mb-3 rounded-2xl border border-line bg-elevated p-3.5 shadow-soft md:hidden">
-          <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-ok-soft text-ok">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden>
-                <rect x="2" y="6" width="20" height="12" rx="2" />
-                <circle cx="12" cy="12" r="2.5" />
-                <path d="M5.5 12h.01" />
-                <path d="M18.5 12h.01" />
-              </svg>
-            </span>
-            <p className="text-[11px] font-bold uppercase tracking-wider text-faint">Earnings</p>
-          </div>
-          <p className="mt-2 text-lg font-bold tracking-tight text-ink">
-            ₹{(
-              payBox.totalEarned ??
-              (payBox.perPostPay ?? 0) * payBox.completedCount
-            ).toLocaleString("en-IN")}
-            <span className="text-xs font-medium text-faint"> earned</span>
-          </p>
-          {(payBox.pendingAmount ?? 0) > 0 && (
-            <p className="mt-0.5 text-xs font-semibold text-warn">
-              ₹{(payBox.pendingAmount ?? 0).toLocaleString("en-IN")}
-              <span className="font-medium text-faint"> pending approval</span>
-            </p>
-          )}
-        </div>
-      )}
 
       <div className="p-3">
         <div className="flex items-center gap-3 rounded-2xl border border-line bg-elevated p-2.5 shadow-soft">
@@ -428,80 +335,6 @@ export function DashboardShell({
 
       <main className="md:pl-64">
         <div className="px-6 py-10 lg:px-10">
-          {payBox && (
-            <div className="mb-6 hidden justify-end md:flex">
-              <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500/20 via-elevated to-elevated p-[1px] shadow-lift">
-                <div className="rounded-2xl bg-elevated/90 px-5 py-3.5 backdrop-blur">
-                  <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 text-white shadow-soft">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="h-4.5 w-4.5" aria-hidden>
-                        <rect x="2" y="6" width="20" height="12" rx="2" />
-                        <circle cx="12" cy="12" r="2.5" />
-                        <path d="M5.5 12h.01" />
-                        <path d="M18.5 12h.01" />
-                      </svg>
-                    </span>
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-faint">
-                        Earnings
-                      </p>
-                      <p className="text-lg font-extrabold leading-tight tracking-tight text-ink">
-                        ₹{(
-                          payBox.totalEarned ??
-                          (payBox.perPostPay ?? 0) * payBox.completedCount
-                        ).toLocaleString("en-IN")}
-                      </p>
-                    </div>
-                    {monthly.length > 0 && selectedMonth && (
-                      <div className="ml-2 border-l border-line pl-3 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <select
-                            value={selectedMonth.key}
-                            onChange={(e) => setPayMonth(e.target.value)}
-                            aria-label="Earnings month"
-                            className="max-w-32 cursor-pointer truncate bg-transparent text-[10px] font-bold uppercase tracking-[0.14em] text-faint outline-none"
-                          >
-                            {monthly.map((m) => (
-                              <option key={m.key} value={m.key} className="bg-elevated text-ink">
-                                {m.label}
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            type="button"
-                            onClick={() => downloadMonthCsv(selectedMonth)}
-                            title="Download this month's work as Excel (CSV)"
-                            className="whitespace-nowrap rounded-lg border border-line bg-elevated px-2 py-0.5 text-[10px] font-semibold text-ink shadow-sm transition hover:bg-panel"
-                          >
-                            Excel ↓
-                          </button>
-                        </div>
-                        <p className="text-sm font-bold text-ink">
-                          ₹{selectedMonth.earned.toLocaleString("en-IN")}
-                          {selectedMonth.bonus ? (
-                            <span className="text-ok">
-                              {" "}
-                              +₹{selectedMonth.bonus.toLocaleString("en-IN")} 🎁
-                            </span>
-                          ) : null}
-                        </p>
-                      </div>
-                    )}
-                    {(payBox.pendingAmount ?? 0) > 0 && (
-                      <div className="ml-2 border-l border-line pl-3 text-right">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-faint">
-                          Pending
-                        </p>
-                        <p className="text-sm font-bold text-warn">
-                          ₹{(payBox.pendingAmount ?? 0).toLocaleString("en-IN")}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
           {children}
         </div>
       </main>

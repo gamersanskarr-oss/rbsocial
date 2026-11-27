@@ -104,7 +104,7 @@ export default function SelfTaskDialog({ clients }: { clients: { id: string; nam
                   required
                   maxLength={60}
                   className="input"
-                  placeholder="e.g. Navdha (verbally) / client WhatsApp"
+                  placeholder="Who asked for this work, e.g. manager / client"
                 />
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -124,13 +124,13 @@ export default function SelfTaskDialog({ clients }: { clients: { id: string; nam
                   </p>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-muted">Work link</label>
+                  <label className="mb-1 block text-sm font-medium text-muted">Google Drive link</label>
                   <input
                     name="submissionLink"
                     type="url"
                     required
                     className="input"
-                    placeholder="https://canva.com/…"
+                    placeholder="https://drive.google.com/…"
                   />
                 </div>
               </div>

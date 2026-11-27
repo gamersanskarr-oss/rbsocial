@@ -32,6 +32,10 @@ export async function createSelfTask(formData: FormData): Promise<SubmitState> {
   try {
     const u = new URL(link);
     if (u.protocol !== "https:" && u.protocol !== "http:") throw new Error();
+    // Drive-only policy — same rule as regular task submissions.
+    if (u.hostname !== "drive.google.com") {
+      return { error: "Only Google Drive links are accepted — upload the work to Drive and share the link." };
+    }
   } catch {
     return { error: "That does not look like a valid work link." };
   }
